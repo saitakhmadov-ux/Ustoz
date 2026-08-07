@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "ai-color-palette",
+        "value": "*",
+        "files": [
+          "**/learn/**/page.jsx"
+        ],
+        "createdAt": "2026-08-03T01:29:21.435Z",
+        "reason": "Indigo Modern brend rangi (foydalanuvchi tanlagan) — sertifikat banneri"
+      }
+    ]
+  }
+}

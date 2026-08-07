@@ -1,0 +1,319 @@
+// Ustoz — Onlayn IT ta'lim platformasi
+// Prisma sxemasi (PostgreSQL)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enumlar ----------
+
+enum Role {
+  ADMIN // bosh admin — to'liq huquq
+  INSTRUCTOR // ustoz admin — faqat biriktirilgan kurs(lar)i kontenti
+  USER
+}
+
+enum MaterialType {
+  VIDEO
+  PDF
+}
+
+enum Level {
+  BEGINNER // boshlang'ich
+  INTERMEDIATE // o'rta
+  ADVANCED // yuqori
+}
+
+enum PaymentProvider {
+  CLICK
+  PAYME
+}
+
+enum PaymentStatus {
+  PENDING // kutilmoqda
+  PAID // to'langan
+  FAILED // muvaffaqiyatsiz
+}
+
+// ---------- Modellar ----------
+
+model User {
+  id           String   @id @default(cuid())
+  fullName     String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  avatarUrl    String?
+  bio          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  enrollments  Enrollment[]
+  payments     Payment[]
+  certificates Certificate[]
+  progress     LessonProgress[]
+  taskProgress TaskProgress[] // vazifa-darajali progress
+  quizAttempts QuizAttempt[] // test urinishlari (kuldown)
+  taughtCourses Course[] @relation("CourseInstructor") // ustoz sifatida biriktirilgan kurslar
+
+  notifications     Notification[] @relation("UserNotifications") // qabul qilingan xabarlar
+  sentNotifications Notification[] @relation("SentNotifications") // yuborgan xabarlar (admin/ustoz)
+  reviews           Review[] // qoldirgan baholar
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  icon        String? // emoji yoki ikon nomi
+  createdAt   DateTime @default(now())
+
+  courses Course[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  thumbnail   String? // rasm URL
+  authorName  String
+  price       Int      @default(0) // so'mda (tiyinsiz)
+  isFree      Boolean  @default(false)
+  level       Level    @default(BEGINNER)
+  // Kursdan foydalanish muddati (oylarda). Bosh admin belgilaydi.
+  // null bo'lsa — daraja bo'yicha standart qo'llanadi (BEGINNER 1, INTERMEDIATE 2, ADVANCED 3).
+  accessMonths Int?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  // Kursga biriktirilgan ustoz admin (ixtiyoriy). Ustoz o'chirilsa kurs qoladi.
+  instructorId String?
+  instructor   User?   @relation("CourseInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
+
+  sections     Section[]
+  enrollments  Enrollment[]
+  payments     Payment[]
+  certificates Certificate[]
+  reviews      Review[]
+
+  @@index([categoryId])
+  @@index([instructorId])
+}
+
+model Section {
+  id       String @id @default(cuid())
+  title    String
+  order    Int    @default(0)
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  lessons Lesson[]
+
+  @@index([courseId])
+}
+
+model Lesson {
+  id            String  @id @default(cuid())
+  title         String
+  order         Int     @default(0)
+  videoUrl      String? // YouTube/Vimeo yoki fayl URL
+  content       String? @db.Text // matnli material (HTML/markdown)
+  isFreePreview Boolean @default(false) // bepul ko'rish mumkinmi
+  sectionId     String
+  section       Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  // Test (quiz) sozlamalari — darsda savollar bo'lsa qo'llanadi.
+  // Bazadan tasodifiy `quizDraw` ta savol beriladi (bo'lim testi 10, yakuniy test 40).
+  // Test foydalanuvchiga faqat baza kamida 2×quizDraw ta savolga to'lganda ochiladi.
+  quizDraw          Int @default(10) // nechta savol beriladi
+  quizPassPercent   Int @default(60) // o'tish chegarasi (%)
+  quizTimePerQ      Int @default(20) // har savolga soniya
+  quizCooldownHours Int @default(3) // yiqilganda qayta urinishgacha soat
+
+  questions    QuizQuestion[]
+  progress     LessonProgress[]
+  taskProgress TaskProgress[]
+  materials    LessonMaterial[]
+  quizAttempts QuizAttempt[]
+
+  @@index([sectionId])
+}
+
+// Darsga biriktirilgan qo'shimcha materiallar (video yoki PDF).
+// url — serverga yuklangan fayl yo'li (/uploads/...) yoki tashqi havola.
+model LessonMaterial {
+  id        String       @id @default(cuid())
+  lessonId  String
+  lesson    Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  type      MaterialType
+  title     String
+  url       String
+  createdAt DateTime     @default(now())
+
+  @@index([lessonId])
+}
+
+model QuizQuestion {
+  id           String   @id @default(cuid())
+  lessonId     String
+  lesson       Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  question     String
+  imageUrl     String? // savolga biriktirilgan skrinshot/rasm (/uploads/... yoki tashqi havola)
+  options      String[] // variantlar
+  correctIndex Int // to'g'ri javob indeksi (0 dan boshlab)
+
+  @@index([lessonId])
+}
+
+// Foydalanuvchining test urinishi — kuldown (3 soat) va urinishlar tarixi uchun.
+// Yiqilgan (passed=false) oxirgi urinishdan keyin quizCooldownHours davomida qayta topshirib bo'lmaydi.
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  lessonId  String
+  correct   Int // to'g'ri javoblar soni
+  total     Int // berilgan savollar soni
+  score     Int // foiz (0..100)
+  passed    Boolean
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([userId, lessonId])
+}
+
+model Enrollment {
+  id        String    @id @default(cuid())
+  userId    String
+  courseId  String
+  createdAt DateTime  @default(now())
+  // Kursdan foydalanish muddati tugaydigan sana. Kurs qiyinchilik darajasiga
+  // qarab yoziluvda hisoblanadi (BEGINNER 1 oy, INTERMEDIATE 2 oy, ADVANCED 3 oy).
+  // null = eski (muddatsiz) yozilishlar bilan mosligi uchun.
+  expiresAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+}
+
+model LessonProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  lessonId    String
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+}
+
+// Dars ichidagi alohida vazifalar bajarilishini kuzatadi (nozik/vazifa-darajali progress).
+// taskKey — darsning bitta vazifasini bildiradi: `video:<lessonId>`, `content:<lessonId>`,
+// `material:<materialId>`, `quiz:<lessonId>` yoki `done:<lessonId>` (komponentsiz dars).
+// Darsning barcha vazifalari bajarilganda LessonProgress.completed = true bo'ladi.
+model TaskProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  lessonId    String
+  taskKey     String
+  completedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, taskKey])
+  @@index([userId])
+  @@index([lessonId])
+}
+
+model Payment {
+  id            String          @id @default(cuid())
+  userId        String
+  courseId      String
+  amount        Int // so'mda
+  provider      PaymentProvider
+  status        PaymentStatus   @default(PENDING)
+  transactionId String? // provayder tranzaksiya ID (mock)
+  createdAt     DateTime        @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([courseId])
+}
+
+// Foydalanuvchining kursga qo'ygan bahosi (yulduz reyting + ixtiyoriy izoh)
+// Har bir foydalanuvchi bitta kursga bitta baho qoldiradi (unique).
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  rating    Int // 1..5 yulduz
+  comment   String?  @db.Text // ixtiyoriy sharh
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+// Foydalanuvchiga yuborilgan xabar/bildirishnoma (bir tomonlama: admin/ustoz -> foydalanuvchi)
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String // qabul qiluvchi
+  user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  senderId  String? // yuboruvchi (admin/ustoz); o'chirilsa null bo'ladi
+  sender    User?    @relation("SentNotifications", fields: [senderId], references: [id], onDelete: SetNull)
+  title     String
+  body      String   @db.Text
+  read      Boolean  @default(false)
+  emailSent Boolean  @default(false) // email ham yuborilganmi (mock/haqiqiy)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([senderId])
+}
+
+// Sayt sozlamalari — key/value (value ichida JSON). Masalan bosh sahifa hero rasmlari.
+// key "hero" -> { images: string[], intervalSec: number }
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text // JSON matn
+  updatedAt DateTime @updatedAt
+}
+
+model Certificate {
+  id       String   @id @default(cuid())
+  userId   String
+  courseId String
+  serial   String   @unique // sertifikat raqami
+  issuedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}

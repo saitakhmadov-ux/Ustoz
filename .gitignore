@@ -1,0 +1,33 @@
+# Bog'liqliklar
+node_modules/
+
+# Muhit fayllari
+.env
+.env.local
+.env*.local
+
+# Build natijalari
+.next/
+dist/
+build/
+out/
+
+# Yuklangan fayllar (runtime — repoga kirmaydi)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Loglar
+*.log
+npm-debug.log*
+
+# Katta hujjatlar / deliverable fayllar (kodga aloqasi yo'q)
+*.pptx
+*.pdf
+*.docx
+
+# Claude Code lokal asboblari (loyihaga aloqasi yo'q)
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Ustoz dizayn tokenlari — Indigo Modern ===== */
+:root {
+  /* Brend ranglari — indigo primary + emerald CTA (zamonaviy, texnologik) */
+  --color-primary: #6366f1; /* indigo-500 */
+  --color-primary-light: #818cf8; /* indigo-400 */
+  --color-primary-dark: #4f46e5; /* indigo-600 */
+  /* Accent/CTA — emerald (WCAG uchun 600) */
+  --color-accent: #059669; /* emerald-600 */
+  --color-accent-dark: #047857; /* emerald-700 */
+
+  /* Neytral (indigo-tint) */
+  --color-ink: #1e1b4b; /* asosiy matn — indigo-950 */
+  --color-muted: #6b7280; /* ikkilamchi matn */
+  --color-surface: #ffffff; /* kartochka foni */
+  --color-line: #e5e3f0; /* chegara chiziq — indigo-tint */
+  --color-bg: #f5f3ff; /* sahifa foni — violet-50 tint */
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display), var(--font-body), sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+  a {
+    color: inherit;
+  }
+  /* Klaviatura fokusi ko'rinishi (a11y) */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Tugmalar */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-dark shadow-sm;
+  }
+  .btn-accent {
+    @apply btn bg-accent text-white hover:bg-accent-dark shadow-sm;
+  }
+  .btn-outline {
+    @apply btn border border-line bg-white text-ink hover:border-primary hover:text-primary;
+  }
+  .btn-ghost {
+    @apply btn text-ink hover:bg-slate-100;
+  }
+
+  /* Kartochka */
+  .card {
+    @apply rounded-2xl border border-line bg-surface shadow-card;
+  }
+
+  /* Belgi (badge) */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  /* Kontent konteyner */
+  .container-page {
+    @apply container mx-auto px-4;
+  }
+
+  /* Input maydoni */
+  .input {
+    @apply w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm text-ink placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/30;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-ink;
+  }
+}
+
+@layer utilities {
+  /* Scroll-reveal (Reveal komponenti bilan ishlaydi) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hero fon dekori — sekin suzuvchi bloblar */
+  .blob {
+    animation: blob-float 14s ease-in-out infinite;
+  }
+  @keyframes blob-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(14px, -20px) scale(1.06); }
+  }
+
+  /* Nozik yuqoriga suzish (belgilar uchun) */
+  .float-slow {
+    animation: float-slow 6s ease-in-out infinite;
+  }
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .blob, .float-slow {
+    animation: none !important;
+  }
+}
