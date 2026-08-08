@@ -162,6 +162,7 @@ const create = asyncHandler(async (req, res) => {
       isFree: data.isFree,
       level: data.level,
       accessMonths: data.accessMonths ?? null,
+      codePlayground: data.codePlayground ?? false,
       categoryId: data.categoryId,
       published: data.published ?? false,
       instructorId: data.instructorId || null,
@@ -205,6 +206,7 @@ const update = asyncHandler(async (req, res) => {
         : {}),
       ...(data.instructorId !== undefined && { instructorId: data.instructorId || null }),
       ...(data.accessMonths !== undefined && { accessMonths: data.accessMonths ?? null }),
+      ...(data.codePlayground !== undefined && { codePlayground: data.codePlayground }),
     });
   }
 

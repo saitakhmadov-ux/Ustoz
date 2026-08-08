@@ -24,6 +24,12 @@ router.use('/learn', require('./learn.routes'));
 router.use('/lessons', require('./lesson.routes'));
 router.use('/certificates', require('./certificate.routes'));
 
+// AI Ustoz (feedback; mentor so'rovi /learn/:slug/mentor'da)
+router.use('/ai', require('./ai.routes'));
+
+// Kod maydoni — ko'p tilli kod-ishga-tushirish
+router.use('/code', require('./code.routes'));
+
 // To'lovlar
 router.use('/payments', require('./payment.routes'));
 

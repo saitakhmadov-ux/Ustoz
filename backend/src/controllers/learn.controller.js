@@ -451,4 +451,4 @@ const submitQuiz = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getCourseContent, completeTask, completeLesson, startQuiz, submitQuiz };
+module.exports = { getCourseContent, completeTask, completeLesson, startQuiz, submitQuiz, getAccess };

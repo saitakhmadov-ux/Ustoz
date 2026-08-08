@@ -64,6 +64,7 @@ model User {
   notifications     Notification[] @relation("UserNotifications") // qabul qilingan xabarlar
   sentNotifications Notification[] @relation("SentNotifications") // yuborgan xabarlar (admin/ustoz)
   reviews           Review[] // qoldirgan baholar
+  aiUsages          AiUsage[] // AI Ustozdan foydalanish tarixi
 }
 
 model Category {
@@ -90,6 +91,9 @@ model Course {
   // Kursdan foydalanish muddati (oylarda). Bosh admin belgilaydi.
   // null bo'lsa — daraja bo'yicha standart qo'llanadi (BEGINNER 1, INTERMEDIATE 2, ADVANCED 3).
   accessMonths Int?
+  // Kod maydoni (playground) yoqilganmi — dasturlash kurslari uchun. Admin belgilaydi.
+  // false bo'lsa foydalanuvchiga "bu kursda ishlamaydi" xabari ko'rsatiladi.
+  codePlayground Boolean @default(false)
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -106,6 +110,7 @@ model Course {
   payments     Payment[]
   certificates Certificate[]
   reviews      Review[]
+  aiUsages     AiUsage[]
 
   @@index([categoryId])
   @@index([instructorId])
@@ -298,11 +303,34 @@ model Notification {
 
 // Sayt sozlamalari — key/value (value ichida JSON). Masalan bosh sahifa hero rasmlari.
 // key "hero" -> { images: string[], intervalSec: number }
+// key "home_content" -> { heroTitle, heroSubtitle, ctaTitle, ctaSubtitle, footerText }
+// key "ai_config" -> { apiKey, model, customInstructions, enabled }
 model SiteSetting {
   id        String   @id @default(cuid())
   key       String   @unique
   value     String   @db.Text // JSON matn
   updatedAt DateTime @updatedAt
+}
+
+// AI Ustoz mentoridan foydalanish jurnali — analitika va foydalilik bahosi uchun.
+// Har bir savol bitta yozuv. helpful — foydalanuvchi 👍/👎 fikri (null = fikr bildirilmagan).
+model AiUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String?
+  lessonId  String?
+  question  String   @db.Text // foydalanuvchi savoli (qisqartirilgan)
+  hasCode   Boolean  @default(false) // playground kodi biriktirilganmi
+  hasError  Boolean  @default(false) // konsol xatosi biriktirilganmi
+  helpful   Boolean? // 👍 true / 👎 false / null = fikr yo'q
+  createdAt DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course? @relation(fields: [courseId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([createdAt])
 }
 
 model Certificate {

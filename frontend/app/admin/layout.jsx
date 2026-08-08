@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, BookOpen, FolderTree, Users, GraduationCap, BarChart3, Send, Image as ImageIcon, Type, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderTree, Users, GraduationCap, BarChart3, Send, LayoutTemplate, Bot, ArrowLeft } from 'lucide-react';
 import RequireAuth from '@/components/RequireAuth';
 import { useAuth } from '@/lib/auth';
 
@@ -13,8 +13,8 @@ const adminMenu = [
   { href: '/admin/courses', label: 'Kurslar', icon: BookOpen },
   { href: '/admin/stats', label: 'Statistika', icon: BarChart3 },
   { href: '/admin/messages', label: 'Xabarlar', icon: Send },
-  { href: '/admin/hero', label: 'Bosh sahifa', icon: ImageIcon },
-  { href: '/admin/content', label: 'Sayt matnlari', icon: Type },
+  { href: '/admin/ai', label: 'Ustoz AI', icon: Bot },
+  { href: '/admin/home', label: 'Bosh sahifa sozlamalari', icon: LayoutTemplate },
   { href: '/admin/categories', label: 'Kategoriyalar', icon: FolderTree },
   { href: '/admin/instructors', label: 'Ustozlar', icon: GraduationCap },
   { href: '/admin/users', label: 'Foydalanuvchilar', icon: Users },

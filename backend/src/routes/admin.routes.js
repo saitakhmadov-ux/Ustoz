@@ -3,6 +3,7 @@ const express = require('express');
 const admin = require('../controllers/admin.controller');
 const cur = require('../controllers/curriculum.controller');
 const notif = require('../controllers/notification.controller');
+const aiAdmin = require('../controllers/ai.admin.controller');
 const { uploadFile, uploadImageFile } = require('../controllers/upload.controller');
 const settings = require('../controllers/settings.controller');
 const { upload, uploadImage } = require('../middleware/upload');
@@ -28,6 +29,13 @@ router.post('/hero/upload', adminOnly, uploadImage.single('file'), settings.uplo
 // Bosh sahifa tahrirlanadigan matnlari (faqat bosh admin)
 router.get('/content', adminOnly, settings.getContent);
 router.put('/content', adminOnly, settings.updateContent);
+
+// Ustoz AI boshqaruvi + analitika (faqat bosh admin)
+router.get('/ai/config', adminOnly, aiAdmin.getConfig);
+router.put('/ai/config', adminOnly, aiAdmin.updateConfig);
+router.get('/ai/models', adminOnly, aiAdmin.listModels);
+router.post('/ai/test', adminOnly, aiAdmin.testConfig);
+router.get('/ai/analytics', adminOnly, aiAdmin.analytics);
 
 // Ustoz adminlar boshqaruvi
 router.get('/instructors', adminOnly, admin.listInstructors);

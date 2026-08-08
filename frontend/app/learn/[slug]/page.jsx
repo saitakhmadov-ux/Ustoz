@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   CheckCircle2, Circle, PlayCircle, FileText, ChevronLeft, ChevronRight,
-  Award, Menu, X, Download, Paperclip, Lock, ListChecks,
+  Award, Menu, X, Download, Paperclip, Lock, ListChecks, Sparkles, Code2,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { fileUrl } from '@/lib/constants';
@@ -14,6 +14,8 @@ import RequireAuth from '@/components/RequireAuth';
 import QuizModal from '@/components/QuizModal';
 import LockedVideo from '@/components/LockedVideo';
 import AccessChip from '@/components/AccessChip';
+import AIChat from '@/components/AIChat';
+import CodePlayground from '@/components/CodePlayground';
 import { Spinner, ErrorState } from '@/components/ui';
 
 function LearnInner() {
@@ -28,6 +30,14 @@ function LearnInner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [certificate, setCertificate] = useState(null);
   const [busyKey, setBusyKey] = useState(null);
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiSeed, setAiSeed] = useState(null);
+  const [codeOpen, setCodeOpen] = useState(false);
+
+  // AI Ustozni ochish. seed={code, errorText} bo'lsa playground kontekstini uzatadi.
+  const askAI = (seed) => { setAiSeed(seed || null); setAiOpen(true); };
+  // Kod maydonidan "AI Ustozdan so'rash" — kod panelni yopib, AI chatni ochamiz.
+  const askAIFromCode = (seed) => { setCodeOpen(false); askAI(seed); };
 
   // Kursni yuklash. keepCurrent=true bo'lsa tanlangan darsni saqlaydi (vazifa bajarilgandan keyin).
   const load = async (keepCurrent = false) => {
@@ -125,6 +135,7 @@ function LearnInner() {
   const videoGate = !!current.videoGate; // backend hisoblaydi (staff uchun false)
 
   return (
+    <>
     <div className="grid min-h-[calc(100vh-4rem)] lg:grid-cols-[340px_1fr]">
       {/* Yon panel (curriculum) */}
       <aside className={`border-r border-line bg-white lg:block ${sidebarOpen ? 'fixed inset-0 z-50 overflow-y-auto' : 'hidden'}`}>
@@ -305,6 +316,7 @@ function LearnInner() {
                   <QuizModal lesson={current} onResult={applyResult} />
                 </div>
               )}
+
                 </>
               )}
 
@@ -344,6 +356,31 @@ function LearnInner() {
         </div>
       </div>
     </div>
+
+      {/* Suzuvchi tugmalar — Kod maydoni (yashil) + AI Ustoz (indigo) */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-stretch gap-3">
+        <button
+          onClick={() => setCodeOpen(true)}
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-5 py-3.5 font-semibold text-white shadow-xl shadow-emerald-500/30 transition-transform hover:scale-105 hover:bg-emerald-700"
+        >
+          <Code2 size={18} /> Kod maydoni
+        </button>
+        <button
+          onClick={() => askAI(null)}
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 font-semibold text-white shadow-xl shadow-indigo-500/30 transition-transform hover:scale-105 hover:bg-primary-dark"
+        >
+          <Sparkles size={18} /> AI Ustoz
+        </button>
+      </div>
+
+      <CodePlayground
+        open={codeOpen}
+        onClose={() => setCodeOpen(false)}
+        enabled={!!course.codePlayground}
+        onAskAI={askAIFromCode}
+      />
+      <AIChat open={aiOpen} onClose={() => setAiOpen(false)} slug={slug} lessonId={current?.id} seed={aiSeed} />
+    </>
   );
 }
 

@@ -14,6 +14,7 @@ export default function CourseForm({ initial, onSaved }) {
   const [form, setForm] = useState({
     title: '', description: '', thumbnail: '', authorName: '',
     price: 0, isFree: false, level: 'BEGINNER', accessMonths: '', categoryId: '', instructorId: '',
+    codePlayground: false,
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -39,6 +40,7 @@ export default function CourseForm({ initial, onSaved }) {
         accessMonths: initial.accessMonths ?? '',
         categoryId: initial.categoryId || initial.category?.id || '',
         instructorId: initial.instructorId || initial.instructor?.id || '',
+        codePlayground: initial.codePlayground || false,
       });
     }
   }, [initial]);
@@ -155,10 +157,14 @@ export default function CourseForm({ initial, onSaved }) {
         </div>
 
         {isAdmin && (
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 space-y-2.5">
             <label className="flex cursor-pointer items-center gap-2 text-sm">
               <input type="checkbox" checked={form.isFree} onChange={(e) => setForm({ ...form, isFree: e.target.checked })} className="h-4 w-4 rounded text-primary focus:ring-primary" />
               Bepul kurs
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 text-sm">
+              <input type="checkbox" checked={form.codePlayground} onChange={(e) => setForm({ ...form, codePlayground: e.target.checked })} className="h-4 w-4 rounded text-emerald-600 focus:ring-emerald-500" />
+              Kod maydoni (dasturlash kursi) — o'quvchilar kod yozib sinab ko'ra oladi
             </label>
           </div>
         )}

@@ -74,6 +74,29 @@ async function getContentConfig() {
   return out;
 }
 
+// ---- AI Ustoz (Gemini) sozlamalari ----
+const AI_CONFIG_KEY = 'ai_config';
+const AI_DEFAULT_MODEL = 'gemini-3.6-flash';
+const AI_MAX_INSTRUCTIONS = 4000;
+
+// AI konfiguratsiyasi. DB (SiteSetting) qiymatlari ustuvor; bo'lmasa .env zaxira.
+// Qaytaradi: { apiKey, model, customInstructions, enabled, keySource }
+async function getAiConfig() {
+  const cfg = (await getSetting(AI_CONFIG_KEY, {})) || {};
+  const dbKey = typeof cfg.apiKey === 'string' ? cfg.apiKey.trim() : '';
+  const envKey = (process.env.GEMINI_API_KEY || '').trim();
+  const apiKey = dbKey || envKey;
+  const model = (typeof cfg.model === 'string' && cfg.model.trim())
+    ? cfg.model.trim()
+    : (process.env.GEMINI_MODEL || AI_DEFAULT_MODEL);
+  const customInstructions = typeof cfg.customInstructions === 'string'
+    ? cfg.customInstructions.slice(0, AI_MAX_INSTRUCTIONS)
+    : '';
+  const enabled = cfg.enabled !== false; // standart: yoqilgan
+  const keySource = dbKey ? 'db' : (envKey ? 'env' : 'none');
+  return { apiKey, model, customInstructions, enabled, keySource };
+}
+
 module.exports = {
   getSetting,
   setSetting,
@@ -88,4 +111,8 @@ module.exports = {
   CONTENT_MAX_LEN,
   contentDefaults,
   getContentConfig,
+  AI_CONFIG_KEY,
+  AI_DEFAULT_MODEL,
+  AI_MAX_INSTRUCTIONS,
+  getAiConfig,
 };
