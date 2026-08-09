@@ -50,7 +50,7 @@ const getCertificate = asyncHandler(async (req, res) => {
     where: { id: req.params.id },
     include: {
       user: { select: { fullName: true } },
-      course: { select: { title: true, authorName: true } },
+      course: { select: { title: true, authorName: true, slug: true } },
     },
   });
   if (!certificate) throw ApiError.notFound('Sertifikat topilmadi');

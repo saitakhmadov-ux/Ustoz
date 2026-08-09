@@ -1,31 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2, Star, Trash2, MessageSquare } from 'lucide-react';
+import { Star, MessageSquare } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { StarRating, StarInput } from '@/components/Stars';
+import { StarRating } from '@/components/Stars';
 import { Spinner } from '@/components/ui';
+import CourseRatingForm from '@/components/CourseRatingForm';
 
 export default function CourseReviews({ slug }) {
   const { isAuthenticated } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Baho berish formasi
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState('');
-
   const load = async () => {
     try {
       const res = await api.get(`/courses/${slug}/reviews`);
       setData(res);
-      if (res.myReview) {
-        setRating(res.myReview.rating);
-        setComment(res.myReview.comment || '');
-      }
     } catch {
       /* jim */
     } finally {
@@ -35,34 +26,10 @@ export default function CourseReviews({ slug }) {
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [slug]);
 
-  const submit = async (e) => {
-    e.preventDefault();
-    setFormError('');
-    if (rating < 1) return setFormError('Iltimos, yulduz tanlang');
-    setSaving(true);
-    try {
-      await api.post(`/courses/${slug}/reviews`, { rating, comment: comment || undefined });
-      await load();
-    } catch (err) {
-      setFormError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const removeReview = async () => {
-    if (!confirm('Bahoyingizni o\'chirasizmi?')) return;
-    try {
-      await api.del(`/courses/${slug}/reviews`);
-      setRating(0); setComment('');
-      await load();
-    } catch (err) { alert(err.message); }
-  };
-
   if (loading) return <Spinner />;
   if (!data) return null;
 
-  const { summary, distribution, reviews, myReview, canReview } = data;
+  const { summary, distribution, reviews, canReview } = data;
   const maxDist = Math.max(1, ...Object.values(distribution));
 
   return (
@@ -93,28 +60,7 @@ export default function CourseReviews({ slug }) {
       <div>
         {/* Baho berish */}
         {isAuthenticated && canReview ? (
-          <form onSubmit={submit} className="card mb-6 p-5">
-            <h3 className="font-semibold">{myReview ? 'Bahoyingizni yangilang' : 'Kursga baho bering'}</h3>
-            {formError && <div className="mt-2 rounded-lg bg-red-50 px-3 py-1.5 text-sm text-red-700">{formError}</div>}
-            <div className="mt-3"><StarInput value={rating} onChange={setRating} /></div>
-            <textarea
-              className="input mt-3 min-h-[80px]"
-              placeholder="Fikringizni yozing (ixtiyoriy)"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              maxLength={1000}
-            />
-            <div className="mt-3 flex gap-2">
-              <button type="submit" disabled={saving} className="btn-primary">
-                {saving && <Loader2 size={16} className="animate-spin" />} {myReview ? 'Yangilash' : 'Yuborish'}
-              </button>
-              {myReview && (
-                <button type="button" onClick={removeReview} className="btn-ghost text-red-600">
-                  <Trash2 size={16} /> O'chirish
-                </button>
-              )}
-            </div>
-          </form>
+          <CourseRatingForm slug={slug} onSaved={load} className="mb-6" />
         ) : isAuthenticated ? (
           <div className="mb-6 rounded-xl bg-slate-50 px-4 py-3 text-sm text-muted">
             Baho berish uchun avval kursga yoziling.

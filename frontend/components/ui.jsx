@@ -1,5 +1,5 @@
 // Kichik qayta ishlatiladigan UI komponentlar
-import { Loader2, Inbox } from 'lucide-react';
+import { Loader2, Inbox, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function Spinner({ label = 'Yuklanmoqda...' }) {
   return (
@@ -28,6 +28,36 @@ export function ErrorState({ message = 'Xatolik yuz berdi' }) {
   return (
     <div className="rounded-2xl bg-red-50 px-4 py-4 text-center text-sm text-red-700">
       {message}
+    </div>
+  );
+}
+
+// Sahifalash — admin ro'yxatlari uchun (foydalanuvchilar, sharhlar, to'lovlar)
+export function Pagination({ page, pages, total, onChange, label = 'yozuv' }) {
+  if (!pages || pages <= 1) return null;
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3 text-sm">
+      <span className="text-muted">
+        Jami {total} ta {label} · {page}/{pages} sahifa
+      </span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onChange(page - 1)}
+          disabled={page <= 1}
+          className="btn-outline px-3 py-1.5"
+        >
+          <ChevronLeft size={15} /> Oldingi
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange(page + 1)}
+          disabled={page >= pages}
+          className="btn-outline px-3 py-1.5"
+        >
+          Keyingi <ChevronRight size={15} />
+        </button>
+      </div>
     </div>
   );
 }

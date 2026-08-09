@@ -6,6 +6,7 @@ import { Award, Download, GraduationCap } from 'lucide-react';
 import { api } from '@/lib/api';
 import { SITE_NAME } from '@/lib/constants';
 import { Spinner, ErrorState } from '@/components/ui';
+import CourseRatingForm from '@/components/CourseRatingForm';
 
 export default function CertificatePage() {
   const { id } = useParams();
@@ -69,6 +70,17 @@ export default function CertificatePage() {
           <Download size={16} /> Sertifikatni chop etish / PDF
         </button>
       </div>
+
+      {/* Kursga baho + izoh (bir marta qo'yilgan baho hamma sahifada ko'rinadi) */}
+      {cert.course?.slug && (
+        <div className="no-print mx-auto mt-8 max-w-xl">
+          <div className="mb-3 text-center">
+            <h2 className="text-lg font-semibold text-ink">Kursni baholang</h2>
+            <p className="text-sm text-muted">Tajribangiz haqida fikringizni qoldiring.</p>
+          </div>
+          <CourseRatingForm slug={cert.course.slug} />
+        </div>
+      )}
 
       <style jsx global>{`
         @media print {

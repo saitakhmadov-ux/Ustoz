@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Shield, User, GraduationCap, Plus, Trash2, Loader2, X } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { Shield, User, GraduationCap, Plus, Trash2, Loader2, X, Search, Users as UsersIcon } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { Spinner, ErrorState } from '@/components/ui';
+import { Spinner, ErrorState, EmptyState, Pagination } from '@/components/ui';
 
 // Rol bo'yicha ko'rinish
 function roleBadge(role) {
@@ -16,8 +17,15 @@ function roleBadge(role) {
 export default function AdminUsersPage() {
   const { user: me } = useAuth();
   const [users, setUsers] = useState([]);
+  const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Qidiruv va filtr
+  const [search, setSearch] = useState('');  // input qiymati
+  const [q, setQ] = useState('');            // debounce'dan keyingi so'rov
+  const [role, setRole] = useState('');
+  const [page, setPage] = useState(1);
 
   // Yangi foydalanuvchi formasi
   const [showForm, setShowForm] = useState(false);
@@ -25,15 +33,25 @@ export default function AdminUsersPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
 
-  const load = () => {
+  // Yozishni to'xtatgandan 400ms keyin qidiramiz
+  useEffect(() => {
+    const t = setTimeout(() => { setQ(search.trim()); setPage(1); }, 400);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const load = useCallback(() => {
     setLoading(true);
-    api.get('/admin/users')
-      .then((res) => setUsers(res.users))
+    const params = new URLSearchParams({ page: String(page), limit: '20' });
+    if (q) params.set('q', q);
+    if (role) params.set('role', role);
+
+    api.get(`/admin/users?${params}`)
+      .then((res) => { setUsers(res.users); setPagination(res.pagination); setError(''); })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  };
+  }, [q, role, page]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   const create = async (e) => {
     e.preventDefault();
@@ -63,7 +81,9 @@ export default function AdminUsersPage() {
     if (!confirm(`"${u.fullName}" foydalanuvchisini o'chirasizmi? Uning yozilishlari, to'lovlari va sertifikatlari ham o'chadi.`)) return;
     try {
       await api.del(`/admin/users/${u.id}`);
-      load();
+      // Sahifadagi oxirgi yozuv o'chirilsa — bo'sh sahifada qolmaslik uchun orqaga qaytamiz
+      if (users.length === 1 && page > 1) setPage(page - 1);
+      else load();
     } catch (err) { alert(err.message); }
   };
 
@@ -72,7 +92,9 @@ export default function AdminUsersPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl">Foydalanuvchilar</h1>
-          <p className="mt-1 text-sm text-muted">Ro'yxatdan o'tgan foydalanuvchilar ({users.length})</p>
+          <p className="mt-1 text-sm text-muted">
+            Ro'yxatdan o'tgan foydalanuvchilar ({pagination?.total ?? 0})
+          </p>
         </div>
         <button onClick={() => setShowForm((v) => !v)} className="btn-primary">
           <Plus size={16} /> Yangi foydalanuvchi
@@ -114,8 +136,46 @@ export default function AdminUsersPage() {
         </form>
       )}
 
-      <div className="mt-6">
-        {error ? <ErrorState message={error} /> : loading ? <Spinner /> : (
+      {/* Qidiruv va rol filtri */}
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <div className="relative min-w-[240px] flex-1">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+          <input
+            className="input pl-9"
+            placeholder="Ism yoki email bo'yicha qidirish..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <select
+          className="input max-w-[190px]"
+          value={role}
+          onChange={(e) => { setRole(e.target.value); setPage(1); }}
+        >
+          <option value="">Barcha rollar</option>
+          <option value="USER">Foydalanuvchi</option>
+          <option value="INSTRUCTOR">Ustoz</option>
+          <option value="ADMIN">Bosh admin</option>
+        </select>
+        {(q || role) && (
+          <button
+            type="button"
+            onClick={() => { setSearch(''); setQ(''); setRole(''); setPage(1); }}
+            className="btn-ghost"
+          >
+            <X size={16} /> Tozalash
+          </button>
+        )}
+      </div>
+
+      <div className="mt-4">
+        {error ? <ErrorState message={error} /> : loading ? <Spinner /> : users.length === 0 ? (
+          <EmptyState
+            title="Foydalanuvchi topilmadi"
+            text={q || role ? 'Qidiruv yoki filtrni o\'zgartirib ko\'ring.' : 'Hali foydalanuvchi yo\'q.'}
+            icon={UsersIcon}
+          />
+        ) : (
           <div className="card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -137,12 +197,12 @@ export default function AdminUsersPage() {
                     return (
                       <tr key={u.id} className="hover:bg-slate-50">
                         <td className="px-4 py-3">
-                          <div className="flex items-center gap-2.5">
+                          <Link href={`/admin/users/${u.id}`} className="flex items-center gap-2.5 hover:text-primary">
                             <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-xs font-bold text-white">
                               {u.fullName?.charAt(0)?.toUpperCase()}
                             </span>
                             <span className="font-medium">{u.fullName}{isSelf && <span className="ml-1 text-xs text-muted">(siz)</span>}</span>
-                          </div>
+                          </Link>
                         </td>
                         <td className="px-4 py-3 text-muted">{u.email}</td>
                         <td className="px-4 py-3">
@@ -166,6 +226,15 @@ export default function AdminUsersPage() {
                 </tbody>
               </table>
             </div>
+            {pagination && (
+              <Pagination
+                page={pagination.page}
+                pages={pagination.pages}
+                total={pagination.total}
+                onChange={setPage}
+                label="foydalanuvchi"
+              />
+            )}
           </div>
         )}
       </div>

@@ -19,7 +19,18 @@ router.use(protect);
 router.get('/stats', adminOnly, admin.stats);
 router.get('/users', adminOnly, admin.users);
 router.post('/users', adminOnly, admin.createUser);
+router.get('/users/:id', adminOnly, admin.getUserDetail);
+router.patch('/users/:id/role', adminOnly, admin.updateUserRole);
+router.post('/users/:id/enrollments', adminOnly, admin.enrollUserToCourse);
 router.delete('/users/:id', adminOnly, admin.deleteUser);
+
+// Yozilishlarni qo'lda boshqarish (muddat uzaytirish / chiqarish)
+router.patch('/enrollments/:id', adminOnly, admin.extendEnrollment);
+router.delete('/enrollments/:id', adminOnly, admin.removeEnrollment);
+
+// Sertifikatlar (ro'yxat + bekor qilish)
+router.get('/certificates', adminOnly, admin.listCertificates);
+router.delete('/certificates/:id', adminOnly, admin.revokeCertificate);
 
 // Bosh sahifa hero rasmlari (sayt bo'ylab umumiy — faqat bosh admin)
 router.get('/hero', adminOnly, settings.getHero);
@@ -36,6 +47,13 @@ router.put('/ai/config', adminOnly, aiAdmin.updateConfig);
 router.get('/ai/models', adminOnly, aiAdmin.listModels);
 router.post('/ai/test', adminOnly, aiAdmin.testConfig);
 router.get('/ai/analytics', adminOnly, aiAdmin.analytics);
+
+// Sharhlar moderatsiyasi (faqat bosh admin)
+router.get('/reviews', adminOnly, admin.listReviews);
+router.delete('/reviews/:id', adminOnly, admin.deleteReview);
+
+// To'lovlar ro'yxati (faqat bosh admin)
+router.get('/payments', adminOnly, admin.listPayments);
 
 // Ustoz adminlar boshqaruvi
 router.get('/instructors', adminOnly, admin.listInstructors);

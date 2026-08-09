@@ -197,7 +197,15 @@ const getCourseContent = asyncHandler(async (req, res) => {
     ? { staff: true, expiresAt: null, expired: false, daysLeft: null, ratioLeft: null }
     : { staff: false, ...accessInfo(enrollment.expiresAt, accessMonthsFor(course)) };
 
-  res.json({ success: true, course: { ...course, sections }, progress, access });
+  // Kurs 100% tugatilgan bo'lsa sertifikatni ham qaytaramiz (sahifa yuklanishida
+  // "Sertifikatingiz" tugmasi ishlashi uchun). issueCertificateIfComplete idempotent —
+  // mavjud bo'lsa uni qaytaradi.
+  let certificate = null;
+  if (progress.percent === 100) {
+    certificate = await issueCertificateIfComplete(req.user.id, course.id);
+  }
+
+  res.json({ success: true, course: { ...course, sections }, progress, access, certificate });
 });
 
 // Vazifani bajarilgan deb belgilash uchun umumiy oqim (write path).

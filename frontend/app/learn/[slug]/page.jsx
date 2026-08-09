@@ -16,6 +16,7 @@ import LockedVideo from '@/components/LockedVideo';
 import AccessChip from '@/components/AccessChip';
 import AIChat from '@/components/AIChat';
 import CodePlayground from '@/components/CodePlayground';
+import CourseRatingForm from '@/components/CourseRatingForm';
 import { Spinner, ErrorState } from '@/components/ui';
 
 function LearnInner() {
@@ -47,6 +48,7 @@ function LearnInner() {
       setCourse(res.course);
       setProgress(res.progress);
       setAccess(res.access);
+      setCertificate(res.certificate || null);
       setError('');
       setErrorCode('');
       if (!keepCurrent) {
@@ -213,8 +215,8 @@ function LearnInner() {
         </div>
 
         <div className="mx-auto max-w-3xl px-4 py-8">
-          {/* Sertifikat bildirishnomasi */}
-          {certificate && (
+          {/* Sertifikat bildirishnomasi — faqat oxirgi materialda */}
+          {certificate && !nextLesson && (
             <div className="mb-6 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-indigo-600 px-5 py-4 text-white">
               <Award size={28} />
               <div className="flex-1">
@@ -342,15 +344,43 @@ function LearnInner() {
                   ? <span className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600"><CheckCircle2 size={16} /> Dars yakunlandi</span>
                   : <span className="text-sm text-muted">{current.tasksDone}/{current.tasksTotal} vazifa bajarildi</span>}
 
-                <button
-                  onClick={() => nextLesson && !nextLesson.locked && setCurrentId(nextLesson.id)}
-                  disabled={!nextLesson || nextLesson.locked}
-                  title={nextLesson?.locked ? 'Bu darsni yakunlab, keyingisini oching' : undefined}
-                  className="btn-outline"
-                >
-                  Keyingi {nextLesson?.locked ? <Lock size={15} /> : <ChevronRight size={16} />}
-                </button>
+                {!nextLesson ? (
+                  certificate ? (
+                    <Link href={`/certificates/${certificate.id}`} className="btn-accent">
+                      <Award size={16} /> Sertifikatingiz
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled
+                      title="Sertifikat uchun barcha vazifalarni yakunlang"
+                      className="btn-accent"
+                    >
+                      <Award size={16} /> Sertifikatingiz
+                    </button>
+                  )
+                ) : (
+                  <button
+                    onClick={() => nextLesson && !nextLesson.locked && setCurrentId(nextLesson.id)}
+                    disabled={nextLesson.locked}
+                    title={nextLesson?.locked ? 'Bu darsni yakunlab, keyingisini oching' : undefined}
+                    className="btn-outline"
+                  >
+                    Keyingi {nextLesson?.locked ? <Lock size={15} /> : <ChevronRight size={16} />}
+                  </button>
+                )}
               </div>
+
+              {/* Faqat eng oxirgi materialda va kurs tugatilganda — baho + izoh */}
+              {!nextLesson && progress.percent === 100 && (
+                <div className="mt-8 border-t border-line pt-8">
+                  <div className="mb-3">
+                    <h2 className="text-lg font-semibold text-ink">Kursni baholang</h2>
+                    <p className="text-sm text-muted">Fikringiz boshqa o'quvchilarga yordam beradi.</p>
+                  </div>
+                  <CourseRatingForm slug={slug} />
+                </div>
+              )}
             </>
           )}
         </div>

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, BookOpen, FolderTree, Users, GraduationCap, BarChart3, Send, LayoutTemplate, Bot, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderTree, Users, GraduationCap, BarChart3, Send, LayoutTemplate, Bot, ArrowLeft, Wallet, MessageSquare, Award } from 'lucide-react';
 import RequireAuth from '@/components/RequireAuth';
 import { useAuth } from '@/lib/auth';
 
@@ -12,6 +12,9 @@ const adminMenu = [
   { href: '/admin', label: 'Boshqaruv paneli', icon: LayoutDashboard, exact: true },
   { href: '/admin/courses', label: 'Kurslar', icon: BookOpen },
   { href: '/admin/stats', label: 'Statistika', icon: BarChart3 },
+  { href: '/admin/payments', label: "To'lovlar", icon: Wallet },
+  { href: '/admin/reviews', label: 'Sharhlar', icon: MessageSquare },
+  { href: '/admin/certificates', label: 'Sertifikatlar', icon: Award },
   { href: '/admin/messages', label: 'Xabarlar', icon: Send },
   { href: '/admin/ai', label: 'Ustoz AI', icon: Bot },
   { href: '/admin/home', label: 'Bosh sahifa sozlamalari', icon: LayoutTemplate },
