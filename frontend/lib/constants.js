@@ -88,8 +88,16 @@ export const PAYMENT_STATUS = {
   FAILED: 'Muvaffaqiyatsiz',
 };
 
-// Narxni formatlash (so'm)
+// Narxni formatlash (so'm). Kurs narxi uchun — 0 bo'lsa "Bepul".
 export function formatPrice(amount, isFree) {
   if (isFree || !amount) return 'Bepul';
   return new Intl.NumberFormat('uz-UZ').format(amount) + ' so\'m';
+}
+
+// Hisobotlar uchun summa formatlash. Narxdan farqi: 0 ham "0 so'm" bo'lib
+// ko'rinadi ("Bepul" emas) va manfiy qiymat to'g'ri chiqadi — maosh,
+// soliq va o'tkazma jadvallarida shu ishlatiladi.
+export function formatMoney(amount) {
+  const n = Number(amount) || 0;
+  return new Intl.NumberFormat('uz-UZ').format(n) + ' so\'m';
 }

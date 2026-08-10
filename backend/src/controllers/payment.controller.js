@@ -4,6 +4,8 @@ const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 const env = require('../config/env');
 const { computeExpiry, accessInfo, accessMonthsFor } = require('../utils/learnProgress');
+const { resolvePromoCode } = require('../utils/promo');
+const { recordEarningForPayment } = require('../utils/recordEarning');
 
 // Mock tranzaksiya ID yaratish
 function mockTransactionId(provider) {
@@ -11,9 +13,9 @@ function mockTransactionId(provider) {
 }
 
 // POST /api/payments — to'lov yaratish
-// body: { courseId, provider: 'CLICK' | 'PAYME' }
+// body: { courseId, provider: 'CLICK' | 'PAYME', promoCode?: string }
 const createPayment = asyncHandler(async (req, res) => {
-  const { courseId, provider } = req.body;
+  const { courseId, provider, promoCode } = req.body;
   if (!courseId) throw ApiError.badRequest('courseId shart');
   if (!['CLICK', 'PAYME'].includes(provider)) {
     throw ApiError.badRequest('provider CLICK yoki PAYME bo\'lishi kerak');
@@ -34,15 +36,28 @@ const createPayment = asyncHandler(async (req, res) => {
     throw ApiError.conflict('Siz bu kursga allaqachon egasiz');
   }
 
+  // Promo kod berilgan bo'lsa — tekshirib, chegirmani qo'llaymiz.
+  // Yaroqsiz kod to'lovni to'xtatadi (o'quvchi kutgan narxdan boshqa summa
+  // yechilib qolmasligi uchun jimgina e'tiborsiz qoldirmaymiz).
+  let promoResult = null;
+  if (promoCode && String(promoCode).trim()) {
+    promoResult = await resolvePromoCode(promoCode, course, req.user.id);
+    if (!promoResult.ok) throw ApiError.badRequest(promoResult.reason);
+  }
+  const finalAmount = promoResult ? promoResult.finalAmount : course.price;
+
   // To'lov yozuvini yaratish
   let payment = await prisma.payment.create({
     data: {
       userId: req.user.id,
       courseId,
-      amount: course.price,
+      amount: finalAmount,
       provider,
       status: 'PENDING',
       transactionId: mockTransactionId(provider),
+      promoCodeId: promoResult ? promoResult.promo.id : null,
+      discountPct: promoResult ? promoResult.discountPct : 0,
+      originalAmount: promoResult ? course.price : null,
     },
   });
 
@@ -68,6 +83,14 @@ const createPayment = asyncHandler(async (req, res) => {
       enrollmentOp,
     ]);
     payment = updated;
+
+    // To'lov PAID bo'ldi — ustoz daromadini yozamiz (kursda ustoz bo'lsa).
+    // Idempotent; xatolik xaridni buzmasligi uchun alohida ushlanadi.
+    try {
+      await recordEarningForPayment(payment, course);
+    } catch (e) {
+      console.error('Daromad yozuvini yaratishda xatolik:', e);
+    }
   }
 
   res.status(201).json({
@@ -84,6 +107,7 @@ const getReceipt = asyncHandler(async (req, res) => {
     include: {
       course: { select: { title: true, slug: true, thumbnail: true } },
       user: { select: { fullName: true, email: true } },
+      promoCode: { select: { code: true, discountPct: true } },
     },
   });
   if (!payment) throw ApiError.notFound('To\'lov topilmadi');

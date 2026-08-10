@@ -40,6 +40,18 @@ enum PaymentStatus {
   FAILED // muvaffaqiyatsiz
 }
 
+// Ustoz daromadining manbasi — taqsimot ulushi shunga bog'liq.
+enum EarningSource {
+  ORGANIC // oddiy sotuv — ustozga sof foydaning 40% i
+  REFERRAL // ustozning promo kodi orqali — ustozga sof foydaning 60% i
+}
+
+// Ustoz hisobiga o'tkazma holati
+enum PayoutStatus {
+  PENDING // rejalashtirilgan, hali o'tkazilmagan
+  PAID // hisobga o'tkazilgan
+}
+
 // ---------- Modellar ----------
 
 model User {
@@ -65,6 +77,12 @@ model User {
   sentNotifications Notification[] @relation("SentNotifications") // yuborgan xabarlar (admin/ustoz)
   reviews           Review[] // qoldirgan baholar
   aiUsages          AiUsage[] // AI Ustozdan foydalanish tarixi
+
+  // Ustoz (INSTRUCTOR) daromadi bilan bog'liq
+  promoCodes     PromoCode[] // yaratgan promo kodlari
+  earnings       Earning[] // sotuvlardan ishlagan daromadlari
+  payouts        Payout[] @relation("InstructorPayouts") // hisobiga o'tkazilgan summalar
+  createdPayouts Payout[] @relation("PayoutCreatedBy") // admin sifatida kiritgan o'tkazmalar
 }
 
 model Category {
@@ -111,6 +129,8 @@ model Course {
   certificates Certificate[]
   reviews      Review[]
   aiUsages     AiUsage[]
+  promoCodes   PromoCode[] // shu kursga biriktirilgan promo kodlar
+  earnings     Earning[] // shu kurs sotuvidan yozilgan daromadlar
 
   @@index([categoryId])
   @@index([instructorId])
@@ -254,17 +274,106 @@ model Payment {
   id            String          @id @default(cuid())
   userId        String
   courseId      String
-  amount        Int // so'mda
+  amount        Int // haqiqatda to'langan summa (chegirmadan KEYIN), so'mda
   provider      PaymentProvider
   status        PaymentStatus   @default(PENDING)
   transactionId String? // provayder tranzaksiya ID (mock)
   createdAt     DateTime        @default(now())
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  // Promo kod bilan xarid qilingan bo'lsa — kod va chegirma tafsilotlari.
+  // originalAmount — chegirmadan OLDINGI kurs narxi (chek va hisobot uchun).
+  promoCodeId    String?
+  promoCode      PromoCode? @relation(fields: [promoCodeId], references: [id], onDelete: SetNull)
+  discountPct    Int        @default(0)
+  originalAmount Int? // null = chegirma bo'lmagan (amount bilan bir xil)
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  earning Earning?
 
   @@index([userId])
   @@index([courseId])
+  @@index([promoCodeId])
+}
+
+// Ustozning promo kodi — o'quvchi olib kelish uchun. Kod FAQAT shu ustozga
+// biriktirilgan kurslarda amal qiladi. courseId null bo'lsa — ustozning barcha
+// kurslariga, aks holda faqat bitta kursga.
+model PromoCode {
+  id           String   @id @default(cuid())
+  code         String   @unique // katta harflarda saqlanadi, masalan "ALISHER10"
+  instructorId String
+  instructor   User     @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  courseId     String? // null = ustozning barcha kurslari
+  course       Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  discountPct  Int      @default(0) // o'quvchiga beriladigan chegirma (0..maxDiscountPct)
+  active       Boolean  @default(true)
+  // Amal muddati. null = muddatsiz (doimiy). Sana o'tgach kod ishlamaydi.
+  expiresAt    DateTime?
+  // Foydalanish limiti — nechta to'langan xaridda ishlatilishi mumkin.
+  // null = cheksiz. Hisob PAID holatdagi to'lovlar bo'yicha yuritiladi.
+  maxUses      Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  payments Payment[]
+  earnings Earning[]
+
+  @@index([instructorId])
+  @@index([courseId])
+}
+
+// Bitta to'langan xariddan ustozga tegishli daromad yozuvi.
+// MUHIM: foizlar (taxPct/sharePct) yozuv yaratilgan paytdagi qiymat bilan
+// SAQLANADI. Keyinchalik admin foizni o'zgartirsa ham o'tgan oylardagi
+// maosh o'zgarmaydi — hisobot barqaror qoladi.
+model Earning {
+  id           String @id @default(cuid())
+  paymentId    String @unique // bitta to'lovdan bitta daromad yozuvi (idempotent)
+  payment      Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  instructorId String
+  instructor   User   @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  courseId     String
+  course       Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  grossAmount      Int // to'langan summa (chegirmadan keyin)
+  taxAmount        Int // ushlab qolingan soliq
+  netAmount        Int // gross - tax (sof foyda)
+  instructorAmount Int // ustoz ulushi
+  platformAmount   Int // tizim ulushi (net - instructorAmount)
+
+  taxPct   Int // snapshot: o'sha paytdagi soliq foizi
+  sharePct Int // snapshot: ustozning sof foydadan ulushi (40 yoki 60)
+
+  source      EarningSource
+  promoCodeId String?
+  promoCode   PromoCode? @relation(fields: [promoCodeId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([instructorId, createdAt])
+  @@index([courseId])
+  @@index([createdAt])
+}
+
+// Ustoz hisobiga HAQIQATDA o'tkazilgan summa. Bosh admin kiritadi.
+// Ustozning kutilayotgan balansi = jami Earning.instructorAmount - jami PAID Payout.amount
+model Payout {
+  id           String       @id @default(cuid())
+  instructorId String
+  instructor   User         @relation("InstructorPayouts", fields: [instructorId], references: [id], onDelete: Cascade)
+  amount       Int // so'mda
+  status       PayoutStatus @default(PAID)
+  method       String? // karta / bank / naqd
+  note         String? // izoh (masalan "2026-yil iyul oyi uchun")
+  periodFrom   DateTime? // qaysi davr uchun (ixtiyoriy)
+  periodTo     DateTime?
+  paidAt       DateTime? // hisobga o'tgan sana
+  createdById  String? // kim kiritgan (admin); o'chirilsa null
+  createdBy    User?    @relation("PayoutCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+
+  @@index([instructorId, createdAt])
 }
 
 // Foydalanuvchining kursga qo'ygan bahosi (yulduz reyting + ixtiyoriy izoh)

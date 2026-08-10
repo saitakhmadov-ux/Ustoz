@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, BookOpen, FolderTree, Users, GraduationCap, BarChart3, Send, LayoutTemplate, Bot, ArrowLeft, Wallet, MessageSquare, Award } from 'lucide-react';
+import { LayoutDashboard, BookOpen, FolderTree, Users, GraduationCap, BarChart3, Send, LayoutTemplate, Bot, ArrowLeft, Wallet, MessageSquare, Award, UserCheck, Coins } from 'lucide-react';
 import RequireAuth from '@/components/RequireAuth';
 import { useAuth } from '@/lib/auth';
 
@@ -11,7 +11,9 @@ import { useAuth } from '@/lib/auth';
 const adminMenu = [
   { href: '/admin', label: 'Boshqaruv paneli', icon: LayoutDashboard, exact: true },
   { href: '/admin/courses', label: 'Kurslar', icon: BookOpen },
+  { href: '/admin/students', label: "O'quvchilar", icon: UserCheck },
   { href: '/admin/stats', label: 'Statistika', icon: BarChart3 },
+  { href: '/admin/earnings', label: 'Maosh hisoboti', icon: Coins },
   { href: '/admin/payments', label: "To'lovlar", icon: Wallet },
   { href: '/admin/reviews', label: 'Sharhlar', icon: MessageSquare },
   { href: '/admin/certificates', label: 'Sertifikatlar', icon: Award },
@@ -26,12 +28,16 @@ const adminMenu = [
 // Ustoz admin uchun cheklangan menyu — faqat o'z kurslari, statistikasi va xabarlar
 const instructorMenu = [
   { href: '/admin/courses', label: 'Kurslarim', icon: BookOpen },
+  { href: '/admin/students', label: "O'quvchilarim", icon: UserCheck },
+  { href: '/admin/earnings', label: 'Maoshim', icon: Coins },
   { href: '/admin/stats', label: 'Statistika', icon: BarChart3 },
   { href: '/admin/messages', label: 'Xabarlar', icon: Send },
 ];
 
 // Ustoz kira oladigan yo'llar (boshqalaridan qaytariladi)
-const instructorAllowed = ['/admin/courses', '/admin/stats', '/admin/messages'];
+const instructorAllowed = [
+  '/admin/courses', '/admin/students', '/admin/earnings', '/admin/stats', '/admin/messages',
+];
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();

@@ -92,6 +92,38 @@ export function uploadFile(path, file, { onProgress } = {}) {
   });
 }
 
+// Faylni yuklab olish (CSV va h.k.). Endpoint token talab qilgani uchun
+// oddiy <a href> ishlamaydi — javobni blob qilib olib, brauzerga saqlatamiz.
+export async function downloadFile(path, fallbackName = 'hisobot.csv') {
+  const token = getToken();
+  const res = await fetch(`${API_URL}${path}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) {
+    let message = 'Faylni yuklab olishda xatolik';
+    try {
+      const data = await res.json();
+      if (data?.message) message = data.message;
+    } catch { /* JSON emas */ }
+    throw new Error(message);
+  }
+
+  // Fayl nomini server sarlavhasidan olamiz (bo'lmasa zaxira nom)
+  const disp = res.headers.get('Content-Disposition') || '';
+  const match = disp.match(/filename="?([^"]+)"?/);
+  const name = match ? match[1] : fallbackName;
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 // Qulay yordamchi metodlar
 export const api = {
   get: (path, opts) => apiFetch(path, { ...opts, method: 'GET' }),
@@ -100,4 +132,5 @@ export const api = {
   patch: (path, body, opts) => apiFetch(path, { ...opts, method: 'PATCH', body }),
   del: (path, opts) => apiFetch(path, { ...opts, method: 'DELETE' }),
   upload: uploadFile,
+  download: downloadFile,
 };

@@ -6,44 +6,15 @@ const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 const { computeProgress } = require('./enrollment.controller');
 const { computeExpiry, accessInfo, accessMonthsFor } = require('../utils/learnProgress');
+const { periodRange, growthPct, bucketByDate } = require('../utils/period');
 
-// Davr (period) parametrini kunlarga aylantirish. null — butun davr.
-const PERIOD_DAYS = { '7d': 7, '30d': 30, '90d': 90, '1y': 365 };
-
-// O'sish foizi: oldingi davrga nisbatan. Oldingi 0 bo'lsa — yangi o'sish 100% deb olinadi.
-function growthPct(current, previous) {
-  if (previous === 0) return current > 0 ? 100 : 0;
-  return Math.round(((current - previous) / previous) * 100);
-}
-
-// Sanalar bo'yicha guruhlash (kunlik yoki oylik) — grafik uchun
-function bucketByDate(rows, days, valueFn = () => 1) {
-  const monthly = days === null || days > 90;
-  const map = {};
-  for (const r of rows) {
-    const d = new Date(r.createdAt);
-    const key = monthly
-      ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-      : d.toISOString().slice(0, 10);
-    map[key] = (map[key] || 0) + valueFn(r);
-  }
-  return Object.entries(map)
-    .map(([date, value]) => ({ date, value }))
-    .sort((a, b) => a.date.localeCompare(b.date));
-}
+// Davr yordamchilari maosh hisoboti bilan umumiy — utils/period.js da.
 
 // GET /api/admin/stats — umumiy statistika
 // ?period=7d|30d|90d|1y|all (standart 30d) — davr bo'yicha o'sish va grafik bilan
 const stats = asyncHandler(async (req, res) => {
-  // Faqat ruxsat etilgan qiymatlar (prototip zanjiriga tushmaslik uchun aniq ro'yxat)
-  const allowed = ['7d', '30d', '90d', '1y', 'all'];
-  const period = allowed.includes(req.query.period) ? req.query.period : '30d';
-  const days = period === 'all' ? null : PERIOD_DAYS[period];
-
-  // Joriy va oldingi davr chegaralari
-  const now = new Date();
-  const from = days === null ? null : new Date(now.getTime() - days * 86400000);
-  const prevFrom = days === null ? null : new Date(now.getTime() - 2 * days * 86400000);
+  // Davr va uning chegaralari (joriy + taqqoslash uchun oldingi davr)
+  const { period, days, from, prevFrom } = periodRange(req.query.period);
 
   const [users, courses, publishedCourses, enrollments, paidPayments, recentPayments] =
     await Promise.all([

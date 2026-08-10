@@ -97,9 +97,20 @@ async function getAiConfig() {
   return { apiKey, model, customInstructions, enabled, keySource };
 }
 
+// ---- Ustoz maoshi (soliq va ulush foizlari) ----
+const { PAYOUT_KEY, normalizePayoutConfig } = require('./earnings');
+
+// Maosh taqsimoti sozlamalari. Saqlanmagan bo'lsa standart qiymatlar qaytadi.
+// Qaytaradi: { taxPct, organicInstructorPct, referralInstructorPct, maxDiscountPct }
+async function getPayoutConfig() {
+  return normalizePayoutConfig(await getSetting(PAYOUT_KEY, null));
+}
+
 module.exports = {
   getSetting,
   setSetting,
+  PAYOUT_KEY,
+  getPayoutConfig,
   getHeroConfig,
   HERO_KEY,
   HERO_MAX_IMAGES,

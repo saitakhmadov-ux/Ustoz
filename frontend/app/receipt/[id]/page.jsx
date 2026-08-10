@@ -68,6 +68,28 @@ function ReceiptInner() {
               <dt className="text-muted">Sana</dt>
               <dd>{date}</dd>
             </div>
+            {/* Promo kod ishlatilgan bo'lsa — asl narx va chegirma ko'rsatiladi */}
+            {payment.discountPct > 0 && (
+              <>
+                <div className="flex justify-between border-t border-line pt-3">
+                  <dt className="text-muted">Kurs narxi</dt>
+                  <dd className="text-muted line-through">
+                    {formatPrice(payment.originalAmount || payment.amount)}
+                  </dd>
+                </div>
+                <div className="flex justify-between text-emerald-700">
+                  <dt>
+                    Chegirma ({payment.discountPct}%)
+                    {payment.promoCode && (
+                      <span className="ml-1.5 font-mono text-xs">{payment.promoCode.code}</span>
+                    )}
+                  </dt>
+                  <dd>
+                    − {formatPrice((payment.originalAmount || payment.amount) - payment.amount)}
+                  </dd>
+                </div>
+              </>
+            )}
             <div className="flex justify-between border-t border-line pt-3 font-display text-base font-bold">
               <dt>Jami</dt>
               <dd className="text-primary">{formatPrice(payment.amount)}</dd>

@@ -121,6 +121,57 @@
   }
 }
 
+/* ---- Hisobotlarni chop etish (maosh, statistika) ----
+   Sahifa navigatsiyasi va tugmalar chiqmaydi, kontent butun enga yoyiladi.
+   .no-print — chop etishda yashiriladi, .print-only — faqat chop etishda ko'rinadi. */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm;
+  }
+  html, body {
+    background: #fff !important;
+  }
+  header, footer, aside, .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  /* Admin panel yon menyusiz bir ustunga tushadi */
+  .container-page {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  .print-wide {
+    display: block !important;
+  }
+  /* Kartochka soyalari qog'ozda kerak emas, chegara yetarli */
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #d8dbe4 !important;
+    break-inside: avoid;
+  }
+  table {
+    break-inside: auto;
+  }
+  tr {
+    break-inside: avoid;
+  }
+  thead {
+    display: table-header-group; /* har sahifada sarlavha takrorlansin */
+  }
+  /* Ranglar (progress, badge) qog'ozda ham saqlansin */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

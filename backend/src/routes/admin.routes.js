@@ -4,6 +4,9 @@ const admin = require('../controllers/admin.controller');
 const cur = require('../controllers/curriculum.controller');
 const notif = require('../controllers/notification.controller');
 const aiAdmin = require('../controllers/ai.admin.controller');
+const teaching = require('../controllers/teaching.controller');
+const earnings = require('../controllers/earnings.controller');
+const promo = require('../controllers/promo.controller');
 const { uploadFile, uploadImageFile } = require('../controllers/upload.controller');
 const settings = require('../controllers/settings.controller');
 const { upload, uploadImage } = require('../middleware/upload');
@@ -55,6 +58,21 @@ router.delete('/reviews/:id', adminOnly, admin.deleteReview);
 // To'lovlar ro'yxati (faqat bosh admin)
 router.get('/payments', adminOnly, admin.listPayments);
 
+// Maosh hisoboti — umumiy manzara va ustozlar kesimi (faqat bosh admin)
+router.get('/earnings', adminOnly, earnings.adminOverview);
+router.get('/earnings/export', adminOnly, earnings.adminTransactionsCsv);
+router.get('/earnings/instructors/:id', adminOnly, earnings.adminInstructorDetail);
+
+// Ustozlarga o'tkazmalar (payout)
+router.get('/payouts', adminOnly, earnings.listPayouts);
+router.post('/payouts', adminOnly, earnings.createPayout);
+router.patch('/payouts/:id', adminOnly, earnings.updatePayout);
+router.delete('/payouts/:id', adminOnly, earnings.deletePayout);
+
+// Soliq va ulush foizlari
+router.get('/payout-config', adminOnly, earnings.getConfig);
+router.put('/payout-config', adminOnly, earnings.updateConfig);
+
 // Ustoz adminlar boshqaruvi
 router.get('/instructors', adminOnly, admin.listInstructors);
 router.post('/instructors', adminOnly, admin.createInstructor);
@@ -64,6 +82,23 @@ router.delete('/instructors/:id', adminOnly, admin.deleteInstructor);
 
 // O'qitish statistikasi (ustozning o'z kurslari bo'yicha)
 router.get('/teaching/stats', adminOrInstructor, admin.teachingStats);
+
+// O'quvchilar (ustozning kurslariga yozilganlar; egalik controllerda tekshiriladi)
+router.get('/teaching/students', adminOrInstructor, teaching.listStudents);
+router.get('/teaching/students/:id', adminOrInstructor, teaching.getStudentDetail);
+
+// Maosh (daromad) — ustoz o'z ko'rsatkichlarini ko'radi
+router.get('/teaching/earnings', adminOrInstructor, earnings.myEarnings);
+router.get('/teaching/earnings/transactions', adminOrInstructor, earnings.myTransactions);
+router.get('/teaching/earnings/export', adminOrInstructor, earnings.myTransactionsCsv);
+router.get('/teaching/payouts', adminOrInstructor, earnings.myPayouts);
+
+// Promo kodlar (ustoz o'zi boshqaradi; egalik controllerda tekshiriladi)
+router.get('/teaching/promo-codes', adminOrInstructor, promo.listPromoCodes);
+router.get('/teaching/promo-codes/suggest', adminOrInstructor, promo.suggestPromoCode);
+router.post('/teaching/promo-codes', adminOrInstructor, promo.createPromoCode);
+router.patch('/teaching/promo-codes/:id', adminOrInstructor, promo.updatePromoCode);
+router.delete('/teaching/promo-codes/:id', adminOrInstructor, promo.deletePromoCode);
 
 // Xabar yuborish (admin: barcha/kurs/muayyan; ustoz: faqat o'z o'quvchilari)
 router.get('/notifications/audience', adminOrInstructor, notif.audience);

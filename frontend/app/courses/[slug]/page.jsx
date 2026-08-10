@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   PlayCircle, FileText, HelpCircle, ChevronDown, BarChart, Users,
@@ -14,10 +14,14 @@ import { StarRating } from '@/components/Stars';
 import CourseReviews from '@/components/CourseReviews';
 import { Spinner, ErrorState } from '@/components/ui';
 
-export default function CourseDetailPage() {
+function CourseDetailInner() {
   const { slug } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated } = useAuth();
+  // Ustozning ulashgan havolasidan kelgan promo kod (?promo=KOD) —
+  // checkout sahifasiga o'tkaziladi va u yerda avtomatik qo'llanadi.
+  const promo = searchParams.get('promo');
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -36,7 +40,8 @@ export default function CourseDetailPage() {
 
   const handleEnroll = async () => {
     if (!isAuthenticated) {
-      router.push(`/login?next=/courses/${slug}`);
+      const next = promo ? `/courses/${slug}?promo=${promo}` : `/courses/${slug}`;
+      router.push(`/login?next=${encodeURIComponent(next)}`);
       return;
     }
     if (course.isEnrolled) {
@@ -44,7 +49,7 @@ export default function CourseDetailPage() {
       return;
     }
     if (!course.isFree && course.price > 0) {
-      router.push(`/checkout/${slug}`);
+      router.push(promo ? `/checkout/${slug}?promo=${promo}` : `/checkout/${slug}`);
       return;
     }
     // Bepul kursga yozilish
@@ -194,5 +199,14 @@ export default function CourseDetailPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function CourseDetailPage() {
+  // useSearchParams (?promo=...) Suspense chegarasini talab qiladi
+  return (
+    <Suspense fallback={<Spinner />}>
+      <CourseDetailInner />
+    </Suspense>
   );
 }

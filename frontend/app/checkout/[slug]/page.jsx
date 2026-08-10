@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { ShieldCheck, Loader2, CreditCard } from 'lucide-react';
+import { Suspense, useEffect, useState } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { ShieldCheck, Loader2, CreditCard, Ticket, Check, X } from 'lucide-react';
 import { api } from '@/lib/api';
 import { formatPrice, courseAccessMonthsLabel, LEVELS } from '@/lib/constants';
 import RequireAuth from '@/components/RequireAuth';
@@ -11,11 +11,18 @@ import { Spinner, ErrorState } from '@/components/ui';
 function CheckoutInner() {
   const { slug } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [provider, setProvider] = useState('CLICK');
   const [paying, setPaying] = useState(false);
+
+  // Promo kod holati
+  const [promoInput, setPromoInput] = useState('');
+  const [promo, setPromo] = useState(null); // tasdiqlangan kod
+  const [promoError, setPromoError] = useState('');
+  const [checking, setChecking] = useState(false);
 
   useEffect(() => {
     api.get(`/courses/${slug}`)
@@ -34,17 +41,64 @@ function CheckoutInner() {
       .finally(() => setLoading(false));
   }, [slug, router]);
 
+  // Kodni tekshirib, chegirmani hisoblaydi
+  const applyPromo = async (code, silent = false) => {
+    const value = String(code || '').trim().toUpperCase();
+    if (!value || !course) return;
+    setChecking(true);
+    setPromoError('');
+    try {
+      const res = await api.post('/payments/promo/validate', { code: value, courseId: course.id });
+      if (res.valid) {
+        setPromo(res);
+        setPromoInput(res.code);
+      } else {
+        setPromo(null);
+        // Havoladan avtomatik qo'llanganda xatoni jimgina o'tkazib yubormaymiz,
+        // lekin uni yumshoqroq ko'rsatamiz
+        setPromoError(silent ? `Havoladagi kod qo'llanmadi: ${res.reason}` : res.reason);
+      }
+    } catch (err) {
+      setPromo(null);
+      setPromoError(err.message);
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  // Havolada ?promo=KOD bo'lsa — kurs yuklangach avtomatik qo'llaymiz
+  useEffect(() => {
+    const fromUrl = searchParams.get('promo');
+    if (course && fromUrl && !promo) {
+      setPromoInput(fromUrl.toUpperCase());
+      applyPromo(fromUrl, true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course]);
+
+  const clearPromo = () => {
+    setPromo(null);
+    setPromoInput('');
+    setPromoError('');
+  };
+
   const handlePay = async () => {
     setPaying(true);
     setError('');
     try {
-      const res = await api.post('/payments', { courseId: course.id, provider });
+      const res = await api.post('/payments', {
+        courseId: course.id,
+        provider,
+        ...(promo ? { promoCode: promo.code } : {}),
+      });
       router.push(`/receipt/${res.payment.id}`);
     } catch (err) {
       setError(err.message);
       setPaying(false);
     }
   };
+
+  const finalPrice = promo ? promo.finalAmount : (course ? course.price : 0);
 
   if (loading) return <Spinner />;
   if (error && !course) return <div className="container-page py-10"><ErrorState message={error} /></div>;
@@ -111,18 +165,68 @@ function CheckoutInner() {
             </div>
           </div>
 
+          {/* Promo kod */}
+          <div className="mt-5 border-t border-line pt-4">
+            <label className="label flex items-center gap-1.5">
+              <Ticket size={14} /> Promo kod
+            </label>
+            {promo ? (
+              <div className="flex items-center justify-between gap-2 rounded-xl bg-emerald-50 px-3.5 py-2.5">
+                <span className="inline-flex min-w-0 items-center gap-2 text-sm text-emerald-800">
+                  <Check size={16} className="shrink-0" />
+                  <b className="font-mono">{promo.code}</b>
+                  <span className="truncate">−{promo.discountPct}%</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={clearPromo}
+                  className="shrink-0 rounded-lg p-1 text-emerald-700 hover:bg-emerald-100"
+                  title="Kodni olib tashlash"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  className="input font-mono uppercase"
+                  value={promoInput}
+                  onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError(''); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyPromo(promoInput); } }}
+                  placeholder="Kod bo'lsa kiriting"
+                  maxLength={24}
+                />
+                <button
+                  type="button"
+                  onClick={() => applyPromo(promoInput)}
+                  disabled={checking || !promoInput.trim()}
+                  className="btn-outline shrink-0 disabled:opacity-50"
+                >
+                  {checking ? <Loader2 size={16} className="animate-spin" /> : 'Qo\'llash'}
+                </button>
+              </div>
+            )}
+            {promoError && <p className="mt-2 text-xs text-red-600">{promoError}</p>}
+          </div>
+
           <div className="mt-5 border-t border-line pt-4">
             <div className="flex justify-between text-sm">
               <span className="text-muted">Kurs narxi</span>
-              <span>{formatPrice(course.price)}</span>
+              <span className={promo ? 'text-muted line-through' : ''}>{formatPrice(course.price)}</span>
             </div>
+            {promo && (
+              <div className="mt-2 flex justify-between text-sm text-emerald-700">
+                <span>Chegirma ({promo.discountPct}%)</span>
+                <span>− {formatPrice(promo.discountAmount)}</span>
+              </div>
+            )}
             <div className="mt-2 flex justify-between text-sm">
               <span className="text-muted">Foydalanish muddati</span>
               <span className="font-medium">{courseAccessMonthsLabel(course)} ({LEVELS[course.level]})</span>
             </div>
             <div className="mt-3 flex justify-between font-display text-lg font-bold">
               <span>Jami</span>
-              <span className="text-primary">{formatPrice(course.price)}</span>
+              <span className="text-primary">{formatPrice(finalPrice)}</span>
             </div>
           </div>
 
@@ -139,7 +243,10 @@ function CheckoutInner() {
 export default function CheckoutPage() {
   return (
     <RequireAuth>
-      <CheckoutInner />
+      {/* useSearchParams (?promo=...) Suspense chegarasini talab qiladi */}
+      <Suspense fallback={<Spinner />}>
+        <CheckoutInner />
+      </Suspense>
     </RequireAuth>
   );
 }
