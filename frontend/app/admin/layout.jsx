@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, BookOpen, FolderTree, Users, BarChart3, Send,
   LayoutTemplate, Bot, ArrowLeft, MessageSquare, Award, UserCheck, Coins,
-  Menu, X, Search as SearchIcon,
+  Menu, X, Search as SearchIcon, Mail,
 } from 'lucide-react';
 import RequireAuth from '@/components/RequireAuth';
 import { useAuth } from '@/lib/auth';
@@ -72,6 +72,7 @@ const adminGroups = [
     items: [
       { href: '/admin/ai', label: 'Ustoz AI', icon: Bot },
       { href: '/admin/home', label: 'Bosh sahifa', icon: LayoutTemplate },
+      { href: '/admin/email', label: 'Aloqa va himoya', icon: Mail },
     ],
   },
 ];

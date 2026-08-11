@@ -7,6 +7,12 @@ const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 const { assertCourseAccess } = require('../utils/courseAccess');
 const { sendMail } = require('../utils/mailer');
+const { sendMessage } = require('../telegram/bot');
+const { formatTelegram } = require('../utils/notify');
+
+// Telegram sekundiga ~30 xabarni qabul qiladi — shu hajmda bo'lib yuboramiz
+const TG_CHUNK = 25;
+const sleep = (ms) => new Promise((r) => { setTimeout(r, ms); });
 
 const sendSchema = z.object({
   mode: z.enum(['users', 'course', 'all']),
@@ -15,6 +21,7 @@ const sendSchema = z.object({
   title: z.string().min(2, 'Sarlavha juda qisqa').max(160),
   body: z.string().min(1, 'Xabar matni bo\'sh').max(4000),
   sendEmail: z.boolean().optional(),
+  sendTelegram: z.boolean().optional(),
 });
 
 // Ustozga biriktirilgan kurslarga yozilgan o'quvchilar id to'plami
@@ -37,7 +44,8 @@ async function resolveRecipients(user, data) {
   if (data.mode === 'all') {
     if (!isAdmin) throw ApiError.forbidden('Ustoz barcha foydalanuvchilarga yubora olmaydi');
     return prisma.user.findMany({
-      where: { role: 'USER' }, select: { id: true, email: true, fullName: true },
+      where: { role: 'USER' },
+      select: { id: true, email: true, fullName: true, telegramChatId: true },
     });
   }
 
@@ -49,7 +57,7 @@ async function resolveRecipients(user, data) {
     await assertCourseAccess(user, data.courseId);
     const enr = await prisma.enrollment.findMany({
       where: { courseId: data.courseId },
-      select: { user: { select: { id: true, email: true, fullName: true } } },
+      select: { user: { select: { id: true, email: true, fullName: true, telegramChatId: true } } },
     });
     return enr.map((e) => e.user);
   }
@@ -60,7 +68,7 @@ async function resolveRecipients(user, data) {
   }
   const users = await prisma.user.findMany({
     where: { id: { in: data.userIds } },
-    select: { id: true, email: true, fullName: true },
+    select: { id: true, email: true, fullName: true, telegramChatId: true },
   });
   // Ustoz faqat o'z o'quvchilariga yubora oladi
   if (!isAdmin) {
@@ -81,16 +89,29 @@ const send = asyncHandler(async (req, res) => {
   const recipients = recipientsRaw.filter((u) => (seen.has(u.id) ? false : seen.add(u.id)));
   if (recipients.length === 0) throw ApiError.badRequest('Qabul qiluvchilar topilmadi');
 
-  // Bildirishnomalarni yaratamiz
-  await prisma.notification.createMany({
-    data: recipients.map((r) => ({
-      userId: r.id,
-      senderId: req.user.id,
-      title: data.title,
-      body: data.body,
-      emailSent: !!data.sendEmail,
-    })),
-  });
+  // Telegram (best-effort). Faqat hisobini ulaganlarga ketadi.
+  // Telegram sekundiga ~30 xabar qabul qiladi — shuning uchun bo'lib yuboramiz.
+  let telegramInfo = null;
+  const tgSent = new Set();
+  if (data.sendTelegram) {
+    const withTg = recipients.filter((r) => r.telegramChatId);
+    const text = formatTelegram({ title: data.title, body: data.body });
+    for (let i = 0; i < withTg.length; i += TG_CHUNK) {
+      const chunk = withTg.slice(i, i + TG_CHUNK);
+      /* eslint-disable no-await-in-loop */
+      const results = await Promise.all(
+        chunk.map((r) => sendMessage(r.telegramChatId, text))
+      );
+      chunk.forEach((r, idx) => { if (results[idx].sent) tgSent.add(r.id); });
+      if (i + TG_CHUNK < withTg.length) await sleep(1000);
+      /* eslint-enable no-await-in-loop */
+    }
+    telegramInfo = {
+      attempted: withTg.length,
+      sent: tgSent.size,
+      skipped: recipients.length - withTg.length, // hisobini ulamaganlar
+    };
+  }
 
   // Email (best-effort; mock rejimda konsolga log)
   let emailInfo = null;
@@ -105,11 +126,24 @@ const send = asyncHandler(async (req, res) => {
     };
   }
 
+  // Bildirishnomalarni yaratamiz — kanallar natijasi bilan
+  await prisma.notification.createMany({
+    data: recipients.map((r) => ({
+      userId: r.id,
+      senderId: req.user.id,
+      title: data.title,
+      body: data.body,
+      emailSent: !!data.sendEmail,
+      telegramSent: tgSent.has(r.id),
+    })),
+  });
+
   res.status(201).json({
     success: true,
     message: `${recipients.length} ta foydalanuvchiga xabar yuborildi`,
     count: recipients.length,
     email: emailInfo,
+    telegram: telegramInfo,
   });
 });
 

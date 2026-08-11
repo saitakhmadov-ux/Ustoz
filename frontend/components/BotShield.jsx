@@ -6,13 +6,33 @@
 //   website      — honeypot: ko'rinmas maydon, faqat bot to'ldiradi
 //   formMs       — forma ochilgandan yuborilgunicha o'tgan vaqt
 //
-// NEXT_PUBLIC_TURNSTILE_SITE_KEY qo'yilmagan bo'lsa vidjet ko'rsatilmaydi va
-// backend ham tekshiruvni o'tkazib yuboradi — lokal ishlab chiqish uchun.
+// Ommaviy kalit admin panelidan (/api/home/security) olinadi — shuning uchun
+// CAPTCHA'ni yoqish uchun saytni qayta joylash shart emas.
+// NEXT_PUBLIC_TURNSTILE_SITE_KEY qo'yilgan bo'lsa, u ustun turadi.
+// Kalit umuman bo'lmasa vidjet ko'rsatilmaydi va backend ham tekshiruvni
+// o'tkazib yuboradi — lokal ishlab chiqish uchun.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { api } from '@/lib/api';
 
-const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
+const ENV_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 const SCRIPT_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+const KEY_TIMEOUT_MS = 5000;
+
+// Kalitni sahifa umri davomida bir marta so'raymiz (bir nechta forma bo'lsa ham).
+// Server javob bermasa yoki kechiksa — kalitsiz davom etamiz, aks holda
+// foydalanuvchi formani umuman yubora olmay qoladi.
+let keyPromise = null;
+function fetchSiteKey() {
+  if (ENV_SITE_KEY) return Promise.resolve(ENV_SITE_KEY);
+  if (keyPromise) return keyPromise;
+
+  keyPromise = Promise.race([
+    api.get('/home/security', { auth: false }).then((res) => res?.security?.siteKey || ''),
+    new Promise((resolve) => setTimeout(() => resolve(''), KEY_TIMEOUT_MS)),
+  ]).catch(() => '');
+  return keyPromise;
+}
 
 // Skriptni bir marta yuklaymiz (bir nechta forma bo'lsa ham)
 let scriptPromise = null;
@@ -38,6 +58,15 @@ export function useBotShield() {
   const [captchaToken, setCaptchaToken] = useState('');
   const [honeypot, setHoneypot] = useState('');
   const startedAt = useRef(Date.now());
+  // null — kalit hali noma'lum; '' — CAPTCHA o'chirilgan
+  const [siteKey, setSiteKey] = useState(ENV_SITE_KEY || null);
+
+  useEffect(() => {
+    if (ENV_SITE_KEY) return undefined;
+    let alive = true;
+    fetchSiteKey().then((key) => { if (alive) setSiteKey(key); });
+    return () => { alive = false; };
+  }, []);
 
   // Har bir yuborishda backendga qo'shiladigan maydonlar
   const fields = useCallback(() => ({
@@ -52,9 +81,11 @@ export function useBotShield() {
     setCaptchaToken,
     honeypot,
     setHoneypot,
-    // CAPTCHA yoqilgan bo'lsa token kelmaguncha tugma bloklanadi
-    ready: !SITE_KEY || Boolean(captchaToken),
-    enabled: Boolean(SITE_KEY),
+    siteKey,
+    // Kalit aniqlanmaguncha va CAPTCHA yoqilgan bo'lsa token kelmaguncha
+    // tugma bloklanadi
+    ready: siteKey !== null && (!siteKey || Boolean(captchaToken)),
+    enabled: Boolean(siteKey),
   };
 }
 
@@ -63,17 +94,17 @@ export default function BotShield({ shield }) {
   const boxRef = useRef(null);
   const widgetId = useRef(null);
   const [failed, setFailed] = useState(false);
-  const { setCaptchaToken, honeypot, setHoneypot } = shield;
+  const { setCaptchaToken, honeypot, setHoneypot, siteKey } = shield;
 
   useEffect(() => {
-    if (!SITE_KEY || !boxRef.current) return undefined;
+    if (!siteKey || !boxRef.current) return undefined;
     let cancelled = false;
 
     loadTurnstile()
       .then((turnstile) => {
         if (cancelled || !boxRef.current || widgetId.current !== null) return;
         widgetId.current = turnstile.render(boxRef.current, {
-          sitekey: SITE_KEY,
+          sitekey: siteKey,
           language: 'uz',
           callback: (token) => setCaptchaToken(token),
           'expired-callback': () => setCaptchaToken(''),
@@ -89,7 +120,7 @@ export default function BotShield({ shield }) {
         widgetId.current = null;
       }
     };
-  }, [setCaptchaToken]);
+  }, [setCaptchaToken, siteKey]);
 
   return (
     <>
@@ -109,7 +140,7 @@ export default function BotShield({ shield }) {
         />
       </div>
 
-      {SITE_KEY && (
+      {siteKey && (
         <div className="mb-4">
           <div ref={boxRef} />
           {failed && (

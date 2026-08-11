@@ -6,6 +6,7 @@ const env = require('../config/env');
 const { computeExpiry, accessInfo, accessMonthsFor } = require('../utils/learnProgress');
 const { resolvePromoCode } = require('../utils/promo');
 const { recordEarningForPayment } = require('../utils/recordEarning');
+const { notifyPaid, notifyInstructorNewStudent } = require('../utils/notify');
 
 // Mock tranzaksiya ID yaratish
 function mockTransactionId(provider) {
@@ -70,7 +71,9 @@ const createPayment = asyncHandler(async (req, res) => {
     const enrollmentOp = existingEnrollment
       ? prisma.enrollment.update({
           where: { id: existingEnrollment.id },
-          data: { expiresAt }, // muddati tugagan yozilishni yangilaymiz (progress saqlanadi)
+          // muddati tugagan yozilishni yangilaymiz (progress saqlanadi);
+          // yangi muddat uchun ogohlantirish belgisi ham tozalanadi
+          data: { expiresAt, expiryWarnedAt: null },
         })
       : prisma.enrollment.create({
           data: { userId: req.user.id, courseId, expiresAt },
@@ -90,6 +93,13 @@ const createPayment = asyncHandler(async (req, res) => {
       await recordEarningForPayment(payment, course);
     } catch (e) {
       console.error('Daromad yozuvini yaratishda xatolik:', e);
+    }
+
+    // Bildirishnomalar (javobni kutib turmaydi). Ustozga faqat yangi
+    // o'quvchi bo'lganda — muddat yangilanishi "yangi o'quvchi" emas.
+    notifyPaid(req.user.id, course, payment);
+    if (!existingEnrollment) {
+      notifyInstructorNewStudent(course.instructorId, req.user.fullName, course);
     }
   }
 

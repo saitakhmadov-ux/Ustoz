@@ -78,7 +78,15 @@ model User {
   // Email tasdiqlangan sana. null = tasdiqlanmagan, akkaunt cheklangan.
   emailVerifiedAt DateTime?
 
+  // Telegram bot bilan bog'lanish. chatId noyob — bitta Telegram akkaunt
+  // faqat bitta Ustoz hisobiga ulanadi. Ulash saytdan boshlanadi (bir martalik
+  // havola), shuning uchun begona odam o'zini birovning hisobiga ulay olmaydi.
+  telegramChatId   String?   @unique
+  telegramUsername String? // @nik — faqat ko'rsatish uchun
+  telegramLinkedAt DateTime?
+
   verificationCodes VerificationCode[]
+  telegramLinks     TelegramLink[]
 
   enrollments  Enrollment[]
   payments     Payment[]
@@ -115,6 +123,24 @@ model VerificationCode {
   createdAt DateTime            @default(now())
 
   @@index([userId, purpose])
+  @@index([expiresAt])
+}
+
+// Telegram akkauntini ulash uchun bir martalik havola tokeni.
+// Foydalanuvchi saytda "Telegram'ga ulash" ni bosadi -> token yaratiladi ->
+// t.me/<bot>?start=<token> havolasi ochiladi -> bot tokenni tanib, chatId ni
+// hisobga bog'laydi. Token ochiq saqlanmaydi: bazada faqat sha256 hash turadi
+// (bot tokenni hash bo'yicha topadi, shuning uchun bcrypt emas — sha256).
+model TelegramLink {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
   @@index([expiresAt])
 }
 
@@ -261,6 +287,9 @@ model Enrollment {
   // qarab yoziluvda hisoblanadi (BEGINNER 1 oy, INTERMEDIATE 2 oy, ADVANCED 3 oy).
   // null = eski (muddatsiz) yozilishlar bilan mosligi uchun.
   expiresAt DateTime?
+  // Muddat tugashi haqida ogohlantirish qachon yuborilgan. Har safar qayta
+  // yozilganda null ga qaytariladi — yangi muddat uchun yangi ogohlantirish.
+  expiryWarnedAt DateTime?
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -437,6 +466,7 @@ model Notification {
   body      String   @db.Text
   read      Boolean  @default(false)
   emailSent Boolean  @default(false) // email ham yuborilganmi (mock/haqiqiy)
+  telegramSent Boolean @default(false) // Telegram botga ham yuborilganmi
   createdAt DateTime @default(now())
 
   @@index([userId])

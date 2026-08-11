@@ -7,6 +7,7 @@
 // rad etadi, aks holda o'tkazib yuboradi (eski mijozni buzmaslik uchun).
 const env = require('../config/env');
 const ApiError = require('./ApiError');
+const { getSecurityConfig } = require('./settings');
 
 const VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const MIN_FORM_MS = 1500;
@@ -14,19 +15,24 @@ const MIN_FORM_MS = 1500;
 let warned = false;
 
 // Turnstile tokenini Cloudflare'da tekshiradi.
+// Maxfiy kalit admin panelidan (yoki .env dan) olinadi — qo'yilmagan bo'lsa
+// tekshiruv o'tkazib yuboriladi.
 // Qaytaradi: { ok, skipped?, reason? }
 async function verifyTurnstile(token, ip) {
-  if (!env.turnstile.secret) {
+  const { secretKey } = await getSecurityConfig();
+
+  if (!secretKey) {
     if (!warned && env.nodeEnv === 'production') {
       warned = true;
-      console.warn('⚠️  TURNSTILE_SECRET_KEY qo\'yilmagan — CAPTCHA tekshiruvi o\'chirilgan!');
+      console.warn('⚠️  Turnstile maxfiy kaliti qo\'yilmagan — CAPTCHA tekshiruvi o\'chirilgan!'
+        + ' Admin panel → Email va himoya bo\'limida kalitni qo\'ying.');
     }
     return { ok: true, skipped: true };
   }
   if (!token) return { ok: false, reason: 'missing' };
 
   try {
-    const body = new URLSearchParams({ secret: env.turnstile.secret, response: token });
+    const body = new URLSearchParams({ secret: secretKey, response: token });
     if (ip) body.set('remoteip', ip);
 
     const res = await fetch(VERIFY_URL, {

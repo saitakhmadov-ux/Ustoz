@@ -186,15 +186,77 @@ Seed 6 ta kategoriya va 6 ta namunaviy kurs (bepul + pullik, bo'lim/dars/testlar
 - [x] **7-bosqich** — Admin panel
 - [x] **8-bosqich** — Seed ma'lumot, statik sahifalar, hujjatlar
 
+## Sozlamalar admin panelida
+
+Quyidagilar bazadan (`SiteSetting`) boshqariladi — o'zgartirish uchun qayta
+deploy qilish shart emas:
+
+| Bo'lim | Nima boshqariladi |
+|--------|-------------------|
+| **Ustoz AI** | Gemini API kaliti, model, yo'naltiruvchi ko'rsatmalar |
+| **Bosh sahifa** | Hero rasmlari, matnlar, "Biz haqimizda" sahifasi |
+| **Aloqa va himoya** → Email (SMTP) | Jo'natuvchi, SMTP server/port/SSL, login-parol, mock rejim, sinov xati |
+| **Aloqa va himoya** → Telegram bot | Bot tokeni, yoqish/o'chirish, sinov xabari, ulangan hisoblar soni |
+| **Aloqa va himoya** → CAPTCHA | Cloudflare Turnstile ommaviy va maxfiy kalitlari |
+
+Qoida: paneldagi qiymat `.env` dan ustun turadi. Email uchun panelda SMTP
+serveri ko'rsatilsa, butun SMTP bloki (port, login, parol) ham paneldan olinadi;
+maydon bo'sh qoldirilsa `.env` qiymatlariga qaytadi. Parol/maxfiy kalitlar
+panelga niqoblangan holda qaytariladi va bo'sh yuborilsa o'zgarmaydi.
+
+> Sinov xati mock rejimni chetlab o'tadi — "Haqiqiy xat yuborish" ni yoqishdan
+> oldin sozlamani tekshirib olish mumkin. Terminaldan: `npm run mail:test [email]`
+
+## Telegram bot
+
+O'quvchi va ustozlar ma'lumotlarini Telegram orqali ham oladi.
+
+**Sozlash:** @BotFather → `/newbot` → tokenni admin panelga (`Aloqa va himoya` →
+`Telegram bot`) qo'ying. Saqlagach bot darhol ishga tushadi — serverni qayta
+yuklash shart emas.
+
+**Ulanish:** foydalanuvchi saytda Profil → "Telegram'ga ulash" tugmasini bosadi.
+Bir martalik havola (`t.me/<bot>?start=<token>`, 15 daqiqa) botni ochadi va hisob
+bog'lanadi. Token bazada ochiq saqlanmaydi (sha256), bir marta ishlatiladi va
+bitta Telegram akkaunt faqat bitta hisobga ulanadi.
+
+**Buyruqlar:** `/kurslarim` (progress va muddat bilan), `/yordam`, `/uzish`.
+
+**Avtomatik xabarlar** (hisobini ulaganlarga Telegram'ga ham boradi; hammasi
+sayt bildirishnomasi sifatida ham saqlanadi):
+
+| Hodisa | Kim oladi |
+|--------|-----------|
+| Kursga yozilish (bepul, admin qo'shgan) | O'quvchi |
+| To'lov qabul qilindi | O'quvchi |
+| Kurs tugatildi — sertifikat tayyor | O'quvchi |
+| Kirish muddati 3 kundan keyin tugaydi | O'quvchi (bir marta) |
+| Kursiga yangi o'quvchi yozildi | Ustoz |
+| Kursiga yangi sharh qoldirildi | Ustoz |
+
+Admin `Xabarlar` bo'limida qo'lda yuborganda "Telegram botga ham yuborilsin"
+belgisi bor. Avtomatik xabarlar **email yubormaydi** — Telegram bepul, email esa
+kunlik chegarali; email faqat admin qo'lda tanlaganda ketadi.
+
+Muddat ogohlantirishi serverning o'zida (12 soatda bir) tekshiriladi — alohida
+cron xizmati kerak emas. Har yozilish uchun bir marta yuboriladi va muddat
+yangilanganda belgi qayta tiklanadi.
+
+**Rejim:** ommaviy manzil bo'lsa (Railway — `RAILWAY_PUBLIC_DOMAIN` avtomatik)
+webhook, lokalda polling. Webhook so'rovlari maxfiy sarlavha bilan tekshiriladi.
+
 ## Rejadagi ishlar
 
 - [ ] **Domenli pochta** — hozir xatlar shaxsiy Gmail'dan ketadi (kuniga ~500 ta
       chegara, jo'natuvchi sifatida shaxsiy manzil ko'rinadi). Domen olingach
       `no-reply@ustoz.uz` ga o'tish: [EMAIL-DOMEN-QOLLANMA.md](EMAIL-DOMEN-QOLLANMA.md)
-- [ ] **Email sozlamalarini admin paneliga chiqarish** — `Ustoz AI` bo'limi kabi
-      bazadan boshqariladigan qilish, deploy'siz almashtirish uchun
-- [ ] **Turnstile kalitlari** — CAPTCHA kodi tayyor, kalit qo'yilishi kerak
-- [ ] **Railway'da email o'zgaruvchilari** — jonli saytda hali `EMAIL_MOCK` yoqilgan
+      (kod o'zgarmaydi — yangi SMTP ma'lumotlari admin paneliga kiritiladi)
+- [ ] **Turnstile kalitlari** — CAPTCHA kodi tayyor, Cloudflare'dan kalit olib
+      admin panelga qo'yish qoldi
+- [ ] **Jonli saytda emailni yoqish** — Railway'da hali mock rejim; admin panel
+      → "Aloqa va himoya" bo'limidan SMTP to'ldirilib yoqiladi
+- [ ] **Telegram bot — 3-bosqich** — AI Ustoz bot ichida, ustoz uchun
+      `/maosh` va `/oquvchilarim` buyruqlari
 
 ## Litsenziya
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Send, Users, BookOpen, UserCheck, Mail, Loader2, Search, CheckCircle2, History,
+  Send, Users, BookOpen, UserCheck, Mail, Loader2, Search, CheckCircle2, History, Bot,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Spinner, ErrorState } from '@/components/ui';
@@ -20,6 +20,7 @@ export default function AdminMessagesPage() {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [sendEmail, setSendEmail] = useState(false);
+  const [sendTelegram, setSendTelegram] = useState(false);
 
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState(null);
@@ -71,12 +72,12 @@ export default function AdminMessagesPage() {
 
     setSending(true);
     try {
-      const payload = { mode, title: title.trim(), body: body.trim(), sendEmail };
+      const payload = { mode, title: title.trim(), body: body.trim(), sendEmail, sendTelegram };
       if (mode === 'course') payload.courseId = courseId;
       if (mode === 'users') payload.userIds = selectedUsers;
       const res = await api.post('/admin/notifications', payload);
       setResult(res);
-      setTitle(''); setBody(''); setSelectedUsers([]); setSendEmail(false);
+      setTitle(''); setBody(''); setSelectedUsers([]); setSendEmail(false); setSendTelegram(false);
       loadSent();
     } catch (err) {
       setFormError(err.message);
@@ -101,7 +102,7 @@ export default function AdminMessagesPage() {
       <h1 className="text-2xl">Xabar yuborish</h1>
       <p className="mt-1 text-sm text-muted">
         {isAdmin
-          ? 'Foydalanuvchilarga akkaunt xabari va (ixtiyoriy) email yuboring'
+          ? "Foydalanuvchilarga akkaunt xabari va (ixtiyoriy) email yoki Telegram orqali yuboring"
           : 'O\'z kurslaringiz o\'quvchilariga xabar yuboring'}
       </p>
 
@@ -109,6 +110,12 @@ export default function AdminMessagesPage() {
         <div className="mt-4 flex items-center gap-2 rounded-xl bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
           <CheckCircle2 size={18} /> {result.message}
           {result.email && <span className="text-indigo-600">· email: {result.email.mocked ? 'mock (log)' : 'yuborildi'} ({result.email.attempted} ta)</span>}
+          {result.telegram && (
+            <span className="text-indigo-600">
+              · Telegram: {result.telegram.sent} ta yuborildi
+              {result.telegram.skipped > 0 && `, ${result.telegram.skipped} ta hisobini ulamagan`}
+            </span>
+          )}
         </div>
       )}
 
@@ -180,17 +187,24 @@ export default function AdminMessagesPage() {
           <textarea className="input min-h-[120px]" value={body} onChange={(e) => setBody(e.target.value)} placeholder="Xabaringizni yozing..." maxLength={4000} />
         </div>
 
-        <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm">
-          <input type="checkbox" checked={sendEmail} onChange={(e) => setSendEmail(e.target.checked)} className="h-4 w-4 rounded text-primary focus:ring-primary" />
-          <Mail size={15} /> Emailga ham yuborilsin
-        </label>
+        {/* Qo'shimcha kanallar — sayt bildirishnomasi har doim yuboriladi */}
+        <div className="mt-4 space-y-2">
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
+            <input type="checkbox" checked={sendEmail} onChange={(e) => setSendEmail(e.target.checked)} className="h-4 w-4 rounded text-primary focus:ring-primary" />
+            <Mail size={15} /> Emailga ham yuborilsin
+          </label>
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
+            <input type="checkbox" checked={sendTelegram} onChange={(e) => setSendTelegram(e.target.checked)} className="h-4 w-4 rounded text-primary focus:ring-primary" />
+            <Bot size={15} /> Telegram botga ham yuborilsin
+            <span className="text-xs text-muted">— faqat hisobini ulaganlarga</span>
+          </label>
+        </div>
 
         <div className="mt-6 flex items-center gap-3">
           <button type="submit" disabled={sending || recipientCount === 0} className="btn-primary">
             {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
             Yuborish ({recipientCount} ta)
           </button>
-          {sendEmail && <span className="text-xs text-muted">Email hozircha mock rejimda (serverga log qilinadi)</span>}
         </div>
       </form>
 
@@ -208,6 +222,7 @@ export default function AdminMessagesPage() {
                     <th className="px-4 py-3">Sarlavha</th>
                     <th className="px-4 py-3">Qabul qiluvchi</th>
                     <th className="px-4 py-3">Email</th>
+                    <th className="px-4 py-3">Telegram</th>
                     <th className="px-4 py-3">Holat</th>
                     <th className="px-4 py-3">Sana</th>
                   </tr>
@@ -218,6 +233,7 @@ export default function AdminMessagesPage() {
                       <td className="px-4 py-3 font-medium">{n.title}</td>
                       <td className="px-4 py-3 text-muted">{n.user?.fullName}</td>
                       <td className="px-4 py-3">{n.emailSent ? <span className="badge bg-blue-50 text-blue-600"><Mail size={11} /> Ha</span> : <span className="text-slate-400">—</span>}</td>
+                      <td className="px-4 py-3">{n.telegramSent ? <span className="badge bg-sky-50 text-sky-700"><Bot size={11} /> Ha</span> : <span className="text-slate-400">—</span>}</td>
                       <td className="px-4 py-3">
                         <span className={`badge ${n.read ? 'bg-indigo-50 text-indigo-700' : 'bg-amber-50 text-amber-700'}`}>
                           {n.read ? 'O\'qilgan' : 'O\'qilmagan'}

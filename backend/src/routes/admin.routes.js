@@ -9,6 +9,7 @@ const earnings = require('../controllers/earnings.controller');
 const promo = require('../controllers/promo.controller');
 const { uploadFile, uploadImageFile } = require('../controllers/upload.controller');
 const settings = require('../controllers/settings.controller');
+const system = require('../controllers/system.controller');
 const { upload, uploadImage } = require('../middleware/upload');
 const { protect, adminOnly, adminOrInstructor } = require('../middleware/auth');
 
@@ -56,6 +57,20 @@ router.put('/ai/config', adminOnly, aiAdmin.updateConfig);
 router.get('/ai/models', adminOnly, aiAdmin.listModels);
 router.post('/ai/test', adminOnly, aiAdmin.testConfig);
 router.get('/ai/analytics', adminOnly, aiAdmin.analytics);
+
+// Email (SMTP) sozlamalari — deploy'siz almashtirish uchun (faqat bosh admin)
+router.get('/email', adminOnly, system.getEmail);
+router.put('/email', adminOnly, system.updateEmail);
+router.post('/email/test', adminOnly, system.testEmail);
+
+// Telegram bot — token, yoqish/o'chirish va sinov xabari (faqat bosh admin)
+router.get('/telegram', adminOnly, system.getTelegram);
+router.put('/telegram', adminOnly, system.updateTelegram);
+router.post('/telegram/test', adminOnly, system.testTelegram);
+
+// Bot himoyasi (Cloudflare Turnstile) kalitlari (faqat bosh admin)
+router.get('/security', adminOnly, system.getSecurity);
+router.put('/security', adminOnly, system.updateSecurity);
 
 // Sharhlar moderatsiyasi (faqat bosh admin)
 router.get('/reviews', adminOnly, admin.listReviews);

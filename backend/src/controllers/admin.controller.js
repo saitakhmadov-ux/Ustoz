@@ -7,6 +7,7 @@ const ApiError = require('../utils/ApiError');
 const { computeProgress } = require('./enrollment.controller');
 const { computeExpiry, accessInfo, accessMonthsFor } = require('../utils/learnProgress');
 const { periodRange, growthPct, bucketByDate } = require('../utils/period');
+const { notifyEnrolled } = require('../utils/notify');
 
 // Davr yordamchilari maosh hisoboti bilan umumiy — utils/period.js da.
 
@@ -704,8 +705,14 @@ const enrollUserToCourse = asyncHandler(async (req, res) => {
     where: { userId_courseId: { userId: user.id, courseId } },
   });
   const enrollment = existing
-    ? await prisma.enrollment.update({ where: { id: existing.id }, data: { expiresAt } })
+    ? await prisma.enrollment.update({
+      where: { id: existing.id },
+      data: { expiresAt, expiryWarnedAt: null },
+    })
     : await prisma.enrollment.create({ data: { userId: user.id, courseId, expiresAt } });
+
+  // O'quvchi kursga qo'lda qo'shilganini bilsin
+  if (!existing) notifyEnrolled(user.id, course);
 
   res.status(existing ? 200 : 201).json({
     success: true,
@@ -733,7 +740,8 @@ const extendEnrollment = asyncHandler(async (req, res) => {
 
   const updated = await prisma.enrollment.update({
     where: { id: enrollment.id },
-    data: { expiresAt: computeExpiry(months, base) },
+    // Yangi muddat — ogohlantirish belgisi tozalanadi
+    data: { expiresAt: computeExpiry(months, base), expiryWarnedAt: null },
   });
   res.json({ success: true, message: `Muddat ${months} oyga uzaytirildi`, enrollment: updated });
 });

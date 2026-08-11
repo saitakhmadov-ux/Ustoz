@@ -2,6 +2,7 @@
 const prisma = require('../config/prisma');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
+const { notifyCertificate } = require('../utils/notify');
 
 // Noyob sertifikat raqami yaratish
 function makeSerial() {
@@ -29,9 +30,19 @@ async function issueCertificateIfComplete(userId, courseId) {
   });
   if (completed < lessons.length) return null;
 
-  return prisma.certificate.create({
+  const certificate = await prisma.certificate.create({
     data: { userId, courseId, serial: makeSerial() },
   });
+
+  // Tabrik xabari — faqat sertifikat YANGI berilganda (funksiya idempotent
+  // bo'lgani uchun mavjudi yuqorida qaytarilgan)
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: { title: true, slug: true },
+  });
+  if (course) notifyCertificate(userId, course, certificate);
+
+  return certificate;
 }
 
 // GET /api/me/certificates — mening sertifikatlarim

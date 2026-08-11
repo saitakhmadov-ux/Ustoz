@@ -1,10 +1,89 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2, User, KeyRound } from 'lucide-react';
+import { Loader2, User, KeyRound, Send, Link2, Unlink, CheckCircle2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import RequireAuth from '@/components/RequireAuth';
+
+// Telegram bot bilan bog'lanish. Havola bir martalik va 15 daqiqa amal qiladi,
+// shuning uchun uni oldindan emas, bosilganda so'raymiz.
+function TelegramCard() {
+  const [tg, setTg] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+
+  const load = () => api.get('/me/telegram')
+    .then((res) => setTg(res.telegram))
+    .catch(() => setTg({ available: false, linked: false }));
+
+  useEffect(() => { load(); }, []);
+
+  const connect = async () => {
+    setBusy(true); setErr('');
+    try {
+      const res = await api.post('/me/telegram/link');
+      // Yangi oynada bot ochiladi; qaytgach holat yangilansin
+      window.open(res.url, '_blank', 'noopener');
+    } catch (e) {
+      setErr(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const disconnect = async () => {
+    if (!window.confirm('Telegram bog\'lanishini uzasizmi? Botga xabarlar kelmay qoladi.')) return;
+    setBusy(true); setErr('');
+    try {
+      await api.del('/me/telegram');
+      await load();
+    } catch (e) {
+      setErr(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // Bot sozlanmagan bo'lsa kartochkani umuman ko'rsatmaymiz
+  if (!tg || (!tg.available && !tg.linked)) return null;
+
+  return (
+    <div className="card mt-6 p-6">
+      <div className="mb-4 flex items-center gap-2 font-semibold"><Send size={18} /> Telegram</div>
+
+      {err && <div className="mb-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700">{err}</div>}
+
+      {tg.linked ? (
+        <>
+          <p className="flex items-center gap-2 text-sm text-emerald-700">
+            <CheckCircle2 size={16} />
+            Ulangan{tg.username ? <span className="font-mono">@{tg.username}</span> : null}
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            Kurslaringiz va xabarlaringizni botdan olasiz. Botda <span className="font-mono">/yordam</span> deb yozing.
+          </p>
+          <button onClick={disconnect} disabled={busy} className="btn-outline mt-4 disabled:opacity-50">
+            {busy ? <Loader2 size={16} className="animate-spin" /> : <Unlink size={16} />} Uzish
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="text-sm text-muted">
+            Hisobingizni botga ulang — kurslaringiz, progressingiz va xabarlar Telegram'ga keladi.
+            {tg.botUsername ? <> Bot: <span className="font-mono">@{tg.botUsername}</span></> : null}
+          </p>
+          <button onClick={connect} disabled={busy} className="btn-primary mt-4 disabled:opacity-50">
+            {busy ? <Loader2 size={16} className="animate-spin" /> : <Link2 size={16} />} Telegram'ga ulash
+          </button>
+          <p className="mt-2 text-xs text-muted">
+            Bot yangi oynada ochiladi. Ulangach shu sahifani yangilang.
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
 
 function ProfileInner() {
   const { user, refresh } = useAuth();
@@ -93,6 +172,8 @@ function ProfileInner() {
           {savingPwd && <Loader2 size={16} className="animate-spin" />} Parolni yangilash
         </button>
       </form>
+
+      <TelegramCard />
     </div>
   );
 }

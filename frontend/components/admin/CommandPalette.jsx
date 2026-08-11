@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Search, CornerDownLeft, LayoutDashboard, BookOpen, FolderTree, UserCheck,
-  MessageSquare, Award, Send, Coins, Users, Bot, LayoutTemplate, Loader2,
+  MessageSquare, Award, Send, Coins, Users, Bot, LayoutTemplate, Loader2, Mail,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { formatPrice } from '@/lib/constants';
@@ -29,6 +29,7 @@ const SECTIONS = [
   { label: 'Ustozlar', href: '/admin/users?role=INSTRUCTOR', icon: Users, keywords: 'instructor teacher' },
   { label: 'Ustoz AI', href: '/admin/ai', icon: Bot, keywords: 'gemini sun\'iy intellekt' },
   { label: 'Bosh sahifa', href: '/admin/home', icon: LayoutTemplate, keywords: 'hero banner matn' },
+  { label: 'Aloqa va himoya', href: '/admin/email', icon: Mail, keywords: 'smtp pochta xat email telegram bot captcha turnstile' },
 ];
 
 const ROLE_LABEL = { ADMIN: 'Bosh admin', INSTRUCTOR: 'Ustoz', USER: "O'quvchi" };

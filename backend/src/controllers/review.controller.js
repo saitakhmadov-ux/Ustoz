@@ -4,17 +4,18 @@ const prisma = require('../config/prisma');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 const { getCourseRating, getRatingDistribution } = require('../utils/rating');
+const { notifyInstructorReview } = require('../utils/notify');
 
 const reviewSchema = z.object({
   rating: z.number().int().min(1, 'Kamida 1 yulduz').max(5, 'Ko\'pi bilan 5 yulduz'),
   comment: z.string().max(1000).optional().nullable(),
 });
 
-// Slug bo'yicha kursni topish (id kerak bo'ladi)
+// Slug bo'yicha kursni topish (id kerak bo'ladi; nom va ustoz — bildirishnoma uchun)
 async function findCourseBySlug(slug) {
   const course = await prisma.course.findUnique({
     where: { slug },
-    select: { id: true, isFree: true },
+    select: { id: true, isFree: true, title: true, slug: true, instructorId: true },
   });
   if (!course) throw ApiError.notFound('Kurs topilmadi');
   return course;
@@ -72,6 +73,9 @@ const upsert = asyncHandler(async (req, res) => {
       comment: data.comment || null,
     },
   });
+
+  // Ustozga xabar (baho yangilanganda ham — u ham bilishga arziydi)
+  notifyInstructorReview(course.instructorId, req.user.fullName, course, data.rating);
 
   const summary = await getCourseRating(course.id);
   res.status(201).json({ success: true, message: 'Bahoyingiz saqlandi', review, summary });

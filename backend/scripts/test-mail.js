@@ -5,7 +5,12 @@
 //
 // Skript avval ulanish va parolni tekshiradi (verify), keyin sinov xati yuboradi.
 // Parol hech qaerga chiqarilmaydi — faqat oxirgi 2 belgisi ko'rsatiladi.
+//
+// Sozlamalar admin panelidan ham kelishi mumkin (SiteSetting) — skript aynan
+// server ishlatadigan yakuniy qiymatlarni ko'rsatadi.
 const env = require('../src/config/env');
+const prisma = require('../src/config/prisma');
+const { getEmailConfig } = require('../src/utils/settings');
 const { sendMail, verifyTransport } = require('../src/utils/mailer');
 
 function mask(value) {
@@ -32,24 +37,28 @@ function explain(message) {
 }
 
 async function main() {
+  const cfg = await getEmailConfig();
+
   // Standart qabul qiluvchi — o'z Gmail manzilingiz (o'zingizga yuborib tekshirish).
-  // SMTP_USER bo'sh bo'lsa ADMIN_EMAIL ga tushamiz.
-  const to = process.argv[2] || env.email.smtp.user || env.admin.email;
+  // SMTP foydalanuvchisi bo'sh bo'lsa ADMIN_EMAIL ga tushamiz.
+  const to = process.argv[2] || cfg.user || env.admin.email;
 
   console.log('--- Email sozlamalari ---');
-  console.log('  EMAIL_MOCK :', env.email.mock);
-  console.log('  EMAIL_FROM :', env.email.from);
-  console.log('  SMTP_HOST  :', env.email.smtp.host || '(bo\'sh)');
-  console.log('  SMTP_PORT  :', env.email.smtp.port);
-  console.log('  SMTP_SECURE:', env.email.smtp.secure);
-  console.log('  SMTP_USER  :', env.email.smtp.user || '(bo\'sh)');
-  console.log('  SMTP_PASS  :', mask(env.email.smtp.pass));
+  console.log('  Manba      :', cfg.source === 'db' ? 'admin panel' : cfg.source === 'env' ? '.env' : '(sozlanmagan)');
+  console.log('  Mock rejim :', cfg.mock);
+  console.log('  Jo\'natuvchi:', cfg.from);
+  console.log('  Server     :', cfg.host || '(bo\'sh)');
+  console.log('  Port       :', cfg.port);
+  console.log('  SSL        :', cfg.secure);
+  console.log('  Foydalanuvchi:', cfg.user || '(bo\'sh)');
+  console.log('  Parol      :', mask(cfg.pass));
   console.log('  Qabul qiluvchi:', to);
   console.log();
 
-  if (env.email.mock) {
-    console.log('⚠️  EMAIL_MOCK=true — haqiqiy xat yuborilmaydi.');
-    console.log('   .env da EMAIL_MOCK=false qiling va qaytadan urinib ko\'ring.');
+  if (cfg.mock) {
+    console.log('⚠️  Mock rejim yoqilgan — haqiqiy xat yuborilmaydi.');
+    console.log('   Admin panel → "Email va himoya" bo\'limida "Haqiqiy xat yuborish" ni yoqing');
+    console.log('   (yoki .env da EMAIL_MOCK=false qiling) va qaytadan urinib ko\'ring.');
     process.exit(1);
   }
 
@@ -88,7 +97,10 @@ async function main() {
   console.log(`\n✅ Tayyor. ${to} pochtasini tekshiring (Spam papkasini ham).`);
 }
 
-main().catch((err) => {
-  console.error('Kutilmagan xatolik:', err.message);
-  process.exit(1);
-});
+// Sozlama bazadan o'qilgani uchun ulanishni yopmasak skript osilib qoladi
+main()
+  .catch((err) => {
+    console.error('Kutilmagan xatolik:', err.message);
+    process.exitCode = 1;
+  })
+  .finally(() => prisma.$disconnect());

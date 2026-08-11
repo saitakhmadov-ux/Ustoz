@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 
 const env = require('./config/env');
 const routes = require('./routes');
+const telegram = require('./telegram/bot');
 const { errorHandler, notFoundHandler } = require('./middleware/error');
 const { apiLimiter } = require('./middleware/rateLimit');
 
@@ -55,6 +56,11 @@ app.use(
     setHeaders: (res) => res.set('Access-Control-Allow-Origin', '*'),
   })
 );
+
+// Telegram webhook — umumiy chastota chegarasidan OLDIN turadi, chunki
+// Telegram bir vaqtda ko'p yangilanish yuborishi mumkin va ular bloklanmasligi
+// kerak. So'rov haqiqiyligi maxfiy sarlavha orqali tekshiriladi (bot.js).
+app.post(telegram.WEBHOOK_PATH, (req, res) => telegram.handleWebhook(req, res));
 
 // API yo'nalishlari (umumiy chastota chegarasi bilan; auth uchun
 // qat'iyroq cheklovlar auth.routes.js da alohida qo'yilgan)

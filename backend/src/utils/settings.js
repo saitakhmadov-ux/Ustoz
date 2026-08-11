@@ -1,5 +1,6 @@
 // Sayt sozlamalari uchun yordamchilar — SiteSetting jadvali (key/value, value ichida JSON)
 const prisma = require('../config/prisma');
+const env = require('../config/env');
 
 // Bitta sozlamani o'qish (JSON parse qilingan). Topilmasa fallback qaytadi.
 async function getSetting(key, fallback = null) {
@@ -185,6 +186,101 @@ async function getAiConfig() {
   return { apiKey, model, customInstructions, enabled, keySource };
 }
 
+// ---- Email (SMTP) sozlamalari ----
+// Panel orqali boshqariladi, shuning uchun domen/pochta almashtirish uchun
+// qayta deploy qilish shart emas. Qoida: SMTP serveri panelda ko'rsatilgan
+// bo'lsa — butun SMTP bloki (port, user, parol) ham paneldan olinadi.
+// Aks holda .env qiymatlari ishlatiladi (aralashib ketmasligi uchun).
+const EMAIL_CONFIG_KEY = 'email_config';
+const EMAIL_MAX_LEN = 200;
+
+const trimStr = (v) => (typeof v === 'string' ? v.trim() : '');
+
+// Portni tekshirib qaytaradi; noto'g'ri bo'lsa zaxira qiymat.
+function safePort(value, fallback) {
+  const n = parseInt(value, 10);
+  return Number.isFinite(n) && n > 0 && n < 65536 ? n : fallback;
+}
+
+// Email konfiguratsiyasi. Qaytaradi:
+// { mock, from, host, port, secure, user, pass, source }
+// source — SMTP qayerdan olindi: 'db' | 'env' | 'none'
+async function getEmailConfig() {
+  const cfg = (await getSetting(EMAIL_CONFIG_KEY, {})) || {};
+  const e = env.email;
+
+  const dbHost = trimStr(cfg.host);
+  const useDb = Boolean(dbHost);
+
+  const smtp = useDb
+    ? {
+      host: dbHost,
+      port: safePort(cfg.port, 587),
+      secure: cfg.secure === true,
+      user: trimStr(cfg.user),
+      pass: typeof cfg.pass === 'string' ? cfg.pass : '',
+    }
+    : {
+      host: e.smtp.host,
+      port: e.smtp.port,
+      secure: e.smtp.secure,
+      user: e.smtp.user,
+      pass: e.smtp.pass,
+    };
+
+  return {
+    // Mock rejim va jo'natuvchi manzili alohida boshqariladi —
+    // ular SMTP blokidan mustaqil qiymatlar.
+    mock: typeof cfg.mock === 'boolean' ? cfg.mock : e.mock,
+    from: trimStr(cfg.from).slice(0, EMAIL_MAX_LEN) || e.from,
+    ...smtp,
+    source: useDb ? 'db' : (e.smtp.host ? 'env' : 'none'),
+  };
+}
+
+// ---- Telegram bot sozlamalari ----
+// Token panelda saqlanadi (AI kaliti kabi), shuning uchun botni yoqish yoki
+// almashtirish uchun qayta deploy qilish shart emas.
+const TELEGRAM_CONFIG_KEY = 'telegram_config';
+
+// Qaytaradi: { token, enabled, botUsername, webhookSecret, source }
+// botUsername va webhookSecret bot ishga tushganda avtomatik to'ldiriladi.
+async function getTelegramConfig() {
+  const cfg = (await getSetting(TELEGRAM_CONFIG_KEY, {})) || {};
+  const dbToken = trimStr(cfg.token);
+  const envToken = trimStr(env.telegram.token);
+  return {
+    token: dbToken || envToken,
+    // Standart: yoqilgan (token qo'yilishi bilan ishlaydi)
+    enabled: cfg.enabled !== false,
+    botUsername: trimStr(cfg.botUsername),
+    webhookSecret: trimStr(cfg.webhookSecret),
+    source: dbToken ? 'db' : (envToken ? 'env' : 'none'),
+  };
+}
+
+// ---- Bot himoyasi (Cloudflare Turnstile) sozlamalari ----
+// Kalitlar paneldan qo'yilsa, .env dagi qiymatlar e'tiborga olinmaydi.
+const SECURITY_KEY = 'security_config';
+
+// Qaytaradi: { siteKey, secretKey, source }
+// siteKey ommaviy (brauzerda ko'rinadi), secretKey esa faqat serverda qoladi.
+async function getSecurityConfig() {
+  const cfg = (await getSetting(SECURITY_KEY, {})) || {};
+  const dbSite = trimStr(cfg.siteKey);
+  const dbSecret = trimStr(cfg.secretKey);
+  const useDb = Boolean(dbSite || dbSecret);
+
+  const siteKey = useDb ? dbSite : env.turnstile.siteKey;
+  const secretKey = useDb ? dbSecret : env.turnstile.secret;
+
+  return {
+    siteKey,
+    secretKey,
+    source: useDb ? 'db' : ((env.turnstile.siteKey || env.turnstile.secret) ? 'env' : 'none'),
+  };
+}
+
 // ---- Ustoz maoshi (soliq va ulush foizlari) ----
 const { PAYOUT_KEY, normalizePayoutConfig } = require('./earnings');
 
@@ -221,4 +317,12 @@ module.exports = {
   AI_DEFAULT_MODEL,
   AI_MAX_INSTRUCTIONS,
   getAiConfig,
+  EMAIL_CONFIG_KEY,
+  EMAIL_MAX_LEN,
+  safePort,
+  getEmailConfig,
+  TELEGRAM_CONFIG_KEY,
+  getTelegramConfig,
+  SECURITY_KEY,
+  getSecurityConfig,
 };

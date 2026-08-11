@@ -3,6 +3,7 @@ const prisma = require('../config/prisma');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 const { lessonTasks, computeExpiry, accessInfo, accessMonthsFor } = require('../utils/learnProgress');
+const { notifyEnrolled, notifyInstructorNewStudent } = require('../utils/notify');
 
 // Kurs bo'yicha vazifa-darajali progress hisoblash.
 // Har bir dars ichidagi vazifalar (video, matn, materiallar, test) alohida sanaladi.
@@ -83,7 +84,8 @@ const enroll = asyncHandler(async (req, res) => {
     if (expired && (course.isFree || course.price === 0)) {
       const renewed = await prisma.enrollment.update({
         where: { id: existing.id },
-        data: { expiresAt: computeExpiry(accessMonthsFor(course)) },
+        // Yangi muddat — eski ogohlantirish belgisi bekor qilinadi
+        data: { expiresAt: computeExpiry(accessMonthsFor(course)), expiryWarnedAt: null },
       });
       return res.json({ success: true, message: 'Foydalanish muddati yangilandi', enrollment: renewed, renewed: true });
     }
@@ -98,6 +100,11 @@ const enroll = asyncHandler(async (req, res) => {
   const enrollment = await prisma.enrollment.create({
     data: { userId: req.user.id, courseId, expiresAt: computeExpiry(accessMonthsFor(course)) },
   });
+
+  // Bildirishnomalar javobni kutib turmaydi (ichida xatolar ushlanadi)
+  notifyEnrolled(req.user.id, course);
+  notifyInstructorNewStudent(course.instructorId, req.user.fullName, course);
+
   res.status(201).json({ success: true, message: 'Kursga muvaffaqiyatli yozildingiz', enrollment });
 });
 

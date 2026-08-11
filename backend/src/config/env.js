@@ -27,8 +27,23 @@ const env = {
   // Cloudflare Turnstile (bepul CAPTCHA). Kalit qo'yilmasa tekshiruv
   // o'tkazib yuboriladi — lokal ishlab chiqishda qulay, ishlab chiqarishda
   // kalitni albatta qo'yish kerak (server ogohlantirish beradi).
+  // Kalitlarni admin panelidan ham qo'yish mumkin (SiteSetting) — u holda
+  // paneldagi qiymatlar ustuvor, .env esa zaxira bo'lib qoladi.
   turnstile: {
     secret: process.env.TURNSTILE_SECRET_KEY || '',
+    // Ommaviy kalit — brauzerga beriladi. Frontendda NEXT_PUBLIC_ o'zgaruvchisi
+    // bo'lmasa, sayt buni /api/home/security orqali oladi.
+    siteKey: process.env.TURNSTILE_SITE_KEY || '',
+  },
+  // Saytning ommaviy manzili — Telegram webhook shu manzilga qo'yiladi.
+  // Railway o'zi RAILWAY_PUBLIC_DOMAIN beradi; lokalda bo'sh bo'ladi va bot
+  // webhook o'rniga polling rejimida ishlaydi.
+  publicUrl: (process.env.PUBLIC_URL
+    || (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : '')
+  ).replace(/\/+$/, ''),
+  // Telegram bot tokeni — asosiy joyi admin panel, bu zaxira
+  telegram: {
+    token: process.env.TELEGRAM_BOT_TOKEN || '',
   },
   email: {
     // Mock rejimda haqiqiy email ketmaydi — konsolga log qilinadi
