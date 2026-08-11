@@ -120,7 +120,7 @@ export default function AdminUserDetailPage() {
   return (
     <div>
       <Link href="/admin/users" className="inline-flex items-center gap-2 text-sm text-muted hover:text-primary">
-        <ArrowLeft size={16} /> Foydalanuvchilar
+        <ArrowLeft size={16} /> Odamlar
       </Link>
 
       {/* Profil */}

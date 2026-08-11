@@ -14,6 +14,10 @@ const {
   CONTENT_FIELDS,
   CONTENT_MAX_LEN,
   getContentConfig,
+  ABOUT_KEY,
+  ABOUT_ICONS,
+  normalizeAboutConfig,
+  getAboutConfig,
 } = require('../utils/settings');
 
 // GET /api/home/hero (ommaviy) va GET /api/admin/hero (bosh admin)
@@ -82,4 +86,27 @@ const updateContent = asyncHandler(async (req, res) => {
   res.json({ success: true, content });
 });
 
-module.exports = { getHero, updateHero, uploadHeroImage, getContent, updateContent };
+// GET /api/home/about (ommaviy) va GET /api/admin/about (bosh admin)
+// "Biz haqimizda" sahifasining to'liq mazmuni.
+const getAbout = asyncHandler(async (req, res) => {
+  const about = await getAboutConfig();
+  res.json({ success: true, about, icons: ABOUT_ICONS });
+});
+
+// PUT /api/admin/about — sahifa mazmunini to'liq almashtiradi.
+// Body: { title, subtitle, video:{url,title,caption}, values:[], mission:{}, sections:[] }
+// Normalizatsiya qiymatlarni kesadi va ruxsat etilmagan ikonkani almashtiradi,
+// shuning uchun mijozdan kelgan ma'lumotga ishonilmaydi.
+const updateAbout = asyncHandler(async (req, res) => {
+  const body = req.body;
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    throw ApiError.badRequest("Ma'lumot obyekt ko'rinishida bo'lishi kerak");
+  }
+  const normalized = normalizeAboutConfig(body);
+  await setSetting(ABOUT_KEY, normalized);
+  res.json({ success: true, about: normalized, message: 'Saqlandi' });
+});
+
+module.exports = {
+  getHero, updateHero, uploadHeroImage, getContent, updateContent, getAbout, updateAbout,
+};

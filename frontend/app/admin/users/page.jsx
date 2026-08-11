@@ -2,56 +2,75 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Shield, User, GraduationCap, Plus, Trash2, Loader2, X, Search, Users as UsersIcon } from 'lucide-react';
+import { Shield, User, GraduationCap, Plus, Trash2, Loader2, X, Users as UsersIcon } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useTableQuery } from '@/lib/useTableQuery';
 import { Spinner, ErrorState, EmptyState, Pagination } from '@/components/ui';
+import { PageHeader, DataToolbar, CountTabs, DataTable, Avatar } from '@/components/admin/table';
 
 // Rol bo'yicha ko'rinish
-function roleBadge(role) {
-  if (role === 'ADMIN') return { label: 'Bosh admin', cls: 'bg-indigo-50 text-indigo-700', Icon: Shield };
-  if (role === 'INSTRUCTOR') return { label: 'Ustoz', cls: 'bg-indigo-50 text-indigo-700', Icon: GraduationCap };
-  return { label: 'Foydalanuvchi', cls: 'bg-slate-100 text-slate-600', Icon: User };
-}
+const ROLES = {
+  ADMIN: { label: 'Bosh admin', cls: 'bg-indigo-50 text-indigo-700', Icon: Shield },
+  INSTRUCTOR: { label: 'Ustoz', cls: 'bg-indigo-50 text-indigo-700', Icon: GraduationCap },
+  USER: { label: "O'quvchi", cls: 'bg-slate-100 text-slate-600', Icon: User },
+};
 
-export default function AdminUsersPage() {
+const TABS = [
+  { key: '', label: 'Barchasi', countKey: 'all' },
+  { key: 'USER', label: "O'quvchilar", countKey: 'USER' },
+  { key: 'INSTRUCTOR', label: 'Ustozlar', countKey: 'INSTRUCTOR' },
+  { key: 'ADMIN', label: 'Adminlar', countKey: 'ADMIN' },
+];
+
+const COLUMNS = [
+  { label: 'Odam' },
+  { label: 'Email' },
+  { label: 'Rol' },
+  { label: 'Kurslar' },
+  { label: 'Sertifikat' },
+  { label: "Ro'yxatdan o'tgan" },
+  { label: 'Amal', align: 'right' },
+];
+
+const EMPTY_FORM = { fullName: '', email: '', password: '', role: 'USER' };
+
+export default function AdminPeoplePage() {
   const { user: me } = useAuth();
   const [users, setUsers] = useState([]);
+  const [roleCounts, setRoleCounts] = useState(null);
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Qidiruv va filtr
-  const [search, setSearch] = useState('');  // input qiymati
-  const [q, setQ] = useState('');            // debounce'dan keyingi so'rov
-  const [role, setRole] = useState('');
-  const [page, setPage] = useState(1);
+  const t = useTableQuery({ filters: { q: '', role: '' } });
 
-  // Yangi foydalanuvchi formasi
+  // Yangi odam formasi
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ fullName: '', email: '', password: '', role: 'USER' });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
 
-  // Yozishni to'xtatgandan 400ms keyin qidiramiz
-  useEffect(() => {
-    const t = setTimeout(() => { setQ(search.trim()); setPage(1); }, 400);
-    return () => clearTimeout(t);
-  }, [search]);
-
   const load = useCallback(() => {
     setLoading(true);
-    const params = new URLSearchParams({ page: String(page), limit: '20' });
-    if (q) params.set('q', q);
-    if (role) params.set('role', role);
-
-    api.get(`/admin/users?${params}`)
-      .then((res) => { setUsers(res.users); setPagination(res.pagination); setError(''); })
+    api.get(`/admin/users?${t.params}`)
+      .then((res) => {
+        setUsers(res.users);
+        setRoleCounts(res.roleCounts);
+        setPagination(res.pagination);
+        setError('');
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [q, role, page]);
+  }, [t.params]);
 
   useEffect(() => { load(); }, [load]);
+
+  // Rol yorlig'i almashganda forma ham o'sha rolga moslanadi
+  const changeRoleTab = (role) => {
+    t.set('role', role);
+    if (role) setForm((f) => ({ ...f, role }));
+  };
 
   const create = async (e) => {
     e.preventDefault();
@@ -67,7 +86,7 @@ export default function AdminUsersPage() {
         password: form.password,
         role: form.role,
       });
-      setForm({ fullName: '', email: '', password: '', role: 'USER' });
+      setForm({ ...EMPTY_FORM, role: form.role });
       setShowForm(false);
       load();
     } catch (err) {
@@ -78,30 +97,30 @@ export default function AdminUsersPage() {
   };
 
   const remove = async (u) => {
-    if (!confirm(`"${u.fullName}" foydalanuvchisini o'chirasizmi? Uning yozilishlari, to'lovlari va sertifikatlari ham o'chadi.`)) return;
+    const warning = u.role === 'INSTRUCTOR'
+      ? 'Uning kurslari saqlanadi, faqat biriktirish uziladi.'
+      : 'Uning yozilishlari, to\'lovlari va sertifikatlari ham o\'chadi.';
+    if (!confirm(`"${u.fullName}" ni o'chirasizmi? ${warning}`)) return;
     try {
       await api.del(`/admin/users/${u.id}`);
-      // Sahifadagi oxirgi yozuv o'chirilsa — bo'sh sahifada qolmaslik uchun orqaga qaytamiz
-      if (users.length === 1 && page > 1) setPage(page - 1);
-      else load();
+      t.pageBackIfEmpty(users.length, load);
     } catch (err) { alert(err.message); }
   };
 
+  const activeRole = t.values.role;
+
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl">Foydalanuvchilar</h1>
-          <p className="mt-1 text-sm text-muted">
-            Ro'yxatdan o'tgan foydalanuvchilar ({pagination?.total ?? 0})
-          </p>
-        </div>
+      <PageHeader
+        title="Odamlar"
+        subtitle="Platformadagi barcha o'quvchilar, ustozlar va adminlar"
+      >
         <button onClick={() => setShowForm((v) => !v)} className="btn-primary">
-          <Plus size={16} /> Yangi foydalanuvchi
+          <Plus size={16} /> Yangi odam
         </button>
-      </div>
+      </PageHeader>
 
-      {/* Yangi foydalanuvchi formasi */}
+      {/* Yangi odam formasi — uchala rol ham shu yerdan yaratiladi */}
       {showForm && (
         <form onSubmit={create} className="card mt-6 p-6">
           {formError && <div className="mb-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700">{formError}</div>}
@@ -121,123 +140,128 @@ export default function AdminUsersPage() {
             <div>
               <label className="label">Rol</label>
               <select className="input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
-                <option value="USER">Foydalanuvchi</option>
+                <option value="USER">O'quvchi</option>
+                <option value="INSTRUCTOR">Ustoz (2-darajali admin)</option>
                 <option value="ADMIN">Bosh admin</option>
               </select>
             </div>
           </div>
-          <p className="mt-2 text-xs text-muted">💡 Ustoz (2-darajali admin) qo'shish uchun "Ustozlar" bo'limidan foydalaning.</p>
+          {form.role === 'INSTRUCTOR' && (
+            <p className="mt-2 text-xs text-muted">
+              💡 Ustoz faqat o'ziga biriktirilgan kurs kontentini boshqaradi. Kursni biriktirish
+              uchun <b>Kurslar</b> bo'limida kursni tahrirlab, "Biriktirilgan ustoz" maydonini tanlang.
+            </p>
+          )}
           <div className="mt-4 flex gap-2">
             <button type="submit" disabled={saving} className="btn-primary">
               {saving && <Loader2 size={16} className="animate-spin" />} Yaratish
             </button>
-            <button type="button" onClick={() => { setShowForm(false); setFormError(''); }} className="btn-ghost"><X size={16} /> Bekor qilish</button>
+            <button type="button" onClick={() => { setShowForm(false); setFormError(''); }} className="btn-ghost">
+              <X size={16} /> Bekor qilish
+            </button>
           </div>
         </form>
       )}
 
-      {/* Qidiruv va rol filtri */}
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[240px] flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <input
-            className="input pl-9"
-            placeholder="Ism yoki email bo'yicha qidirish..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <select
-          className="input max-w-[190px]"
-          value={role}
-          onChange={(e) => { setRole(e.target.value); setPage(1); }}
-        >
-          <option value="">Barcha rollar</option>
-          <option value="USER">Foydalanuvchi</option>
-          <option value="INSTRUCTOR">Ustoz</option>
-          <option value="ADMIN">Bosh admin</option>
-        </select>
-        {(q || role) && (
-          <button
-            type="button"
-            onClick={() => { setSearch(''); setQ(''); setRole(''); setPage(1); }}
-            className="btn-ghost"
-          >
-            <X size={16} /> Tozalash
-          </button>
-        )}
-      </div>
+      {/* Rol yorliqlari — alohida "Ustozlar" sahifasi o'rniga */}
+      {roleCounts && (
+        <CountTabs
+          value={activeRole}
+          onChange={changeRoleTab}
+          items={TABS.map((tab) => ({ ...tab, count: roleCounts[tab.countKey] ?? 0 }))}
+        />
+      )}
+
+      <DataToolbar
+        search={t.search}
+        onSearch={t.setSearch}
+        placeholder="Ism yoki email bo'yicha qidirish..."
+        hasFilters={t.hasFilters}
+        onReset={t.reset}
+      />
 
       <div className="mt-4">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : users.length === 0 ? (
           <EmptyState
-            title="Foydalanuvchi topilmadi"
-            text={q || role ? 'Qidiruv yoki filtrni o\'zgartirib ko\'ring.' : 'Hali foydalanuvchi yo\'q.'}
+            title="Hech kim topilmadi"
+            text={t.hasFilters ? 'Qidiruv yoki filtrni o\'zgartirib ko\'ring.' : 'Hali hech kim yo\'q.'}
             icon={UsersIcon}
           />
         ) : (
-          <div className="card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="border-b border-line bg-slate-50 text-left text-xs uppercase text-muted">
-                  <tr>
-                    <th className="px-4 py-3">Foydalanuvchi</th>
-                    <th className="px-4 py-3">Email</th>
-                    <th className="px-4 py-3">Rol</th>
-                    <th className="px-4 py-3">Kurslar</th>
-                    <th className="px-4 py-3">Sertifikat</th>
-                    <th className="px-4 py-3">Ro'yxatdan o'tgan</th>
-                    <th className="px-4 py-3 text-right">Amal</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line">
-                  {users.map((u) => {
-                    const { label, cls, Icon } = roleBadge(u.role);
-                    const isSelf = me?.id === u.id;
-                    return (
-                      <tr key={u.id} className="hover:bg-slate-50">
-                        <td className="px-4 py-3">
-                          <Link href={`/admin/users/${u.id}`} className="flex items-center gap-2.5 hover:text-primary">
-                            <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-xs font-bold text-white">
-                              {u.fullName?.charAt(0)?.toUpperCase()}
-                            </span>
-                            <span className="font-medium">{u.fullName}{isSelf && <span className="ml-1 text-xs text-muted">(siz)</span>}</span>
-                          </Link>
-                        </td>
-                        <td className="px-4 py-3 text-muted">{u.email}</td>
-                        <td className="px-4 py-3">
-                          <span className={`badge ${cls}`}><Icon size={12} /> {label}</span>
-                        </td>
-                        <td className="px-4 py-3">{u._count.enrollments}</td>
-                        <td className="px-4 py-3">{u._count.certificates}</td>
-                        <td className="px-4 py-3 text-muted">{new Date(u.createdAt).toLocaleDateString('uz-UZ')}</td>
-                        <td className="px-4 py-3 text-right">
-                          {isSelf ? (
-                            <span className="text-xs text-slate-300">—</span>
-                          ) : (
-                            <button onClick={() => remove(u)} title="O'chirish" className="grid h-8 w-8 place-items-center rounded-lg text-red-600 hover:bg-red-50 ml-auto">
-                              <Trash2 size={16} />
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            {pagination && (
+          <DataTable
+            columns={COLUMNS}
+            footer={pagination && (
               <Pagination
                 page={pagination.page}
                 pages={pagination.pages}
                 total={pagination.total}
-                onChange={setPage}
-                label="foydalanuvchi"
+                onChange={t.setPage}
+                label="odam"
               />
             )}
-          </div>
+          >
+            {users.map((u) => {
+              const { label, cls, Icon } = ROLES[u.role] || ROLES.USER;
+              const isSelf = me?.id === u.id;
+              const taught = u.taughtCourses || [];
+              return (
+                <tr key={u.id} className="hover:bg-slate-50">
+                  <td className="px-4 py-3">
+                    <Link href={`/admin/users/${u.id}`} className="flex items-center gap-2.5 hover:text-primary">
+                      <Avatar name={u.fullName} />
+                      <span className="font-medium">
+                        {u.fullName}
+                        {isSelf && <span className="ml-1 text-xs text-muted">(siz)</span>}
+                      </span>
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-muted">{u.email}</td>
+                  <td className="px-4 py-3">
+                    <span className={`badge ${cls}`}><Icon size={12} /> {label}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    {u.role === 'INSTRUCTOR' ? (
+                      taught.length === 0 ? (
+                        <span className="text-xs text-slate-400">biriktirilmagan</span>
+                      ) : (
+                        <span title={taught.map((c) => c.title).join(', ')}>
+                          {taught.length}
+                          <span className="ml-1 text-xs text-muted">biriktirilgan</span>
+                        </span>
+                      )
+                    ) : (
+                      <span>
+                        {u._count.enrollments}
+                        <span className="ml-1 text-xs text-muted">yozilgan</span>
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    {u.role === 'INSTRUCTOR' ? <span className="text-slate-300">—</span> : u._count.certificates}
+                  </td>
+                  <td className="px-4 py-3 text-muted">{new Date(u.createdAt).toLocaleDateString('uz-UZ')}</td>
+                  <td className="px-4 py-3 text-right">
+                    {isSelf ? (
+                      <span className="text-xs text-slate-300">—</span>
+                    ) : (
+                      <button onClick={() => remove(u)} title="O'chirish" className="ml-auto grid h-8 w-8 place-items-center rounded-lg text-red-600 hover:bg-red-50">
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </DataTable>
         )}
       </div>
+
+      {activeRole === 'INSTRUCTOR' && (
+        <p className="mt-6 rounded-xl bg-slate-50 px-4 py-3 text-xs text-muted">
+          💡 Kursni ustozga biriktirish uchun <b>Kurslar</b> bo'limida kursni tahrirlab,
+          "Biriktirilgan ustoz" maydonini tanlang.
+        </p>
+      )}
     </div>
   );
 }

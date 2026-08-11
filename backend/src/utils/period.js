@@ -63,4 +63,66 @@ function monthlySeries(rows, months = 12, valueFn = () => 1) {
   return out;
 }
 
-module.exports = { PERIOD_DAYS, PERIODS, periodRange, growthPct, bucketByDate, monthlySeries };
+// Sana kalitlari — mahalliy vaqt bo'yicha (monthlySeries bilan bir xil mantiq,
+// UTC'ga o'tib ketmaslik uchun)
+const pad = (n) => String(n).padStart(2, '0');
+const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const monthKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+
+// Oxirgi N kun uchun uzluksiz qator (bo'sh kunlar 0 bilan to'ldiriladi).
+function dailySeries(rows, days, valueFn = () => 1) {
+  const map = {};
+  for (const r of rows) {
+    const k = dayKey(new Date(r.createdAt));
+    map[k] = (map[k] || 0) + valueFn(r);
+  }
+  const out = [];
+  const now = new Date();
+  for (let i = days - 1; i >= 0; i -= 1) {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    const k = dayKey(d);
+    out.push({ key: k, value: map[k] || 0 });
+  }
+  return out;
+}
+
+// Eng eski yozuvdan bugungacha bo'lgan barcha oylar ("butun davr" uchun).
+function allMonthsSeries(rows, valueFn = () => 1) {
+  if (rows.length === 0) {
+    return monthlySeries(rows, 12, valueFn).map((m) => ({ key: m.month, value: m.value }));
+  }
+  const map = {};
+  let earliest = null;
+  for (const r of rows) {
+    const d = new Date(r.createdAt);
+    const k = monthKey(d);
+    map[k] = (map[k] || 0) + valueFn(r);
+    if (!earliest || d < earliest) earliest = d;
+  }
+  const out = [];
+  const now = new Date();
+  const cursor = new Date(earliest.getFullYear(), earliest.getMonth(), 1);
+  const end = new Date(now.getFullYear(), now.getMonth(), 1);
+  while (cursor <= end) {
+    const k = monthKey(cursor);
+    out.push({ key: k, value: map[k] || 0 });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  return out;
+}
+
+// Tanlangan davrga mos qator: qisqa davrlarda kunlik, uzunlarida oylik.
+// Qaytaradi: { granularity: 'day'|'month', points: [{ key, value }] }
+function timeSeries(rows, days, valueFn = () => 1) {
+  if (days === null) return { granularity: 'month', points: allMonthsSeries(rows, valueFn) };
+  if (days <= 90) return { granularity: 'day', points: dailySeries(rows, days, valueFn) };
+  return {
+    granularity: 'month',
+    points: monthlySeries(rows, 12, valueFn).map((m) => ({ key: m.month, value: m.value })),
+  };
+}
+
+module.exports = {
+  PERIOD_DAYS, PERIODS, periodRange, growthPct, bucketByDate, monthlySeries,
+  dailySeries, allMonthsSeries, timeSeries,
+};

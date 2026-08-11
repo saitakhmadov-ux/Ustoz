@@ -2,10 +2,14 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Search, X, Users as UsersIcon, GraduationCap, Clock, PlayCircle, CircleSlash } from 'lucide-react';
+import { Users as UsersIcon, GraduationCap, Clock, PlayCircle, CircleSlash } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useTableQuery } from '@/lib/useTableQuery';
 import { Spinner, ErrorState, EmptyState, Pagination } from '@/components/ui';
+import {
+  PageHeader, DataToolbar, FilterSelect, CountTabs, DataTable, Avatar,
+} from '@/components/admin/table';
 
 // Yozilish holati — yorliq va rang
 const STATUS = {
@@ -22,6 +26,21 @@ const TABS = [
   { key: 'notStarted', label: 'Boshlamagan', count: 'notStarted' },
   { key: 'completed', label: 'Tugatgan', count: 'completed' },
   { key: 'expired', label: 'Muddati tugagan', count: 'expired' },
+];
+
+const SORTS = [
+  { value: 'recent', label: 'Yangi yozilganlar' },
+  { value: 'progress', label: "Progress bo'yicha" },
+  { value: 'name', label: "Ism bo'yicha" },
+];
+
+const COLUMNS = [
+  { label: "O'quvchi" },
+  { label: 'Kurs' },
+  { label: 'Progress', minWidth: 160 },
+  { label: 'Oxirgi faollik' },
+  { label: 'Yozilgan' },
+  { label: 'Holat' },
 ];
 
 // Progress foiziga qarab rang: past — qizil, o'rta — sabzi, yuqori — yashil
@@ -51,28 +70,11 @@ export default function TeachingStudentsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Qidiruv va filtrlar
-  const [search, setSearch] = useState('');
-  const [q, setQ] = useState('');
-  const [courseId, setCourseId] = useState('');
-  const [status, setStatus] = useState('');
-  const [sort, setSort] = useState('recent');
-  const [page, setPage] = useState(1);
-
-  // Yozishni to'xtatgandan 400ms keyin qidiramiz
-  useEffect(() => {
-    const t = setTimeout(() => { setQ(search.trim()); setPage(1); }, 400);
-    return () => clearTimeout(t);
-  }, [search]);
+  const t = useTableQuery({ filters: { q: '', courseId: '', status: '', sort: 'recent' } });
 
   const load = useCallback(() => {
     setLoading(true);
-    const params = new URLSearchParams({ page: String(page), limit: '20', sort });
-    if (q) params.set('q', q);
-    if (courseId) params.set('courseId', courseId);
-    if (status) params.set('status', status);
-
-    api.get(`/admin/teaching/students?${params}`)
+    api.get(`/admin/teaching/students?${t.params}`)
       .then((res) => {
         setStudents(res.students);
         setCourses(res.courses);
@@ -82,14 +84,9 @@ export default function TeachingStudentsPage() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [q, courseId, status, sort, page]);
+  }, [t.params]);
 
   useEffect(() => { load(); }, [load]);
-
-  const hasFilters = q || courseId || status;
-  const clearFilters = () => {
-    setSearch(''); setQ(''); setCourseId(''); setStatus(''); setPage(1);
-  };
 
   // Kurs biriktirilmagan ustoz uchun alohida holat
   if (!loading && !error && courses.length === 0) {
@@ -109,154 +106,107 @@ export default function TeachingStudentsPage() {
 
   return (
     <div>
-      <div>
-        <h1 className="text-2xl">{isAdmin ? 'O\'quvchilar' : 'O\'quvchilarim'}</h1>
-        <p className="mt-1 text-sm text-muted">
-          {isAdmin ? 'Kurslarga' : 'Kurslaringizga'} yozilgan o'quvchilar va ularning progressi ({pagination?.total ?? 0})
-        </p>
-      </div>
+      <PageHeader
+        title={isAdmin ? "O'quvchilar" : "O'quvchilarim"}
+        subtitle={`${isAdmin ? 'Kurslarga' : 'Kurslaringizga'} yozilgan o'quvchilar va ularning progressi (${pagination?.total ?? 0})`}
+      />
 
-      {/* Holat yorliqlari */}
       {summary && (
-        <div className="mt-6 flex flex-wrap gap-2">
-          {TABS.map((t) => {
-            const active = status === t.key;
-            return (
-              <button
-                key={t.key || 'all'}
-                type="button"
-                onClick={() => { setStatus(t.key); setPage(1); }}
-                className={`rounded-xl px-3.5 py-2 text-sm font-medium transition-colors
-                  ${active ? 'bg-primary text-white' : 'bg-slate-100 text-muted hover:bg-slate-200'}`}
-              >
-                {t.label}
-                <span className={`ml-2 text-xs ${active ? 'text-white/70' : 'text-slate-400'}`}>
-                  {summary[t.count] ?? 0}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <CountTabs
+          value={t.values.status}
+          onChange={(v) => t.set('status', v)}
+          items={TABS.map((tab) => ({ ...tab, count: summary[tab.count] ?? 0 }))}
+        />
       )}
 
-      {/* Qidiruv, kurs filtri va saralash */}
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[240px] flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <input
-            className="input pl-9"
-            placeholder="Ism yoki email bo'yicha qidirish..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+      <DataToolbar
+        search={t.search}
+        onSearch={t.setSearch}
+        placeholder="Ism yoki email bo'yicha qidirish..."
+        hasFilters={t.hasFilters}
+        onReset={t.reset}
+      >
         {courses.length > 1 && (
-          <select
-            className="input max-w-[220px]"
-            value={courseId}
-            onChange={(e) => { setCourseId(e.target.value); setPage(1); }}
-          >
-            <option value="">Barcha kurslar</option>
-            {courses.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
-          </select>
+          <FilterSelect
+            value={t.values.courseId}
+            onChange={(v) => t.set('courseId', v)}
+            options={courses.map((c) => ({ value: c.id, label: c.title }))}
+            placeholder="Barcha kurslar"
+            width="220px"
+          />
         )}
-        <select
-          className="input max-w-[190px]"
-          value={sort}
-          onChange={(e) => { setSort(e.target.value); setPage(1); }}
-        >
-          <option value="recent">Yangi yozilganlar</option>
-          <option value="progress">Progress bo'yicha</option>
-          <option value="name">Ism bo'yicha</option>
-        </select>
-        {hasFilters && (
-          <button type="button" onClick={clearFilters} className="btn-ghost">
-            <X size={16} /> Tozalash
-          </button>
-        )}
-      </div>
+        <FilterSelect
+          value={t.values.sort}
+          onChange={(v) => t.set('sort', v)}
+          options={SORTS}
+        />
+      </DataToolbar>
 
       <div className="mt-4">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : students.length === 0 ? (
           <EmptyState
             title="O'quvchi topilmadi"
-            text={hasFilters ? 'Qidiruv yoki filtrni o\'zgartirib ko\'ring.' : 'Kurslaringizga hali hech kim yozilmagan.'}
+            text={t.hasFilters ? 'Qidiruv yoki filtrni o\'zgartirib ko\'ring.' : 'Kurslaringizga hali hech kim yozilmagan.'}
             icon={UsersIcon}
           />
         ) : (
-          <div className="card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="border-b border-line bg-slate-50 text-left text-xs uppercase text-muted">
-                  <tr>
-                    <th className="px-4 py-3">O'quvchi</th>
-                    <th className="px-4 py-3">Kurs</th>
-                    <th className="px-4 py-3 min-w-[160px]">Progress</th>
-                    <th className="px-4 py-3">Oxirgi faollik</th>
-                    <th className="px-4 py-3">Yozilgan</th>
-                    <th className="px-4 py-3">Holat</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line">
-                  {students.map((s) => {
-                    const st = STATUS[s.status];
-                    const last = relativeTime(s.lastActivityAt);
-                    return (
-                      <tr key={s.enrollmentId} className="hover:bg-slate-50">
-                        <td className="px-4 py-3">
-                          <Link
-                            href={`/admin/students/${s.user.id}`}
-                            className="flex items-center gap-2.5 hover:text-primary"
-                          >
-                            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-white">
-                              {s.user.fullName?.charAt(0)?.toUpperCase()}
-                            </span>
-                            <span className="min-w-0">
-                              <span className="block font-medium">{s.user.fullName}</span>
-                              <span className="block text-xs text-muted">{s.user.email}</span>
-                            </span>
-                          </Link>
-                        </td>
-                        <td className="px-4 py-3 text-muted">{s.course.title}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <div className="h-1.5 w-24 overflow-hidden rounded-full bg-slate-200">
-                              <div
-                                className={`h-full rounded-full ${barColor(s.progress.percent)}`}
-                                style={{ width: `${s.progress.percent}%` }}
-                              />
-                            </div>
-                            <span className="text-xs font-medium">{s.progress.percent}%</span>
-                          </div>
-                          <span className="mt-1 block text-xs text-muted">
-                            {s.progress.completedLessons}/{s.progress.totalLessons} dars
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-muted">
-                          {last || <span className="text-slate-300">—</span>}
-                        </td>
-                        <td className="px-4 py-3 text-muted">
-                          {new Date(s.enrolledAt).toLocaleDateString('uz-UZ')}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`badge ${st.cls}`}><st.Icon size={12} /> {st.label}</span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            {pagination && (
+          <DataTable
+            columns={COLUMNS}
+            footer={pagination && (
               <Pagination
                 page={pagination.page}
                 pages={pagination.pages}
                 total={pagination.total}
-                onChange={setPage}
+                onChange={t.setPage}
                 label="o'quvchi"
               />
             )}
-          </div>
+          >
+            {students.map((s) => {
+              const st = STATUS[s.status];
+              const last = relativeTime(s.lastActivityAt);
+              return (
+                <tr key={s.enrollmentId} className="hover:bg-slate-50">
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/admin/students/${s.user.id}`}
+                      className="flex items-center gap-2.5 hover:text-primary"
+                    >
+                      <Avatar name={s.user.fullName} />
+                      <span className="min-w-0">
+                        <span className="block font-medium">{s.user.fullName}</span>
+                        <span className="block text-xs text-muted">{s.user.email}</span>
+                      </span>
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-muted">{s.course.title}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-1.5 w-24 overflow-hidden rounded-full bg-slate-200">
+                        <div
+                          className={`h-full rounded-full ${barColor(s.progress.percent)}`}
+                          style={{ width: `${s.progress.percent}%` }}
+                        />
+                      </div>
+                      <span className="text-xs font-medium">{s.progress.percent}%</span>
+                    </div>
+                    <span className="mt-1 block text-xs text-muted">
+                      {s.progress.completedLessons}/{s.progress.totalLessons} dars
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-muted">
+                    {last || <span className="text-slate-300">—</span>}
+                  </td>
+                  <td className="px-4 py-3 text-muted">
+                    {new Date(s.enrolledAt).toLocaleDateString('uz-UZ')}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`badge ${st.cls}`}><st.Icon size={12} /> {st.label}</span>
+                  </td>
+                </tr>
+              );
+            })}
+          </DataTable>
         )}
       </div>
     </div>

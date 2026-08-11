@@ -2,110 +2,76 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Search, MessageSquare, Trash2, X } from 'lucide-react';
+import { MessageSquare, Trash2 } from 'lucide-react';
 import { api } from '@/lib/api';
+import { useTableQuery } from '@/lib/useTableQuery';
 import { StarRating } from '@/components/Stars';
 import { Spinner, ErrorState, EmptyState, Pagination } from '@/components/ui';
+import { PageHeader, DataToolbar, FilterSelect, FilterCheckbox, Avatar } from '@/components/admin/table';
+
+const RATINGS = [5, 4, 3, 2, 1].map((n) => ({ value: String(n), label: `${n} yulduz` }));
 
 export default function AdminReviewsPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Filtrlar
-  const [search, setSearch] = useState('');
-  const [q, setQ] = useState('');
-  const [rating, setRating] = useState('');
-  const [withComment, setWithComment] = useState(false);
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    const t = setTimeout(() => { setQ(search.trim()); setPage(1); }, 400);
-    return () => clearTimeout(t);
-  }, [search]);
+  const t = useTableQuery({ filters: { q: '', rating: '', withComment: false } });
 
   const load = useCallback(() => {
     setLoading(true);
-    const params = new URLSearchParams({ page: String(page), limit: '20' });
-    if (q) params.set('q', q);
-    if (rating) params.set('rating', rating);
-    if (withComment) params.set('withComment', '1');
-
-    api.get(`/admin/reviews?${params}`)
+    api.get(`/admin/reviews?${t.params}`)
       .then((res) => { setData(res); setError(''); })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [q, rating, withComment, page]);
+  }, [t.params]);
 
   useEffect(() => { load(); }, [load]);
 
   const reviews = data?.reviews || [];
-  const hasFilter = q || rating || withComment;
 
   const remove = async (r) => {
     const who = r.user?.fullName || 'Foydalanuvchi';
     if (!confirm(`${who}ning "${r.course?.title}" kursiga qoldirgan sharhini o'chirasizmi?`)) return;
     try {
       await api.del(`/admin/reviews/${r.id}`);
-      // Sahifadagi oxirgi sharh o'chirilsa — bo'sh sahifada qolmaslik uchun orqaga qaytamiz
-      if (reviews.length === 1 && page > 1) setPage(page - 1);
-      else load();
+      t.pageBackIfEmpty(reviews.length, load);
     } catch (err) { alert(err.message); }
-  };
-
-  const resetFilters = () => {
-    setSearch(''); setQ(''); setRating(''); setWithComment(false); setPage(1);
   };
 
   return (
     <div>
-      <h1 className="text-2xl">Sharhlar</h1>
-      <p className="mt-1 text-sm text-muted">
-        O'quvchilar qoldirgan baho va izohlar — nomaqbullarini o'chirishingiz mumkin
-      </p>
+      <PageHeader
+        title="Sharhlar"
+        subtitle="O'quvchilar qoldirgan baho va izohlar — nomaqbullarini o'chirishingiz mumkin"
+      />
 
-      {/* Qidiruv va filtrlar */}
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[240px] flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <input
-            className="input pl-9"
-            placeholder="Izoh matni, ism, email yoki kurs..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <select
-          className="input max-w-[160px]"
-          value={rating}
-          onChange={(e) => { setRating(e.target.value); setPage(1); }}
-        >
-          <option value="">Barcha baholar</option>
-          {[5, 4, 3, 2, 1].map((n) => (
-            <option key={n} value={n}>{n} yulduz</option>
-          ))}
-        </select>
-        <label className="flex cursor-pointer items-center gap-2 text-sm text-muted">
-          <input
-            type="checkbox"
-            checked={withComment}
-            onChange={(e) => { setWithComment(e.target.checked); setPage(1); }}
-            className="h-4 w-4 rounded border-line accent-indigo-600"
-          />
-          Faqat izohlilari
-        </label>
-        {hasFilter && (
-          <button type="button" onClick={resetFilters} className="btn-ghost">
-            <X size={16} /> Tozalash
-          </button>
-        )}
-      </div>
+      <DataToolbar
+        search={t.search}
+        onSearch={t.setSearch}
+        placeholder="Izoh matni, ism, email yoki kurs..."
+        hasFilters={t.hasFilters}
+        onReset={t.reset}
+      >
+        <FilterSelect
+          value={t.values.rating}
+          onChange={(v) => t.set('rating', v)}
+          options={RATINGS}
+          placeholder="Barcha baholar"
+          width="160px"
+        />
+        <FilterCheckbox
+          checked={!!t.values.withComment}
+          onChange={(v) => t.set('withComment', v)}
+          label="Faqat izohlilari"
+        />
+      </DataToolbar>
 
       <div className="mt-4">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : reviews.length === 0 ? (
           <EmptyState
             title="Sharh topilmadi"
-            text={hasFilter ? 'Filtrni o\'zgartirib ko\'ring.' : 'Hali hech kim baho qoldirmagan.'}
+            text={t.hasFilters ? 'Filtrni o\'zgartirib ko\'ring.' : 'Hali hech kim baho qoldirmagan.'}
             icon={MessageSquare}
           />
         ) : (
@@ -113,9 +79,7 @@ export default function AdminReviewsPage() {
             <div className="divide-y divide-line">
               {reviews.map((r) => (
                 <div key={r.id} className="flex gap-4 p-5 hover:bg-slate-50">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-white">
-                    {r.user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
-                  </span>
+                  <Avatar name={r.user?.fullName} size={9} />
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -155,7 +119,7 @@ export default function AdminReviewsPage() {
               page={data.pagination.page}
               pages={data.pagination.pages}
               total={data.pagination.total}
-              onChange={setPage}
+              onChange={t.setPage}
               label="sharh"
             />
           </div>

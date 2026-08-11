@@ -11,7 +11,7 @@ import {
 import { api } from '@/lib/api';
 import { formatMoney } from '@/lib/constants';
 import { Spinner, ErrorState, EmptyState } from '@/components/ui';
-import { StatCard, MonthlyBars, SplitBar } from '@/components/admin/earnings-ui';
+import { StatCard, TimeBars, SplitBar } from '@/components/admin/earnings-ui';
 
 function formatDate(d) {
   return d ? new Date(d).toLocaleDateString('uz-UZ') : '—';
@@ -141,9 +141,11 @@ export default function InstructorEarningsDetail() {
 
         <div className="card p-5">
           <h2 className="text-lg">Oylar bo'yicha maosh</h2>
-          <MonthlyBars
-            data={monthly.map((m) => ({ month: m.month, value: m.instructor }))}
+          <TimeBars
+            data={monthly.map((m) => ({ key: m.month, value: m.instructor }))}
+            granularity="month"
             label="ustoz ulushi"
+            caption="Oxirgi 12 oy"
           />
         </div>
       </div>

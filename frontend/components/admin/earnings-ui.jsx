@@ -61,40 +61,70 @@ export function StatCard({ label, value, hint, icon: Icon, color = 'bg-indigo-50
   );
 }
 
-// Oylik ustunli grafik (kutubxonasiz). data: [{ month, value }]
-export function MonthlyBars({ data, color = 'var(--color-primary)', label = 'daromad' }) {
+// "2026-08-10" -> "08-10" (o'q yorlig'i uchun qisqa ko'rinish)
+function dayLabel(key) {
+  return String(key).slice(5);
+}
+
+// Vaqt bo'yicha ustunli grafik (kutubxonasiz).
+// data: [{ key, value }] — key kunlik ('2026-08-10') yoki oylik ('2026-08').
+// granularity backenddan keladi va tanlangan davrga bog'liq.
+export function TimeBars({
+  data,
+  granularity = 'month',
+  color = 'var(--color-primary)',
+  label = 'daromad',
+  caption,
+}) {
   if (!data || data.length === 0) {
     return <p className="py-10 text-center text-sm text-muted">Ma'lumot yo'q</p>;
   }
+  const daily = granularity === 'day';
   const max = Math.max(...data.map((d) => d.value), 1);
   const empty = data.every((d) => d.value === 0);
+  // Nuqta ko'p bo'lsa yorliqlar bir-birining ustiga chiqmasligi uchun siyraklashtiramiz
+  const labelStep = Math.ceil(data.length / 12);
+  const gap = daily && data.length > 40 ? 'gap-0.5' : 'gap-1.5';
+  const minWidth = daily && data.length > 40 ? 3 : 6;
+
+  // Qator bir nechta yilni qamrasa oy nomi yolg'iz o'zi chalkash bo'ladi
+  // (Mar, Iyn, ... Mar) — shuning uchun yilning oxirgi ikki raqami qo'shiladi
+  const multiYear = !daily && new Set(data.map((d) => String(d.key).slice(0, 4))).size > 1;
+  const axisLabel = (k) => (daily
+    ? dayLabel(k)
+    : monthLabel(k, false) + (multiYear ? ` ${String(k).slice(2, 4)}` : ''));
+  const tipLabel = (k) => (daily ? k : monthLabel(k));
 
   return (
     <div className="mt-4">
       {empty && (
-        <p className="mb-2 text-xs text-muted">Bu 12 oyda daromad qayd etilmagan</p>
+        <p className="mb-2 text-xs text-muted">Bu davrda daromad qayd etilmagan</p>
       )}
-      <div className="flex h-44 items-end gap-1.5">
+      <div className={`flex h-44 items-end ${gap}`}>
         {data.map((d) => (
-          <div key={d.month} className="group relative flex flex-1 flex-col justify-end" style={{ minWidth: 6 }}>
+          // h-full muhim: ustun balandligi foizda berilgan, shuning uchun ota
+          // element aniq balandlikka ega bo'lishi shart (items-end cho'zmaydi)
+          <div key={d.key} className="group relative flex h-full flex-1 flex-col justify-end" style={{ minWidth }}>
             <div
               className="rounded-t transition-opacity hover:opacity-80"
               style={{ height: `${Math.max(2, (d.value / max) * 100)}%`, background: color }}
             />
             <span className="pointer-events-none absolute -top-8 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-ink px-2 py-1 text-xs text-white group-hover:block">
-              {monthLabel(d.month)}: {formatMoney(d.value)}
+              {tipLabel(d.key)}: {formatMoney(d.value)}
             </span>
           </div>
         ))}
       </div>
-      <div className="mt-2 flex gap-1.5 text-[10px] text-muted">
-        {data.map((d) => (
-          <span key={d.month} className="flex-1 truncate text-center" style={{ minWidth: 6 }}>
-            {monthLabel(d.month, false)}
+      <div className={`mt-2 flex text-[10px] text-muted ${gap}`}>
+        {/* Yorliqlar siyraklashtirilgani uchun matn qo'shni bo'sh katakka
+            chiqib turishi mumkin — truncate emas, nowrap kerak */}
+        {data.map((d, i) => (
+          <span key={d.key} className="flex-1 whitespace-nowrap text-center" style={{ minWidth }}>
+            {i % labelStep === 0 ? axisLabel(d.key) : ''}
           </span>
         ))}
       </div>
-      <p className="mt-2 text-center text-xs text-muted">Oxirgi 12 oy · {label}</p>
+      {caption && <p className="mt-2 text-center text-xs text-muted">{caption} · {label}</p>}
     </div>
   );
 }
@@ -162,6 +192,15 @@ export const PERIODS = [
   { key: '1y', label: '1 yil' },
   { key: 'all', label: 'Butun davr' },
 ];
+
+// Grafik ostidagi izoh — tanlangan davr nimani qamrab olganini aytadi
+export const PERIOD_CAPTION = {
+  '7d': 'Oxirgi 7 kun',
+  '30d': 'Oxirgi 30 kun',
+  '90d': 'Oxirgi 90 kun',
+  '1y': 'Oxirgi 12 oy',
+  all: 'Butun davr',
+};
 
 export function PeriodTabs({ value, onChange }) {
   return (

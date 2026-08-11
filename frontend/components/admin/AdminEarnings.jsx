@@ -1,7 +1,8 @@
 'use client';
 
-// Bosh admin uchun maosh hisoboti — barcha ustozlar bo'yicha jamlangan
-// manzara, ustozlar kesimi, o'tkazmalar va foiz sozlamalari.
+// Bosh admin uchun "Moliya" bo'limi — platformadagi butun pul oqimi bir joyda:
+// tranzaksiyalar, taqsimot, ustozlar kesimi, o'tkazmalar va foiz sozlamalari.
+// Avval "To'lovlar" alohida sahifa edi va aylanma raqami ikki joyda takrorlanardi.
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
@@ -12,11 +13,14 @@ import { api } from '@/lib/api';
 import { formatMoney } from '@/lib/constants';
 import { Spinner, ErrorState, EmptyState } from '@/components/ui';
 import {
-  StatCard, MonthlyBars, SplitBar, PeriodTabs, GrowthBadge,
+  StatCard, TimeBars, SplitBar, PeriodTabs, GrowthBadge, PERIOD_CAPTION,
 } from '@/components/admin/earnings-ui';
+import PaymentsTable from '@/components/admin/PaymentsTable';
 
+// Pul yo'li bo'yicha tartib: tushdi -> taqsimlandi -> kimga tegishli -> to'landi -> qoida
 const TABS = [
   { key: 'overview', label: 'Umumiy' },
+  { key: 'payments', label: "To'lovlar" },
   { key: 'instructors', label: 'Ustozlar' },
   { key: 'payouts', label: "O'tkazmalar" },
   { key: 'settings', label: 'Foizlar' },
@@ -43,6 +47,18 @@ export default function AdminEarnings() {
 
   useEffect(() => { load(); }, [load]);
 
+  // Yorliq manzil qatorida saqlanadi — eski /admin/payments havolasi ham shu orqali keladi
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get('tab');
+    if (TABS.some((x) => x.key === t)) setTab(t);
+  }, []);
+
+  const changeTab = (key) => {
+    setTab(key);
+    const qs = key === 'overview' ? '' : `?tab=${key}`;
+    window.history.replaceState(null, '', window.location.pathname + qs);
+  };
+
   if (loading && !data) return <Spinner />;
   if (error) return <ErrorState message={error} />;
   if (!data) return null;
@@ -57,9 +73,9 @@ export default function AdminEarnings() {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl">Maosh hisoboti</h1>
+          <h1 className="text-2xl">Moliya</h1>
           <p className="mt-1 max-w-3xl text-sm text-muted">
-            Barcha ustozlar bo'yicha jamlangan hisob-kitob. Har bir sotuvdan {config.taxPct}%
+            Platformadagi butun pul oqimi. Har bir sotuvdan {config.taxPct}%
             soliq ushlanadi; qolgan sof foyda organik sotuvda tizim {100 - config.organicInstructorPct}% /
             ustoz {config.organicInstructorPct}%, promo kod orqali esa tizim {100 - config.referralInstructorPct}% /
             ustoz {config.referralInstructorPct}% nisbatida taqsimlanadi.
@@ -119,7 +135,7 @@ export default function AdminEarnings() {
           <button
             key={t.key}
             type="button"
-            onClick={() => setTab(t.key)}
+            onClick={() => changeTab(t.key)}
             className={`-mb-px border-b-2 px-3.5 py-2.5 text-sm font-medium transition-colors
               ${tab === t.key ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-ink'}`}
           >
@@ -132,6 +148,7 @@ export default function AdminEarnings() {
         {tab === 'overview' && (
           <Overview data={data} period={period} setPeriod={setPeriod} platformTotal={platformTotal} unassignedNet={unassignedNet} />
         )}
+        {tab === 'payments' && <PaymentsTable />}
         {tab === 'instructors' && <InstructorsTable data={data} onChanged={load} />}
         {tab === 'payouts' && <PayoutsTab instructors={data.byInstructor} onChanged={load} />}
         {tab === 'settings' && <SettingsTab config={data.config} onSaved={load} />}
@@ -142,7 +159,7 @@ export default function AdminEarnings() {
 
 // ---------- Umumiy ----------
 function Overview({ data, period, setPeriod, platformTotal, unassignedNet }) {
-  const { totals, bySource, monthly, config, unassigned } = data;
+  const { totals, bySource, series, config, unassigned } = data;
 
   return (
     <div className="space-y-6">
@@ -152,7 +169,8 @@ function Overview({ data, period, setPeriod, platformTotal, unassignedNet }) {
           <h2 className="text-lg">Pul oqimi (butun davr)</h2>
           <dl className="mt-4 space-y-2 text-sm">
             <div className="flex items-baseline justify-between gap-4 font-semibold">
-              <dt>O'quvchilar to'lagani</dt>
+              {/* Yuqoridagi "Jami aylanma" kartochkasi bilan bir xil raqam — nomi ham bir xil */}
+              <dt>Aylanma (o'quvchilar to'lagani)</dt>
               <dd className="tabular-nums">{formatMoney(totals.gross + unassigned.gross)}</dd>
             </div>
             <div className="flex items-baseline justify-between gap-4 text-red-600">
@@ -218,15 +236,17 @@ function Overview({ data, period, setPeriod, platformTotal, unassignedNet }) {
       <div className="card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg">Oylar bo'yicha aylanma</h2>
+            <h2 className="text-lg">Aylanma dinamikasi</h2>
             <p className="mt-1 text-sm text-muted">Ustozli kurslardan tushgan to'lovlar</p>
           </div>
           <div className="no-print"><PeriodTabs value={period} onChange={setPeriod} /></div>
         </div>
-        <MonthlyBars
-          data={monthly.map((m) => ({ month: m.month, value: m.gross }))}
+        <TimeBars
+          data={series.points}
+          granularity={series.granularity}
           color="var(--color-primary)"
           label="aylanma"
+          caption={PERIOD_CAPTION[period]}
         />
         <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-4 text-sm">
           <span className="text-muted">Tanlangan davr ({period}):</span>
@@ -248,7 +268,7 @@ function InstructorsTable({ data, onChanged }) {
     return (
       <EmptyState
         title="Ustoz yo'q"
-        text="Ustozlar bo'limidan ustoz qo'shing va ularga pulli kurs biriktiring."
+        text="Odamlar bo'limidan ustoz qo'shing va ularga pulli kurs biriktiring."
         icon={Users}
       />
     );
@@ -455,7 +475,7 @@ function PayoutsTab({ instructors, onChanged }) {
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : payouts.length === 0 ? (
           <EmptyState
             title="O'tkazma yo'q"
-            text="Ustozlar bo'limidan qoldiqni ko'rib, o'tkazma qo'shing."
+            text="Ustozlar yorlig'idan qoldiqni ko'rib, o'tkazma qo'shing."
             icon={Wallet}
           />
         ) : (

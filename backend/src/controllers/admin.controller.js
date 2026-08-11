@@ -119,29 +119,174 @@ const stats = asyncHandler(async (req, res) => {
 });
 
 // So'rovdan sahifalash parametrlarini o'qish (limit 100 bilan cheklangan)
+// GET /api/admin/attention — "Diqqat talab qiladi" ro'yxati.
+// Boshqaruv paneli passiv hisobot bo'lib qolmasligi uchun: qo'l tekkizish
+// kerak bo'lgan holatlar bir joyda, har biri tegishli bo'limga havola bilan.
+const attention = asyncHandler(async (req, res) => {
+  const monthAgo = new Date(Date.now() - 30 * 86400000);
+
+  const [
+    draftCourses,
+    pendingPayments,
+    lowReviews,
+    unassignedPaidCourses,
+    earnedAgg,
+    paidAgg,
+  ] = await Promise.all([
+    prisma.course.count({ where: { published: false } }),
+    prisma.payment.count({ where: { status: 'PENDING' } }),
+    prisma.review.count({ where: { rating: { lte: 2 }, createdAt: { gte: monthAgo } } }),
+    prisma.course.count({ where: { published: true, isFree: false, instructorId: null } }),
+    prisma.earning.groupBy({ by: ['instructorId'], _sum: { instructorAmount: true } }),
+    prisma.payout.groupBy({ by: ['instructorId'], where: { status: 'PAID' }, _sum: { amount: true } }),
+  ]);
+
+  // Ustoz kesimida qoldiq: ishlagani − o'tkazilgani
+  const paidByInstructor = new Map(paidAgg.map((p) => [p.instructorId, p._sum.amount || 0]));
+  let unpaidTotal = 0;
+  let unpaidInstructors = 0;
+  for (const e of earnedAgg) {
+    const pending = (e._sum.instructorAmount || 0) - (paidByInstructor.get(e.instructorId) || 0);
+    if (pending > 0) {
+      unpaidTotal += pending;
+      unpaidInstructors += 1;
+    }
+  }
+
+  // Faqat haqiqatan e'tibor talab qiladiganlari qaytariladi
+  const items = [];
+  if (draftCourses > 0) {
+    items.push({
+      key: 'draftCourses',
+      tone: 'slate',
+      count: draftCourses,
+      title: `${draftCourses} ta kurs qoralamada`,
+      text: 'Nashr etilmagan — o\'quvchilar ko\'ra olmaydi',
+      href: '/admin/courses',
+      action: 'Kurslarga o\'tish',
+    });
+  }
+  if (pendingPayments > 0) {
+    items.push({
+      key: 'pendingPayments',
+      tone: 'amber',
+      count: pendingPayments,
+      title: `${pendingPayments} ta to'lov kutilmoqda`,
+      text: 'Yakunlanmagan tranzaksiyalar — tekshirib chiqing',
+      href: '/admin/earnings?tab=payments&status=PENDING',
+      action: 'To\'lovlarni ko\'rish',
+    });
+  }
+  if (unpaidTotal > 0) {
+    items.push({
+      key: 'unpaidPayouts',
+      tone: 'amber',
+      count: unpaidInstructors,
+      amount: unpaidTotal,
+      title: `${unpaidInstructors} ta ustozga to'lanmagan qoldiq bor`,
+      text: 'Ishlagan, ammo hali o\'tkazilmagan summa',
+      href: '/admin/earnings?tab=instructors',
+      action: 'Moliyaga o\'tish',
+    });
+  }
+  if (lowReviews > 0) {
+    items.push({
+      key: 'lowReviews',
+      tone: 'rose',
+      count: lowReviews,
+      title: `${lowReviews} ta past baho (1–2 yulduz)`,
+      text: 'So\'nggi 30 kunda qoldirilgan — sababini ko\'rib chiqing',
+      href: '/admin/reviews',
+      action: 'Sharhlarni ko\'rish',
+    });
+  }
+  if (unassignedPaidCourses > 0) {
+    items.push({
+      key: 'unassignedCourses',
+      tone: 'indigo',
+      count: unassignedPaidCourses,
+      title: `${unassignedPaidCourses} ta pullik kursda ustoz yo'q`,
+      text: 'Bunday sotuvdan ustozga ulush yozilmaydi',
+      href: '/admin/courses',
+      action: 'Ustoz biriktirish',
+    });
+  }
+
+  res.json({ success: true, items });
+});
+
+// GET /api/admin/search?q= — panel bo'ylab tezkor qidiruv (Ctrl+K).
+// Odam, kurs va to'lov bo'yicha bir nechta eng mos natija qaytaradi.
+const search = asyncHandler(async (req, res) => {
+  const q = (req.query.q || '').trim();
+  if (q.length < 2) {
+    return res.json({ success: true, users: [], courses: [], payments: [] });
+  }
+  const like = { contains: q, mode: 'insensitive' };
+
+  const [users, courses, payments] = await Promise.all([
+    prisma.user.findMany({
+      where: { OR: [{ fullName: like }, { email: like }] },
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, fullName: true, email: true, role: true },
+    }),
+    prisma.course.findMany({
+      where: { OR: [{ title: like }, { slug: like }] },
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, title: true, slug: true, published: true },
+    }),
+    prisma.payment.findMany({
+      where: {
+        OR: [
+          { transactionId: like },
+          { user: { OR: [{ fullName: like }, { email: like }] } },
+          { course: { title: like } },
+        ],
+      },
+      take: 4,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true, amount: true, status: true, createdAt: true,
+        user: { select: { fullName: true } },
+        course: { select: { title: true } },
+      },
+    }),
+  ]);
+
+  res.json({ success: true, users, courses, payments });
+});
+
 function pageParams(query) {
   const page = Math.max(1, parseInt(query.page, 10) || 1);
   const limit = Math.min(100, Math.max(1, parseInt(query.limit, 10) || 20));
   return { page, limit, skip: (page - 1) * limit };
 }
 
-// GET /api/admin/users — foydalanuvchilar ro'yxati
+// GET /api/admin/users — "Odamlar" ro'yxati (o'quvchi, ustoz va bosh admin bir joyda)
 // Qidiruv (?q=), rol filtri (?role=) va sahifalash (?page=&limit=) bilan.
+// Ustozlar uchun biriktirilgan kurslar ham qaytadi — alohida so'rov kerak emas.
 const users = asyncHandler(async (req, res) => {
   const { page, limit, skip } = pageParams(req.query);
   const q = (req.query.q || '').trim();
   const role = req.query.role;
 
-  const where = {};
-  if (q) {
-    where.OR = [
-      { fullName: { contains: q, mode: 'insensitive' } },
-      { email: { contains: q, mode: 'insensitive' } },
-    ];
-  }
+  // Qidiruv shartini rol filtridan ajratamiz: rol yorliqlaridagi hisoblagichlar
+  // joriy qidiruvga mos, ammo tanlangan roldan qat'i nazar hisoblanadi.
+  const searchWhere = q
+    ? {
+      OR: [
+        { fullName: { contains: q, mode: 'insensitive' } },
+        { email: { contains: q, mode: 'insensitive' } },
+      ],
+    }
+    : {};
+
+  const where = { ...searchWhere };
   if (['USER', 'ADMIN', 'INSTRUCTOR'].includes(role)) where.role = role;
 
-  const [list, total] = await Promise.all([
+  const [list, total, grouped] = await Promise.all([
     prisma.user.findMany({
       where,
       orderBy: { createdAt: 'desc' },
@@ -150,14 +295,23 @@ const users = asyncHandler(async (req, res) => {
       select: {
         id: true, fullName: true, email: true, role: true, createdAt: true,
         _count: { select: { enrollments: true, certificates: true } },
+        taughtCourses: { select: { id: true, title: true, slug: true } },
       },
     }),
     prisma.user.count({ where }),
+    prisma.user.groupBy({ by: ['role'], where: searchWhere, _count: { _all: true } }),
   ]);
+
+  const roleCounts = { all: 0, USER: 0, INSTRUCTOR: 0, ADMIN: 0 };
+  for (const g of grouped) {
+    roleCounts[g.role] = g._count._all;
+    roleCounts.all += g._count._all;
+  }
 
   res.json({
     success: true,
     users: list,
+    roleCounts,
     pagination: { page, limit, total, pages: Math.max(1, Math.ceil(total / limit)) },
   });
 });
@@ -166,9 +320,8 @@ const createUserSchema = z.object({
   fullName: z.string().min(2, 'Ism juda qisqa').max(80),
   email: z.string().email('Email noto\'g\'ri'),
   password: z.string().min(6, 'Parol kamida 6 belgi'),
-  // Bu sahifada oddiy foydalanuvchi yoki bosh admin yaratiladi.
-  // Ustoz (INSTRUCTOR) alohida "Ustozlar" sahifasida boshqariladi.
-  role: z.enum(['USER', 'ADMIN']).default('USER'),
+  // "Odamlar" sahifasi uchta rolni ham shu yerdan yaratadi.
+  role: z.enum(['USER', 'INSTRUCTOR', 'ADMIN']).default('USER'),
 });
 
 // POST /api/admin/users — yangi foydalanuvchi yaratish (bosh admin)
@@ -183,6 +336,7 @@ const createUser = asyncHandler(async (req, res) => {
     select: {
       id: true, fullName: true, email: true, role: true, createdAt: true,
       _count: { select: { enrollments: true, certificates: true } },
+      taughtCourses: { select: { id: true, title: true, slug: true } },
     },
   });
   res.status(201).json({ success: true, message: 'Foydalanuvchi yaratildi', user });
@@ -703,7 +857,7 @@ const listPayments = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  stats, users, createUser, deleteUser,
+  stats, attention, search, users, createUser, deleteUser,
   listInstructors, createInstructor, deleteInstructor, teachingStats,
   listReviews, deleteReview, listPayments,
   getUserDetail, updateUserRole,

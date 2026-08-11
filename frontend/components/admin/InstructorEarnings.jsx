@@ -11,7 +11,7 @@ import { useAuth } from '@/lib/auth';
 import { formatMoney } from '@/lib/constants';
 import { Spinner, ErrorState, EmptyState, Pagination } from '@/components/ui';
 import {
-  StatCard, MonthlyBars, SplitBar, SplitBreakdown, PeriodTabs, GrowthBadge,
+  StatCard, TimeBars, SplitBar, SplitBreakdown, PeriodTabs, GrowthBadge, PERIOD_CAPTION,
 } from '@/components/admin/earnings-ui';
 
 const TABS = [
@@ -145,7 +145,7 @@ export default function InstructorEarnings() {
 
 // ---------- Umumiy ----------
 function Overview({ data, period, setPeriod }) {
-  const { totals, bySource, byCourse, monthly, config } = data;
+  const { totals, bySource, byCourse, series, config } = data;
 
   return (
     <div className="space-y-6">
@@ -192,19 +192,21 @@ function Overview({ data, period, setPeriod }) {
         </div>
       </div>
 
-      {/* Oylik grafik */}
+      {/* Maosh dinamikasi */}
       <div className="card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg">Oylar bo'yicha maosh</h2>
-            <p className="mt-1 text-sm text-muted">Har oyda ishlab topgan summangiz</p>
+            <h2 className="text-lg">Maosh dinamikasi</h2>
+            <p className="mt-1 text-sm text-muted">Ishlab topgan summangiz</p>
           </div>
           <div className="no-print"><PeriodTabs value={period} onChange={setPeriod} /></div>
         </div>
-        <MonthlyBars
-          data={monthly.map((m) => ({ month: m.month, value: m.instructor }))}
+        <TimeBars
+          data={series.points}
+          granularity={series.granularity}
           color="var(--color-primary)"
           label="sizning ulushingiz"
+          caption={PERIOD_CAPTION[period]}
         />
         <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-4 text-sm">
           <span className="text-muted">Tanlangan davr ({period}):</span>

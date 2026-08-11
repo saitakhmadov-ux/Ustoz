@@ -9,7 +9,7 @@ const { z } = require('zod');
 const prisma = require('../config/prisma');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
-const { periodRange, growthPct, monthlySeries } = require('../utils/period');
+const { periodRange, growthPct, monthlySeries, timeSeries } = require('../utils/period');
 const { getPayoutConfig, setSetting, PAYOUT_KEY } = require('../utils/settings');
 const { normalizePayoutConfig } = require('../utils/earnings');
 const { sendCsv, csvDate } = require('../utils/csv');
@@ -134,6 +134,10 @@ const myEarnings = asyncHandler(async (req, res) => {
     gross: monthlyGross[i].value,
   }));
 
+  // Grafik uchun tanlangan davrga mos qator: 7/30/90 kun — kunlik,
+  // 1 yil — oylik (12 oy), butun davr — birinchi sotuvdan bugungacha
+  const series = timeSeries(all, days, (e) => e.instructorAmount);
+
   // Kurs kesimi — daromad keltirmagan pulli kurslar ham ko'rinadi (0 bilan)
   const byCourseMap = new Map();
   for (const c of courses) {
@@ -194,6 +198,7 @@ const myEarnings = asyncHandler(async (req, res) => {
     lastMonth,
     bySource: { organic, referral },
     monthly,
+    series,
     byCourse,
     balance: { earned: totals.instructor, paid, pending: totals.instructor - paid },
   });
@@ -417,6 +422,10 @@ const adminOverview = asyncHandler(async (req, res) => {
     gross: monthlyGross[i].value,
   }));
 
+  // Grafik uchun tanlangan davrga mos qator (7/30/90 kun — kunlik,
+  // 1 yil — 12 oy, butun davr — birinchi sotuvdan bugungacha)
+  const series = timeSeries(all, days, (e) => e.grossAmount);
+
   // Ustoz kesimi: ishlangan / to'langan / qoldiq
   const paidByInstructor = {};
   for (const p of payouts) {
@@ -489,6 +498,7 @@ const adminOverview = asyncHandler(async (req, res) => {
     lastMonth,
     bySource: { organic, referral },
     monthly,
+    series,
     byInstructor,
     payoutTotals: {
       paid: totalPaid,

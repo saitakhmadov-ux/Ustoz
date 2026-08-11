@@ -11,5 +11,7 @@ router.get('/reviews', home.featuredReviews);
 router.get('/hero', settings.getHero);
 // Bosh sahifa tahrirlanadigan matnlari (ommaviy)
 router.get('/content', settings.getContent);
+// "Biz haqimizda" sahifasi mazmuni (ommaviy)
+router.get('/about', settings.getAbout);
 
 module.exports = router;

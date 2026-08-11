@@ -20,6 +20,8 @@ router.use(protect);
 // ---- Faqat bosh admin ----
 // Statistika va foydalanuvchilar
 router.get('/stats', adminOnly, admin.stats);
+router.get('/attention', adminOnly, admin.attention);
+router.get('/search', adminOnly, admin.search);
 router.get('/users', adminOnly, admin.users);
 router.post('/users', adminOnly, admin.createUser);
 router.get('/users/:id', adminOnly, admin.getUserDetail);
@@ -43,6 +45,10 @@ router.post('/hero/upload', adminOnly, uploadImage.single('file'), settings.uplo
 // Bosh sahifa tahrirlanadigan matnlari (faqat bosh admin)
 router.get('/content', adminOnly, settings.getContent);
 router.put('/content', adminOnly, settings.updateContent);
+
+// "Biz haqimizda" sahifasi mazmuni
+router.get('/about', adminOnly, settings.getAbout);
+router.put('/about', adminOnly, settings.updateAbout);
 
 // Ustoz AI boshqaruvi + analitika (faqat bosh admin)
 router.get('/ai/config', adminOnly, aiAdmin.getConfig);
