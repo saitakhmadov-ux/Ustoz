@@ -22,8 +22,12 @@ export default function LoginPage() {
       const user = await login(form.email, form.password);
       router.push(user.role === 'ADMIN' ? '/admin' : '/dashboard');
     } catch (err) {
+      // Parol to'g'ri, ammo email tasdiqlanmagan — tasdiqlash sahifasiga o'tamiz
+      if (err.code === 'EMAIL_NOT_VERIFIED') {
+        router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
+        return;
+      }
       setError(err.message);
-    } finally {
       setLoading(false);
     }
   };
@@ -60,7 +64,15 @@ export default function LoginPage() {
         </div>
 
         <div className="mb-6">
-          <label className="label" htmlFor="password">Parol</label>
+          <div className="flex items-baseline justify-between gap-2">
+            <label className="label" htmlFor="password">Parol</label>
+            <Link
+              href={`/forgot-password${form.email ? `?email=${encodeURIComponent(form.email)}` : ''}`}
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              Parolni unutdingizmi?
+            </Link>
+          </div>
           <input
             id="password"
             type="password"

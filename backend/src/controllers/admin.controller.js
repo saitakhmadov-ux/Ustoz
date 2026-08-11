@@ -124,12 +124,18 @@ const stats = asyncHandler(async (req, res) => {
 // kerak bo'lgan holatlar bir joyda, har biri tegishli bo'limga havola bilan.
 const attention = asyncHandler(async (req, res) => {
   const monthAgo = new Date(Date.now() - 30 * 86400000);
+  const dayAgo = new Date(Date.now() - 86400000);
+  const hourAgo = new Date(Date.now() - 3600000);
+  // Bir kunda shundan ko'p ro'yxatdan o'tish bo'lsa — tekshirib ko'rish kerak
+  const SIGNUP_SPIKE = 30;
 
   const [
     draftCourses,
     pendingPayments,
     lowReviews,
     unassignedPaidCourses,
+    signupsToday,
+    unverifiedUsers,
     earnedAgg,
     paidAgg,
   ] = await Promise.all([
@@ -137,6 +143,10 @@ const attention = asyncHandler(async (req, res) => {
     prisma.payment.count({ where: { status: 'PENDING' } }),
     prisma.review.count({ where: { rating: { lte: 2 }, createdAt: { gte: monthAgo } } }),
     prisma.course.count({ where: { published: true, isFree: false, instructorId: null } }),
+    prisma.user.count({ where: { createdAt: { gte: dayAgo } } }),
+    // Bir soatdan oshgan, ammo hali tasdiqlanmagan akkauntlar.
+    // Yangi ro'yxatdan o'tayotganlarni ogohlantirishga qo'shmaslik uchun 1 soat kutamiz.
+    prisma.user.count({ where: { emailVerifiedAt: null, createdAt: { lt: hourAgo } } }),
     prisma.earning.groupBy({ by: ['instructorId'], _sum: { instructorAmount: true } }),
     prisma.payout.groupBy({ by: ['instructorId'], where: { status: 'PAID' }, _sum: { amount: true } }),
   ]);
@@ -155,6 +165,31 @@ const attention = asyncHandler(async (req, res) => {
 
   // Faqat haqiqatan e'tibor talab qiladiganlari qaytariladi
   const items = [];
+
+  // Xavfsizlik signallari birinchi o'rinda
+  if (signupsToday > SIGNUP_SPIKE) {
+    items.push({
+      key: 'signupSpike',
+      tone: 'rose',
+      count: signupsToday,
+      title: `Oxirgi 24 soatda ${signupsToday} ta yangi ro'yxatdan o'tish`,
+      text: 'Odatdagidan ko\'p — bot hujumi bo\'lmaganini tekshiring',
+      href: '/admin/users',
+      action: 'Odamlarni ko\'rish',
+    });
+  }
+  if (unverifiedUsers > 0) {
+    items.push({
+      key: 'unverifiedUsers',
+      tone: 'slate',
+      count: unverifiedUsers,
+      title: `${unverifiedUsers} ta akkaunt emailini tasdiqlamagan`,
+      text: 'Ular tizimga kira olmaydi. Ko\'p bo\'lsa — soxta ro\'yxatdan o\'tish belgisi',
+      href: '/admin/users?verified=no',
+      action: 'Ko\'rib chiqish',
+    });
+  }
+
   if (draftCourses > 0) {
     items.push({
       key: 'draftCourses',
@@ -285,6 +320,9 @@ const users = asyncHandler(async (req, res) => {
 
   const where = { ...searchWhere };
   if (['USER', 'ADMIN', 'INSTRUCTOR'].includes(role)) where.role = role;
+  // Tasdiqlanganlik bo'yicha filtr (?verified=yes|no)
+  if (req.query.verified === 'no') where.emailVerifiedAt = null;
+  if (req.query.verified === 'yes') where.emailVerifiedAt = { not: null };
 
   const [list, total, grouped] = await Promise.all([
     prisma.user.findMany({
@@ -293,7 +331,7 @@ const users = asyncHandler(async (req, res) => {
       skip,
       take: limit,
       select: {
-        id: true, fullName: true, email: true, role: true, createdAt: true,
+        id: true, fullName: true, email: true, role: true, createdAt: true, emailVerifiedAt: true, phone: true,
         _count: { select: { enrollments: true, certificates: true } },
         taughtCourses: { select: { id: true, title: true, slug: true } },
       },
@@ -334,7 +372,7 @@ const createUser = asyncHandler(async (req, res) => {
   const user = await prisma.user.create({
     data: { fullName: data.fullName, email: data.email, passwordHash, role: data.role },
     select: {
-      id: true, fullName: true, email: true, role: true, createdAt: true,
+      id: true, fullName: true, email: true, role: true, createdAt: true, emailVerifiedAt: true, phone: true,
       _count: { select: { enrollments: true, certificates: true } },
       taughtCourses: { select: { id: true, title: true, slug: true } },
     },

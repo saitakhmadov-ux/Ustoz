@@ -32,20 +32,35 @@ export function AuthProvider({ children }) {
     loadUser();
   }, [loadUser]);
 
-  // Kirish
-  const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password }, { auth: false });
+  // Serverdan kelgan token va foydalanuvchini seansga o'rnatish
+  const applySession = (res) => {
     setToken(res.token);
     setUser(res.user);
     return res.user;
   };
 
-  // Ro'yxatdan o'tish
-  const register = async (fullName, email, password) => {
-    const res = await api.post('/auth/register', { fullName, email, password }, { auth: false });
-    setToken(res.token);
-    setUser(res.user);
-    return res.user;
+  // Kirish
+  const login = async (email, password) => {
+    const res = await api.post('/auth/login', { email, password }, { auth: false });
+    return applySession(res);
+  };
+
+  // Ro'yxatdan o'tish — token BERMAYDI. Avval email tasdiqlanishi kerak,
+  // shuning uchun javobda { needsVerification, email } qaytadi.
+  const register = async (payload) => {
+    return api.post('/auth/register', payload, { auth: false });
+  };
+
+  // Emailga kelgan kodni tasdiqlash — shu yerda seans boshlanadi
+  const verifyEmail = async (email, code) => {
+    const res = await api.post('/auth/verify-email', { email, code }, { auth: false });
+    return applySession(res);
+  };
+
+  // Parolni tiklash: yangi parol o'rnatilgach darhol kiritamiz
+  const resetPassword = async (payload) => {
+    const res = await api.post('/auth/reset-password', payload, { auth: false });
+    return applySession(res);
   };
 
   // Chiqish
@@ -64,6 +79,8 @@ export function AuthProvider({ children }) {
     isStaff: user?.role === 'ADMIN' || user?.role === 'INSTRUCTOR',
     login,
     register,
+    verifyEmail,
+    resetPassword,
     logout,
     refresh: loadUser,
   };

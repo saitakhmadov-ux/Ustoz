@@ -2,12 +2,21 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Shield, User, GraduationCap, Plus, Trash2, Loader2, X, Users as UsersIcon } from 'lucide-react';
+import {
+  Shield, User, GraduationCap, Plus, Trash2, Loader2, X, Users as UsersIcon, MailWarning,
+} from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { useTableQuery } from '@/lib/useTableQuery';
 import { Spinner, ErrorState, EmptyState, Pagination } from '@/components/ui';
-import { PageHeader, DataToolbar, CountTabs, DataTable, Avatar } from '@/components/admin/table';
+import {
+  PageHeader, DataToolbar, FilterSelect, CountTabs, DataTable, Avatar,
+} from '@/components/admin/table';
+
+const VERIFIED_OPTIONS = [
+  { value: 'yes', label: 'Tasdiqlangan' },
+  { value: 'no', label: 'Tasdiqlanmagan' },
+];
 
 // Rol bo'yicha ko'rinish
 const ROLES = {
@@ -43,7 +52,7 @@ export default function AdminPeoplePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const t = useTableQuery({ filters: { q: '', role: '' } });
+  const t = useTableQuery({ filters: { q: '', role: '', verified: '' } });
 
   // Yangi odam formasi
   const [showForm, setShowForm] = useState(false);
@@ -178,7 +187,15 @@ export default function AdminPeoplePage() {
         placeholder="Ism yoki email bo'yicha qidirish..."
         hasFilters={t.hasFilters}
         onReset={t.reset}
-      />
+      >
+        <FilterSelect
+          value={t.values.verified}
+          onChange={(v) => t.set('verified', v)}
+          options={VERIFIED_OPTIONS}
+          placeholder="Tasdiqlash holati"
+          width="200px"
+        />
+      </DataToolbar>
 
       <div className="mt-4">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : users.length === 0 ? (
@@ -215,7 +232,18 @@ export default function AdminPeoplePage() {
                       </span>
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-muted">{u.email}</td>
+                  <td className="px-4 py-3 text-muted">
+                    {u.email}
+                    {!u.emailVerifiedAt && (
+                      <span
+                        className="badge ml-1.5 bg-amber-50 text-amber-700"
+                        title="Email tasdiqlanmagan — bu foydalanuvchi tizimga kira olmaydi"
+                      >
+                        <MailWarning size={12} /> tasdiqlanmagan
+                      </span>
+                    )}
+                    {u.phone && <p className="text-xs text-slate-400">{u.phone}</p>}
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`badge ${cls}`}><Icon size={12} /> {label}</span>
                   </td>

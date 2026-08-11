@@ -46,6 +46,12 @@ enum EarningSource {
   REFERRAL // ustozning promo kodi orqali — ustozga sof foydaning 60% i
 }
 
+// Bir martalik kodning maqsadi
+enum VerificationPurpose {
+  EMAIL_VERIFY // ro'yxatdan o'tishda emailni tasdiqlash
+  PASSWORD_RESET // parolni tiklash
+}
+
 // Ustoz hisobiga o'tkazma holati
 enum PayoutStatus {
   PENDING // rejalashtirilgan, hali o'tkazilmagan
@@ -65,6 +71,15 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  // Telefon raqam — ixtiyoriy va noyob (+998XXXXXXXXX ko'rinishida saqlanadi).
+  // Hozircha profil ma'lumoti; tasdiqlash keyingi bosqichda (Telegram/SMS) qo'shiladi.
+  phone           String?   @unique
+  phoneVerifiedAt DateTime?
+  // Email tasdiqlangan sana. null = tasdiqlanmagan, akkaunt cheklangan.
+  emailVerifiedAt DateTime?
+
+  verificationCodes VerificationCode[]
+
   enrollments  Enrollment[]
   payments     Payment[]
   certificates Certificate[]
@@ -83,6 +98,24 @@ model User {
   earnings       Earning[] // sotuvlardan ishlagan daromadlari
   payouts        Payout[] @relation("InstructorPayouts") // hisobiga o'tkazilgan summalar
   createdPayouts Payout[] @relation("PayoutCreatedBy") // admin sifatida kiritgan o'tkazmalar
+}
+
+// Bir martalik tasdiqlash kodlari: emailni tasdiqlash va parolni tiklash.
+// Kod ochiq saqlanmaydi — faqat hash. Muddati o'tgan va ishlatilgan kodlar
+// keyingi kod so'ralganda tozalanadi.
+model VerificationCode {
+  id        String              @id @default(cuid())
+  userId    String
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose   VerificationPurpose
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int                 @default(0) // noto'g'ri urinishlar soni
+  usedAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  @@index([userId, purpose])
+  @@index([expiresAt])
 }
 
 model Category {

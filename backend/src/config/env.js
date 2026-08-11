@@ -24,6 +24,12 @@ const env = {
     name: process.env.ADMIN_NAME || 'Bosh Admin',
   },
   paymentMock: (process.env.PAYMENT_MOCK || 'true') === 'true',
+  // Cloudflare Turnstile (bepul CAPTCHA). Kalit qo'yilmasa tekshiruv
+  // o'tkazib yuboriladi — lokal ishlab chiqishda qulay, ishlab chiqarishda
+  // kalitni albatta qo'yish kerak (server ogohlantirish beradi).
+  turnstile: {
+    secret: process.env.TURNSTILE_SECRET_KEY || '',
+  },
   email: {
     // Mock rejimda haqiqiy email ketmaydi — konsolga log qilinadi
     mock: (process.env.EMAIL_MOCK || 'true') === 'true',

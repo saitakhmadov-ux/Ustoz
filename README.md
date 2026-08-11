@@ -186,6 +186,16 @@ Seed 6 ta kategoriya va 6 ta namunaviy kurs (bepul + pullik, bo'lim/dars/testlar
 - [x] **7-bosqich** — Admin panel
 - [x] **8-bosqich** — Seed ma'lumot, statik sahifalar, hujjatlar
 
+## Rejadagi ishlar
+
+- [ ] **Domenli pochta** — hozir xatlar shaxsiy Gmail'dan ketadi (kuniga ~500 ta
+      chegara, jo'natuvchi sifatida shaxsiy manzil ko'rinadi). Domen olingach
+      `no-reply@ustoz.uz` ga o'tish: [EMAIL-DOMEN-QOLLANMA.md](EMAIL-DOMEN-QOLLANMA.md)
+- [ ] **Email sozlamalarini admin paneliga chiqarish** — `Ustoz AI` bo'limi kabi
+      bazadan boshqariladigan qilish, deploy'siz almashtirish uchun
+- [ ] **Turnstile kalitlari** — CAPTCHA kodi tayyor, kalit qo'yilishi kerak
+- [ ] **Railway'da email o'zgaruvchilari** — jonli saytda hali `EMAIL_MOCK` yoqilgan
+
 ## Litsenziya
 
 Shaxsiy loyiha.

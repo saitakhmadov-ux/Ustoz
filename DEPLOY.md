@@ -59,12 +59,32 @@ git push -u origin main
    | `ADMIN_EMAIL` | `admin@ustoz.uz` |
    | `ADMIN_PASSWORD` | *(o'zingiz kuchliroq qo'ying)* |
    | `PAYMENT_MOCK` | `true` |
-   | `EMAIL_MOCK` | `true` |
+   | `EMAIL_MOCK` | `false` ⚠️ |
+   | `EMAIL_FROM` | `Ustoz <sizning@gmail.com>` |
+   | `SMTP_HOST` | `smtp.gmail.com` |
+   | `SMTP_PORT` | `587` |
+   | `SMTP_SECURE` | `false` |
+   | `SMTP_USER` | *(Gmail manzilingiz)* |
+   | `SMTP_PASS` | *(16 belgili App password)* |
+   | `TURNSTILE_SECRET_KEY` | *(Cloudflare Turnstile maxfiy kaliti)* |
+
+   ⚠️ **`EMAIL_MOCK` ni ishlab chiqarishda albatta `false` qiling.** Mock rejimda
+   tasdiqlash kodlari faqat server loglariga chiqadi — ya'ni hech kim ro'yxatdan
+   o'ta olmaydi. Server ishga tushganda bu holat haqida ogohlantirish yozadi.
 
    Kuchli `JWT_SECRET` yaratish:
    ```bash
    node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
    ```
+
+   SMTP to'g'ri sozlanganini tekshirish (lokal yoki Railway konsolida):
+   ```bash
+   npm run mail:test
+   ```
+
+   > 📌 **Keyingi bosqich:** hozir jo'natuvchi shaxsiy Gmail. O'z domeningiz
+   > olingach `no-reply@ustoz.uz` ga o'tish kerak — to'liq qo'llanma:
+   > [EMAIL-DOMEN-QOLLANMA.md](EMAIL-DOMEN-QOLLANMA.md)
 
 6. Backend service → **Settings → Networking → Generate Domain** (masalan `ustoz-backend.up.railway.app`).
 7. Deploy avtomatik ishlaydi. Loglarda `🚀 Ustoz API ishga tushdi` ko'rinishi kerak (`prisma migrate deploy` migratsiyalarni qo'llaydi).
@@ -98,6 +118,7 @@ Bu quyidagilarni yaratadi:
    | Kalit | Qiymat |
    |-------|--------|
    | `NEXT_PUBLIC_API_URL` | `https://SIZNING-BACKEND.up.railway.app/api` |
+   | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | *(Cloudflare Turnstile ochiq kaliti)* |
 
    > Oxiridagi `/api` ni **albatta** qo'shing.
 5. **Deploy** bosing. Tugagach `https://ustoz.vercel.app` kabi havola beriladi.

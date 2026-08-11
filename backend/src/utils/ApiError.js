@@ -22,6 +22,9 @@ class ApiError extends Error {
   static conflict(msg = 'Ziddiyat yuz berdi') {
     return new ApiError(409, msg);
   }
+  static tooManyRequests(msg = 'Juda ko\'p urinish. Birozdan so\'ng qayta urinib ko\'ring') {
+    return new ApiError(429, msg);
+  }
 }
 
 module.exports = ApiError;
