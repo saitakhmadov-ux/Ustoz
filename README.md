@@ -215,12 +215,104 @@ O'quvchi va ustozlar ma'lumotlarini Telegram orqali ham oladi.
 `Telegram bot`) qo'ying. Saqlagach bot darhol ishga tushadi — serverni qayta
 yuklash shart emas.
 
-**Ulanish:** foydalanuvchi saytda Profil → "Telegram'ga ulash" tugmasini bosadi.
-Bir martalik havola (`t.me/<bot>?start=<token>`, 15 daqiqa) botni ochadi va hisob
-bog'lanadi. Token bazada ochiq saqlanmaydi (sha256), bir marta ishlatiladi va
-bitta Telegram akkaunt faqat bitta hisobga ulanadi.
+**Ulanishning ikki yo'li bor. Ikkalasida ham bitta Telegram akkaunt faqat bitta
+hisobga ulanadi va bot hech qachon parol so'ramaydi.**
 
-**Buyruqlar:** `/kurslarim` (progress va muddat bilan), `/yordam`, `/uzish`.
+**1) Botning o'zidan (Telegram Mini App).** Foydalanuvchi Telegram'da botni topadi
+→ `/start` → "Siz kimsiz?" (o'quvchi/ustoz) → **"Hisobni ulash"** tugmasi →
+Telegram ichida saytning `/telegram-link` sahifasi ochiladi → odam **saytning o'z
+formasida** hisobiga kiradi → ulanish avtomatik bajariladi va botga salom keladi.
+
+- Parol **botga emas**, saytning HTTPS sahifasiga kiritiladi.
+- Telegram sahifaga `initData` beradi — u **bot tokeni bilan imzolangan**. Server
+  imzoni qayta hisoblab tekshiradi (`backend/src/utils/telegramWebApp.js`,
+  `HMAC-SHA256`, `timingSafeEqual`), shuning uchun o'zini boshqa Telegram
+  foydalanuvchisi qilib ko'rsatib bo'lmaydi.
+- `auth_date` 15 daqiqadan eski bo'lsa rad etiladi (eski so'rovni qayta ishlatib
+  bo'lmaydi).
+- Kim ekanligi JWT dan, qaysi Telegram ekanligi imzolangan `initData` dan olinadi.
+- Hisobda boshqa Telegram bo'lgan bo'lsa — almashtiriladi va **eski chatga
+  ogohlantirish** yuboriladi.
+- Rol tugmasi faqat matnni moslashtiradi — **haqiqiy rol hisobdan olinadi**,
+  botdan turib o'ziga ustoz huquqini berib bo'lmaydi.
+- ⚠️ Telegram `web_app` tugmasi faqat **HTTPS** manzil bilan ishlaydi. `localhost`
+  da bot tugma o'rniga oddiy havola beradi (va nega tugma yo'qligini yozadi) —
+  bu oqim jonli saytda sinaladi. Manzil quyidagi tartibda olinadi:
+  `PUBLIC_SITE_URL` → `CLIENT_URL` dagi birinchi **HTTPS** manzil → birinchi manzil.
+  Ya'ni `CLIENT_URL` da localhost birinchi tursa ham bot HTTPS manzilni tanlaydi.
+
+**2) Saytdan (eski yo'l, saqlanib qolgan).** Profil → "Telegram'ga ulash" → bir
+martalik havola (`t.me/<bot>?start=<token>`, 15 daqiqa). Token bazada ochiq
+saqlanmaydi (sha256) va bir marta ishlatiladi.
+
+**Tugmalar va buyruqlar.** Asosiy yo'l — xabar maydoni ostidagi doimiy tugmalar
+paneli (`backend/src/telegram/keyboard.js`). Panel holatga qarab o'zgaradi:
+
+| Holat | Panel |
+|-------|-------|
+| Ulanmagan | `🔗 Hisobni ulash` · `🛒 Kurslar` · `❓ Yordam` |
+| O'quvchi | `📚 Kurslarim` · `🤖 AI Ustoz` · `🎓 Sertifikatlarim` · `🛒 Kurslar` · `❓ Yordam` |
+| Ustoz/admin | yuqoridagilar + `💰 Maoshim` · `👥 O'quvchilarim` |
+| AI suhbati ochiq | birinchi qatorda `✖️ Suhbatni tugatish` |
+
+Har bir tugma tegishli buyruq bilan bir xil kodga boradi — buyruq yozib ham
+ishlatsa bo'ladi:
+
+| Buyruq | Tugma | Nima qiladi |
+|--------|-------|-------------|
+| `/ulash` | `🔗 Hisobni ulash` | Hisobni botning o'zidan ulash menyusi |
+| `/kurslar` | `🛒 Kurslar` | Barcha ochiq kurslar: kategoriya, narx, daraja va havola (hisobsiz ham ishlaydi) |
+| `/kurslarim` | `📚 Kurslarim` | Kurslar, progress chizig'i va kirish muddati |
+| `/sertifikatlarim` | `🎓 Sertifikatlarim` | Olingan sertifikatlar: kurs, raqam, sana va yuklab olish havolasi |
+| `/ustoz` | `🤖 AI Ustoz` | AI Ustoz bilan suhbat (quyida) |
+| `/tugat` | `✖️ Suhbatni tugatish` | AI suhbatini yakunlash |
+| `/maosh` | `💰 Maoshim` | Shu oy ulushi, jami/to'langan/qoldiq, kurslar kesimi |
+| `/oquvchilarim` | `👥 O'quvchilarim` | Yozilishlar, holat kesimi, o'rtacha progress |
+| `/yordam` | `❓ Yordam` | Ro'yxat (rolga qarab) |
+| `/kunlik` | — | Kunlik progress eslatmasini yoqish/o'chirish |
+| `/uzish` | — | Hisobni botdan uzish (panel ulash holatiga qaytadi) |
+
+> Tugma bosilganda Telegram uning **matnini** oddiy xabar sifatida yuboradi.
+> Shuning uchun matn yo'naltirishda tugma yozuvlari **AI suhbatidan oldin**
+> tekshiriladi — aks holda "📚 Kurslarim" savol sifatida AI ga ketib qolardi.
+
+**Kurslar katalogi.** `🛒 Kurslar` — faqat **nashr etilgan** (`published`) kurslar,
+kategoriya bo'yicha guruhlangan: narx (yoki `🆓 Bepul`), daraja va "Batafsil"
+havolasi. Foydalanuvchi allaqachon yozilgan kurslar `✅` bilan belgilanadi.
+Katalog ochiq ma'lumot — hisob ulanmagan bo'lsa ham ko'rinadi. Ro'yxat uzun
+bo'lsa xabar bir necha bo'lakka bo'linadi (`format.js:chunkLines`) — Telegram'ning
+4096 belgi chegarasidan oshib, xabar jimgina yo'qolib qolmasligi uchun.
+
+**Sertifikatlar.** Bot faqat ulangan hisobning sertifikatlarini ko'rsatadi (kurs
+nomi, raqam, berilgan sana) va har biriga `⬇️` yuklab olish tugmasini beradi.
+Tugma sayt sahifasini (`/certificates/<id>`) ochadi — u yerda "Sertifikatni chop
+etish / PDF" tugmasi bor. Sertifikat sahifasi havola bo'yicha ochiq (raqam
+bo'yicha tekshirish uchun shunday), shuning uchun yuklab olishda qayta kirish
+talab qilinmaydi. Sertifikat kurs 100% tugatilganda avtomatik beriladi.
+
+Ustoz buyruqlari faqat `INSTRUCTOR` va `ADMIN` rollariga ochiq va `/yordam`
+ro'yxatida ham faqat ularga ko'rinadi. Ustoz o'ziga biriktirilgan kurslar
+kesimini, bosh admin butun platforma kesimini oladi. Botda o'quvchilarning
+shaxsiy ma'lumotlari (email, to'lov tafsiloti) ko'rsatilmaydi — faqat sonlar.
+
+### AI Ustoz bot ichida
+
+`/ustoz` — kursga yozilgan o'quvchi savolini to'g'ridan-to'g'ri Telegram'dan
+so'raydi. Bir nechta ochiq kursi bo'lsa tugmalardan birini tanlaydi, keyin
+oddiy xabar yozsa — javob keladi.
+
+- Javob sayt mentori bilan **bir xil qoidalar** asosida beriladi
+  (`backend/src/utils/aiMentor.js`): faqat o'zbekcha, faqat shu kurs doirasida,
+  foydalanuvchi matni ko'rsatma emas — ma'lumot sifatida qabul qilinadi.
+- Kirish huquqi **har savolda** qayta tekshiriladi — suhbat davomida kurs
+  muddati tugasa, suhbat yopiladi.
+- Suhbat 30 daqiqa jimlikdan keyin avtomatik yakunlanadi; tarix xotirada
+  saqlanadi (server qayta yuklansa suhbat yangidan boshlanadi).
+- Chegara: bir foydalanuvchi soatiga 20 ta savol.
+- Savollar `AiUsage` jadvaliga yoziladi — admin AI panelidagi analitika sayt va
+  bot so'rovlarini birga ko'rsatadi.
+- Javob markdown'dan Telegram HTML'ga aylantiriladi (kod bloklari saqlanadi) va
+  4096 belgidan uzun bo'lsa bir necha xabarga bo'linadi.
 
 **Avtomatik xabarlar** (hisobini ulaganlarga Telegram'ga ham boradi; hammasi
 sayt bildirishnomasi sifatida ham saqlanadi):
@@ -242,8 +334,84 @@ Muddat ogohlantirishi serverning o'zida (12 soatda bir) tekshiriladi — alohida
 cron xizmati kerak emas. Har yozilish uchun bir marta yuboriladi va muddat
 yangilanganda belgi qayta tiklanadi.
 
+### Kunlik progress eslatmasi
+
+`backend/src/jobs/dailyProgress.js` — kuniga **bir marta va bitta xabar**:
+tugatilmagan kurslar bo'yicha progress foizi, qolgan kunlar va "▶️ Davom
+ettirish" havolasi.
+
+- **Kimga:** hisobini botga ulagan, kursga yozilgan, lekin **sertifikat
+  olmagan** va **muddati tugamagan** foydalanuvchiga.
+- **Kimga yo'q:** barcha kurslarini tugatganlarga (har biriga sertifikat
+  olganlarga), muddati o'tganlarga, `/kunlik` bilan o'chirganlarga, hamda
+  progress 100% bo'lib sertifikat hali berilmagan o'tkinchi holatda.
+- **Qachon:** Toshkent vaqti bilan 10:00 dan keyingi birinchi tekshiruvda
+  (soatiga bir marta tekshiriladi). Server o'sha payt o'chiq bo'lsa, kun
+  davomida ko'tarilganda yuboriladi — kuniga bittadan oshmaydi
+  (`User.progressPingAt`).
+- **O'chirish:** `/kunlik` (holat `User.progressPingOff` da saqlanadi).
+- Xabar faqat Telegram'ga boradi — sayt bildirishnomalari va email har kuni
+  to'lib ketmasligi uchun `notify.js` orqali o'tmaydi.
+
 **Rejim:** ommaviy manzil bo'lsa (Railway — `RAILWAY_PUBLIC_DOMAIN` avtomatik)
 webhook, lokalda polling. Webhook so'rovlari maxfiy sarlavha bilan tekshiriladi.
+
+## Ma'lumotlar bazasi: o'sish va tezlik
+
+### Cheksiz o'sadigan jadvallar va tozalash
+
+`backend/src/jobs/dbCleanup.js` kuniga bir marta vaqtinchalik yozuvlarni
+o'chiradi. Muddatlar shu faylning boshida — kerak bo'lsa o'zgartiring:
+
+| Jadval | Nima o'chadi | Muddat |
+|--------|--------------|--------|
+| `VerificationCode` | muddati o'tgan tasdiqlash kodlari | 1 kun |
+| `TelegramLink` | ishlatilgan / eskirgan ulash havolalari | 7 kun |
+| `Notification` | **faqat o'qilgan** eski bildirishnomalar | 180 kun |
+| `AiUsage` | AI so'rovlari tarixi (analitika) | 365 kun |
+
+**Hech qachon o'chirilmaydi:** to'lovlar, daromadlar, o'tkazmalar, sertifikatlar,
+yozilishlar, progress va sharhlar — bular hisobot va huquqiy ma'lumot.
+O'qilmagan bildirishnoma ham o'chirilmaydi.
+
+Nima uchun muhim: eng tez o'sadigan jadval — `AiUsage` (har savol = bitta qator).
+O'rtacha qator ~170 bayt. 1000 faol o'quvchi kuniga 3 tadan savol bersa yiliga
+~1.1 mln qator ≈ **0.2 GB**; tozalashsiz bu har yili ortib boradi.
+
+### Indekslar
+
+Auditda topilib qo'shilganlari (`20260813090000_indekslar_va_tozalash`):
+
+| Indeks | Nima uchun |
+|--------|------------|
+| `Certificate(courseId)` | ustoz paneli, kunlik eslatma va admin hisobotlari kurs kesimida qidiradi |
+| `Enrollment(expiresAt)` | muddat ogohlantirishi va kunlik eslatma butun jadvalni skanerlamasin |
+| `Notification(userId, createdAt)` | ro'yxat doim shu tartibda o'qiladi (eski `userId` indeksi o'rniga) |
+| `Notification(createdAt)` | tozalash vazifasi uchun |
+| `User(progressPingOff, progressPingAt)` | kunlik eslatma har soatda shu shart bo'yicha qidiradi |
+| `Course(published, createdAt)` | ommaviy kurslar ro'yxati va bot katalogi |
+
+### Sozlamalar keshi
+
+`SiteSetting` qiymatlari (bot tokeni, AI kaliti, email, bosh sahifa) juda
+tez-tez o'qiladi — har bot xabari, har AI savoli, har bosh sahifa ochilishi.
+`utils/settings.js` ularni 60 soniya keshlaydi va **`setSetting` chaqirilganda
+keshni darhol bo'shatadi** — admin paneldagi o'zgarish o'sha zahoti amal qiladi.
+
+### Ma'lum cheklov (hali tuzatilmagan)
+
+Admin va ustoz hisobotlarining bir qismi yozuvlarni **to'liq o'qib, xotirada**
+hisoblaydi (`take` chegarasi yo'q):
+
+- `earnings.controller.js` — `myEarnings`, `adminOverview`, CSV eksport
+- `teaching.controller.js` — `listStudents`, `getStudentDetail`
+- `admin.controller.js` — dashboard statistikasi
+
+Hozirgi hajmda muammo yo'q. Sotuvlar ~50 000 dan, bitta kursdagi o'quvchilar
+~5 000 dan oshganda bu sahifalar sekinlashadi va serverning xotirasini yeydi.
+Yechim: `groupBy`/`aggregate` bilan hisobni bazaga o'tkazish — Telegram
+botidagi `/maosh` shu tarzda qayta yozilgan (`telegram/teacher.js`), o'sha
+naqshni shu uch faylga ham qo'llash kerak.
 
 ## Rejadagi ishlar
 
@@ -255,7 +423,7 @@ webhook, lokalda polling. Webhook so'rovlari maxfiy sarlavha bilan tekshiriladi.
       admin panelga qo'yish qoldi
 - [ ] **Jonli saytda emailni yoqish** — Railway'da hali mock rejim; admin panel
       → "Aloqa va himoya" bo'limidan SMTP to'ldirilib yoqiladi
-- [ ] **Telegram bot — 3-bosqich** — AI Ustoz bot ichida, ustoz uchun
+- [x] **Telegram bot — 3-bosqich** — AI Ustoz bot ichida, ustoz uchun
       `/maosh` va `/oquvchilarim` buyruqlari
 
 ## Litsenziya

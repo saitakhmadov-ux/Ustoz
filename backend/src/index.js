@@ -5,6 +5,8 @@ const prisma = require('./config/prisma');
 const { logMailStatus } = require('./utils/mailer');
 const { startBot } = require('./telegram/bot');
 const { startAccessExpiryJob } = require('./jobs/accessExpiry');
+const { startDailyProgressJob } = require('./jobs/dailyProgress');
+const { startDbCleanupJob } = require('./jobs/dbCleanup');
 
 async function start() {
   try {
@@ -21,6 +23,10 @@ async function start() {
       startBot().catch((err) => console.error('❌ Telegram bot:', err.message));
       // Kurs muddati tugayotganlarni ogohlantirish (kuniga ikki marta)
       startAccessExpiryJob();
+      // Tugatilmagan kurslar bo'yicha kunlik progress eslatmasi (Telegram)
+      startDailyProgressJob();
+      // Eskirgan vaqtinchalik yozuvlarni tozalash (kuniga bir marta)
+      startDbCleanupJob();
     });
   } catch (err) {
     console.error('❌ Serverni ishga tushirishda xatolik:', err.message);

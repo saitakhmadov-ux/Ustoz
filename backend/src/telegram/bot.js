@@ -16,6 +16,17 @@ const registerHandlers = require('./handlers');
 
 const WEBHOOK_PATH = '/api/telegram/webhook';
 
+const BOT_COMMANDS = [
+  { command: 'ulash', description: 'Hisobni botga ulash' },
+  { command: 'kurslar', description: 'Barcha kurslar va narxlari' },
+  { command: 'kurslarim', description: 'Kurslarim va progress' },
+  { command: 'sertifikatlarim', description: 'Olingan sertifikatlarim' },
+  { command: 'ustoz', description: 'AI Ustozdan savol so\'rash' },
+  { command: 'tugat', description: 'AI suhbatini yakunlash' },
+  { command: 'yordam', description: 'Buyruqlar ro\'yxati' },
+  { command: 'uzish', description: 'Hisobni botdan uzish' },
+];
+
 // Joriy holat. bot=null bo'lsa bot ishlamayapti.
 let state = {
   bot: null,
@@ -85,6 +96,10 @@ async function startBot() {
     // Token to'g'riligini darrov tekshiramiz (noto'g'ri bo'lsa shu yerda bilinadi)
     const me = await bot.telegram.getMe();
     await saveBotUsername(me.username || '');
+    // Telegram menyusidagi buyruqlar ro'yxati. Ustoz buyruqlari (/maosh,
+    // /oquvchilarim) bu yerda yo'q — ular hammaga ko'rinmasligi uchun faqat
+    // /yordam javobida (rolga qarab) chiqadi.
+    await bot.telegram.setMyCommands(BOT_COMMANDS).catch(() => {});
 
     let mode;
     if (env.publicUrl) {

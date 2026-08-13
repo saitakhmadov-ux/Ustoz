@@ -5,7 +5,9 @@ const prisma = require('../config/prisma');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 const { assertCourseAccess } = require('../utils/courseAccess');
-const { lessonTasks, accessInfo, accessMonthsFor } = require('../utils/learnProgress');
+const {
+  lessonTasks, accessInfo, accessMonthsFor, buildTaskIndex, progressFor, deriveStatus,
+} = require('../utils/learnProgress');
 
 // Foydalanuvchi ko'ra oladigan kurslar filtri (prisma `where`).
 function courseScope(user) {
@@ -19,50 +21,8 @@ function pageParams(query) {
   return { page, limit, skip: (page - 1) * limit };
 }
 
-// Kurs bo'yicha vazifa indeksi: darslardan amaldagi taskKey'larni yig'adi.
-// Qaytaradi: Map(courseId -> { validKeys:Set, lessons:[{id, keys}] })
-function buildTaskIndex(lessons) {
-  const index = new Map();
-  for (const l of lessons) {
-    const courseId = l.section.courseId;
-    if (!index.has(courseId)) index.set(courseId, { validKeys: new Set(), lessons: [] });
-    const entry = index.get(courseId);
-    const keys = lessonTasks(l).map((t) => t.key);
-    keys.forEach((k) => entry.validKeys.add(k));
-    entry.lessons.push({ id: l.id, keys });
-  }
-  return index;
-}
-
-// (userId, courseId) juftligi uchun progressni xotirada hisoblaydi.
-// doneByUser: Map(userId -> Set(taskKey)) — faqat shu kurs doirasidagi kalitlar.
-function progressFor(entry, doneKeys) {
-  const totalTasks = entry ? entry.validKeys.size : 0;
-  const totalLessons = entry ? entry.lessons.length : 0;
-  if (!entry || totalTasks === 0) {
-    return { percent: 0, totalTasks: 0, completedTasks: 0, totalLessons, completedLessons: 0 };
-  }
-  let completedTasks = 0;
-  for (const k of doneKeys) if (entry.validKeys.has(k)) completedTasks += 1;
-  const completedLessons = entry.lessons.filter(
-    (l) => l.keys.length > 0 && l.keys.every((k) => doneKeys.has(k))
-  ).length;
-  return {
-    percent: Math.round((completedTasks / totalTasks) * 100),
-    totalTasks,
-    completedTasks,
-    totalLessons,
-    completedLessons,
-  };
-}
-
-// Yozilish holati. Ustuvorlik: tugatgan → muddati tugagan → boshlamagan → jarayonda.
-function deriveStatus({ hasCertificate, expired, completedTasks }) {
-  if (hasCertificate) return 'completed';
-  if (expired) return 'expired';
-  if (completedTasks === 0) return 'notStarted';
-  return 'inProgress';
-}
+// buildTaskIndex / progressFor / deriveStatus — utils/learnProgress.js da
+// (Telegram bot hisoboti ham o'sha hisob-kitobdan foydalanadi).
 
 const STATUSES = ['completed', 'expired', 'notStarted', 'inProgress'];
 

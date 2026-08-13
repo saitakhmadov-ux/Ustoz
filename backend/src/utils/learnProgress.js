@@ -96,6 +96,54 @@ function quizCooldownInfo(lastFailedAt, hours) {
   return { active: true, remainingMs, until };
 }
 
+// ---------- Ustoz kesimidagi progress (o'quvchilar ro'yxati, Telegram hisoboti) ----------
+
+// Kurs bo'yicha vazifa indeksi: darslardan amaldagi taskKey'larni yig'adi.
+// lessons: [{ id, videoUrl, content, materials, questions, section: { courseId } }]
+// Qaytaradi: Map(courseId -> { validKeys:Set, lessons:[{id, keys}] })
+function buildTaskIndex(lessons) {
+  const index = new Map();
+  for (const l of lessons) {
+    const courseId = l.section.courseId;
+    if (!index.has(courseId)) index.set(courseId, { validKeys: new Set(), lessons: [] });
+    const entry = index.get(courseId);
+    const keys = lessonTasks(l).map((t) => t.key);
+    keys.forEach((k) => entry.validKeys.add(k));
+    entry.lessons.push({ id: l.id, keys });
+  }
+  return index;
+}
+
+// (userId, courseId) juftligi uchun progressni xotirada hisoblaydi.
+// doneKeys — shu kurs doirasida bajarilgan taskKey'lar to'plami.
+function progressFor(entry, doneKeys) {
+  const totalTasks = entry ? entry.validKeys.size : 0;
+  const totalLessons = entry ? entry.lessons.length : 0;
+  if (!entry || totalTasks === 0) {
+    return { percent: 0, totalTasks: 0, completedTasks: 0, totalLessons, completedLessons: 0 };
+  }
+  let completedTasks = 0;
+  for (const k of doneKeys) if (entry.validKeys.has(k)) completedTasks += 1;
+  const completedLessons = entry.lessons.filter(
+    (l) => l.keys.length > 0 && l.keys.every((k) => doneKeys.has(k))
+  ).length;
+  return {
+    percent: Math.round((completedTasks / totalTasks) * 100),
+    totalTasks,
+    completedTasks,
+    totalLessons,
+    completedLessons,
+  };
+}
+
+// Yozilish holati. Ustuvorlik: tugatgan → muddati tugagan → boshlamagan → jarayonda.
+function deriveStatus({ hasCertificate, expired, completedTasks }) {
+  if (hasCertificate) return 'completed';
+  if (expired) return 'expired';
+  if (completedTasks === 0) return 'notStarted';
+  return 'inProgress';
+}
+
 // Massivdan tasodifiy n ta element (Fisher-Yates aralashtirib, kesib olamiz).
 function pickRandom(arr, n) {
   const a = [...arr];
@@ -134,6 +182,9 @@ module.exports = {
   lessonTasks,
   isManualTaskKey,
   accessInfo,
+  buildTaskIndex,
+  progressFor,
+  deriveStatus,
   quizRequiredBank,
   isPureTestLesson,
   quizCooldownInfo,

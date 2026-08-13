@@ -18,6 +18,8 @@ router.get('/certificates', myCertificates);
 // Telegram bog'lanishi (ulash havolasi / uzish)
 router.get('/telegram', telegram.status);
 router.post('/telegram/link', telegram.createLink);
+// Telegram Mini App ichidan ulash (botdagi "Hisobni ulash" tugmasi)
+router.post('/telegram/webapp-link', telegram.webappLink);
 router.delete('/telegram', telegram.unlink);
 
 // Bildirishnomalar
