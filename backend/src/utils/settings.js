@@ -2,25 +2,65 @@
 const prisma = require('../config/prisma');
 const env = require('../config/env');
 
+// Sozlamalar keshi.
+//
+// Nega: bu qiymatlar deyarli o'zgarmaydi, lekin juda tez-tez o'qiladi — har
+// bosh sahifa ochilishi, har bot xabari (telegram_config), har AI savoli
+// (ai_config), har email. Keshsiz bularning hammasi bazaga alohida so'rov.
+//
+// Eskirib qolmaydi: yozuv shu jarayonning o'zidan (`setSetting`) o'tadi va
+// darhol keshni bo'shatadi — admin paneldagi o'zgarish o'sha zahoti amal qiladi.
+// TTL faqat zaxira chora (bir necha nusxa ishlayotgan bo'lsa).
+const CACHE_TTL_MS = 60 * 1000;
+const cache = new Map(); // key -> { value, at }
+
+function cacheGet(key) {
+  const hit = cache.get(key);
+  if (!hit) return undefined;
+  if (Date.now() - hit.at > CACHE_TTL_MS) {
+    cache.delete(key);
+    return undefined;
+  }
+  return hit.value;
+}
+
+// Sozlama o'zgarganda chaqiriladi (yoki testlarda keshni tozalash uchun)
+function clearSettingsCache(key) {
+  if (key) cache.delete(key);
+  else cache.clear();
+}
+
 // Bitta sozlamani o'qish (JSON parse qilingan). Topilmasa fallback qaytadi.
 async function getSetting(key, fallback = null) {
+  const cached = cacheGet(key);
+  if (cached !== undefined) return cached === null ? fallback : cached;
+
   const row = await prisma.siteSetting.findUnique({ where: { key } });
-  if (!row) return fallback;
+  if (!row) {
+    // Yo'qligini ham keshlaymiz — har safar qidirib o'tirmaslik uchun
+    cache.set(key, { value: null, at: Date.now() });
+    return fallback;
+  }
+  let parsed;
   try {
-    return JSON.parse(row.value);
+    parsed = JSON.parse(row.value);
   } catch {
     return fallback;
   }
+  cache.set(key, { value: parsed, at: Date.now() });
+  return parsed;
 }
 
 // Sozlamani yozish (upsert). value JSON ga aylantiriladi.
 async function setSetting(key, value) {
   const str = JSON.stringify(value);
-  return prisma.siteSetting.upsert({
+  const row = await prisma.siteSetting.upsert({
     where: { key },
     create: { key, value: str },
     update: { value: str },
   });
+  clearSettingsCache(key); // yangi qiymat darhol amal qilsin
+  return row;
 }
 
 // ---- Bosh sahifa hero rasmlari ----
@@ -293,6 +333,7 @@ async function getPayoutConfig() {
 module.exports = {
   getSetting,
   setSetting,
+  clearSettingsCache,
   PAYOUT_KEY,
   getPayoutConfig,
   getHeroConfig,

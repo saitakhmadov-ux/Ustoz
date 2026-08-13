@@ -85,6 +85,11 @@ model User {
   telegramUsername String? // @nik — faqat ko'rsatish uchun
   telegramLinkedAt DateTime?
 
+  // Kunlik progress eslatmasi (Telegram). Tugatilmagan kurslar bo'yicha kuniga
+  // bir marta yuboriladi; sertifikat olingach o'sha kurs ro'yxatdan chiqadi.
+  progressPingAt  DateTime? // oxirgi eslatma vaqti — kuniga bittadan oshmasligi uchun
+  progressPingOff Boolean   @default(false) // foydalanuvchi /kunlik bilan o'chirgan
+
   verificationCodes VerificationCode[]
   telegramLinks     TelegramLink[]
 
@@ -106,6 +111,10 @@ model User {
   earnings       Earning[] // sotuvlardan ishlagan daromadlari
   payouts        Payout[] @relation("InstructorPayouts") // hisobiga o'tkazilgan summalar
   createdPayouts Payout[] @relation("PayoutCreatedBy") // admin sifatida kiritgan o'tkazmalar
+
+  // Kunlik eslatma vazifasi har soatda shu shart bo'yicha qidiradi —
+  // foydalanuvchilar ko'payganda butun jadval skanerlanmasin
+  @@index([progressPingOff, progressPingAt])
 }
 
 // Bir martalik tasdiqlash kodlari: emailni tasdiqlash va parolni tiklash.
@@ -193,6 +202,8 @@ model Course {
 
   @@index([categoryId])
   @@index([instructorId])
+  // Ommaviy ro'yxatlar va bot katalogi doim `published: true` bo'yicha filtrlaydi
+  @@index([published, createdAt])
 }
 
 model Section {
@@ -297,6 +308,9 @@ model Enrollment {
   @@unique([userId, courseId])
   @@index([userId])
   @@index([courseId])
+  // Muddat bo'yicha vazifalar (accessExpiry ogohlantirishi, kunlik progress
+  // eslatmasi) butun jadvalni skanerlamasin
+  @@index([expiresAt])
 }
 
 model LessonProgress {
@@ -469,8 +483,11 @@ model Notification {
   telegramSent Boolean @default(false) // Telegram botga ham yuborilganmi
   createdAt DateTime @default(now())
 
-  @@index([userId])
+  // Ro'yxat har doim "userId + eng yangilari" tartibida o'qiladi
+  @@index([userId, createdAt])
   @@index([senderId])
+  // Tozalash vazifasi eskilarini shu bo'yicha topadi
+  @@index([createdAt])
 }
 
 // Sayt sozlamalari — key/value (value ichida JSON). Masalan bosh sahifa hero rasmlari.
@@ -516,4 +533,6 @@ model Certificate {
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
+  // Kurs kesimida qidiriladi (ustoz paneli, kunlik eslatma, admin hisobotlari)
+  @@index([courseId])
 }
