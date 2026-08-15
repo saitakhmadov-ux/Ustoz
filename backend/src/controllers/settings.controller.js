@@ -18,6 +18,10 @@ const {
   ABOUT_ICONS,
   normalizeAboutConfig,
   getAboutConfig,
+  CONTACT_KEY,
+  CONTACT_ICONS,
+  normalizeContactConfig,
+  getContactConfig,
 } = require('../utils/settings');
 
 // GET /api/home/hero (ommaviy) va GET /api/admin/hero (bosh admin)
@@ -107,6 +111,34 @@ const updateAbout = asyncHandler(async (req, res) => {
   res.json({ success: true, about: normalized, message: 'Saqlandi' });
 });
 
+// GET /api/home/contact (ommaviy) va GET /api/admin/contact (bosh admin)
+// "Kontaktlar" sahifasining to'liq mazmuni.
+const getContact = asyncHandler(async (req, res) => {
+  const contact = await getContactConfig();
+  res.json({ success: true, contact, icons: CONTACT_ICONS });
+});
+
+// PUT /api/admin/contact — sahifa mazmunini to'liq almashtiradi.
+// Body: { title, subtitle, items:[{icon,label,value,url}], workHours, mapUrl, formEnabled, formNote }
+// Normalizatsiya havolalarni tekshiradi va ruxsat etilmagan ikonkani almashtiradi.
+const updateContact = asyncHandler(async (req, res) => {
+  const body = req.body;
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    throw ApiError.badRequest("Ma'lumot obyekt ko'rinishida bo'lishi kerak");
+  }
+  const normalized = normalizeContactConfig(body);
+  await setSetting(CONTACT_KEY, normalized);
+  res.json({ success: true, contact: normalized, message: 'Saqlandi' });
+});
+
 module.exports = {
-  getHero, updateHero, uploadHeroImage, getContent, updateContent, getAbout, updateAbout,
+  getHero,
+  updateHero,
+  uploadHeroImage,
+  getContent,
+  updateContent,
+  getAbout,
+  updateAbout,
+  getContact,
+  updateContact,
 };

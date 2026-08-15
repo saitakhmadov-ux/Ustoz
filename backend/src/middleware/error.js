@@ -34,6 +34,11 @@ function errorHandler(err, req, res, next) {
   if (err.code && typeof err.code === 'string' && !/^P\d+$/.test(err.code)) {
     payload.code = err.code;
   }
+  // Xatolik bilan birga qaytariladigan qo'shimcha ma'lumot (masalan
+  // EMAIL_NOT_VERIFIED bilan `pendingToken`). Faqat o'z kodimiz to'ldiradi.
+  if (err.data && typeof err.data === 'object') {
+    Object.assign(payload, err.data);
+  }
   res.status(statusCode).json(payload);
 }
 

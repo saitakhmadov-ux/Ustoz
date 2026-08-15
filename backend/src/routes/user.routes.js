@@ -22,6 +22,10 @@ router.post('/telegram/link', telegram.createLink);
 router.post('/telegram/webapp-link', telegram.webappLink);
 router.delete('/telegram', telegram.unlink);
 
+// Bildirishnoma sozlamalari (qaysi hodisalar Telegram'ga yuborilsin)
+router.get('/notify-prefs', ctrl.notifyPrefs);
+router.put('/notify-prefs', ctrl.saveNotifyPrefs);
+
 // Bildirishnomalar
 router.get('/notifications', notif.listMine);
 router.get('/notifications/unread-count', notif.unreadCount);

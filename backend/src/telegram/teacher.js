@@ -172,6 +172,7 @@ async function studentsText(user) {
         content: true,
         materials: { select: { id: true, type: true } },
         questions: { select: { id: true } },
+        typingDrill: { select: { id: true } },
         section: { select: { courseId: true } },
       },
     }),

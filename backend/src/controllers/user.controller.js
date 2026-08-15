@@ -4,6 +4,7 @@ const { z } = require('zod');
 const prisma = require('../config/prisma');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
+const { eventsFor, offKeys, setOffKeys } = require('../utils/notifyPrefs');
 
 const profileSchema = z.object({
   fullName: z.string().min(2, 'Ism juda qisqa').max(80).optional(),
@@ -58,4 +59,32 @@ const myStats = asyncHandler(async (req, res) => {
   res.json({ success: true, stats: { enrollmentCount, certificateCount } });
 });
 
-module.exports = { updateProfile, changePassword, myStats };
+// GET /api/me/notify-prefs — bildirishnoma sozlamalari
+const notifyPrefs = asyncHandler(async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.id },
+    select: {
+      role: true, notifyOff: true, progressPingOff: true, telegramChatId: true,
+    },
+  });
+  if (!user) throw ApiError.notFound('Foydalanuvchi topilmadi');
+
+  res.json({
+    success: true,
+    events: eventsFor(user.role),
+    off: offKeys(user),
+    // Telegram ulanmagan bo'lsa sozlamaning amaliy ta'siri yo'q — sahifa
+    // buni odamga tushuntirib qo'yadi
+    telegramLinked: Boolean(user.telegramChatId),
+  });
+});
+
+// PUT /api/me/notify-prefs — o'chirilgan turlar ro'yxatini saqlash
+const saveNotifyPrefs = asyncHandler(async (req, res) => {
+  const off = await setOffKeys(req.user.id, req.body?.off);
+  res.json({ success: true, message: 'Sozlamalar saqlandi', off });
+});
+
+module.exports = {
+  updateProfile, changePassword, myStats, notifyPrefs, saveNotifyPrefs,
+};

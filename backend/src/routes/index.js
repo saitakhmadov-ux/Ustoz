@@ -30,6 +30,9 @@ router.use('/ai', require('./ai.routes'));
 // Kod maydoni — ko'p tilli kod-ishga-tushirish
 router.use('/code', require('./code.routes'));
 
+// Erkin klaviatura mashqi (kursdan tashqari vaqtli test)
+router.use('/typing', require('./typing.routes'));
+
 // To'lovlar
 router.use('/payments', require('./payment.routes'));
 

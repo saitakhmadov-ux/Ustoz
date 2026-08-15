@@ -7,6 +7,8 @@ const { startBot } = require('./telegram/bot');
 const { startAccessExpiryJob } = require('./jobs/accessExpiry');
 const { startDailyProgressJob } = require('./jobs/dailyProgress');
 const { startDbCleanupJob } = require('./jobs/dbCleanup');
+const { startTelegramQueue } = require('./jobs/telegramQueue');
+const { startNewLessonsJob } = require('./jobs/newLessons');
 
 async function start() {
   try {
@@ -27,6 +29,10 @@ async function start() {
       startDailyProgressJob();
       // Eskirgan vaqtinchalik yozuvlarni tozalash (kuniga bir marta)
       startDbCleanupJob();
+      // Telegram xabarlari navbati — tezlikni saqlab yuboradi, uzilishda qayta uradi
+      startTelegramQueue();
+      // Kursga qo'shilgan yangi darslar haqida o'quvchilarga xabar (soatiga bir marta)
+      startNewLessonsJob();
     });
   } catch (err) {
     console.error('❌ Serverni ishga tushirishda xatolik:', err.message);

@@ -13,6 +13,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
+    "db:seed:typing": "node prisma/seed_typing.js",
     "mail:test": "node scripts/test-mail.js"
   },
   "prisma": {

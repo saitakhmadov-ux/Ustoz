@@ -7,7 +7,12 @@ import { fileUrl } from '@/lib/constants';
 
 // Dars qo'shish/tahrirlash formasi
 // mode: 'create' (sectionId kerak) yoki 'edit' (lesson kerak)
-export default function LessonEditor({ sectionId, lesson, onDone, onCancel }) {
+//
+// typing=true — klaviatura mashqi kursi: video, matn va materiallar ko'rsatilmaydi
+// (mashq matni alohida tahrirlagichda), faqat dars nomi qoladi.
+export default function LessonEditor({
+  sectionId, lesson, onDone, onCancel, typing = false,
+}) {
   const [form, setForm] = useState({
     title: lesson?.title || '',
     videoUrl: lesson?.videoUrl || '',
@@ -48,24 +53,34 @@ export default function LessonEditor({ sectionId, lesson, onDone, onCancel }) {
     <div className="rounded-lg border border-line bg-white p-3">
       {error && <div className="mb-2 rounded bg-red-50 px-3 py-1.5 text-xs text-red-700">{error}</div>}
       <input className="input mb-2 text-sm" placeholder="Dars nomi" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-      <input className="input mb-2 text-sm" placeholder="Asosiy video URL (YouTube/Vimeo/mp4) — ixtiyoriy" value={form.videoUrl} onChange={(e) => setForm({ ...form, videoUrl: e.target.value })} />
-      <textarea className="input mb-2 min-h-[80px] text-sm" placeholder="Matnli material (ixtiyoriy)" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
-      <label className="flex cursor-pointer items-center gap-2 text-sm">
-        <input type="checkbox" checked={form.isFreePreview} onChange={(e) => setForm({ ...form, isFreePreview: e.target.checked })} className="h-4 w-4 rounded text-primary focus:ring-primary" />
-        Bepul ko'rish (preview)
-      </label>
 
-      {/* Materiallar bo'limi — faqat saqlangan darsda */}
-      <div className="mt-3 border-t border-line pt-3">
-        <p className="mb-2 text-xs font-semibold uppercase text-muted">Qo'shimcha materiallar (video / PDF)</p>
-        {lesson ? (
-          <MaterialsManager lessonId={lesson.id} materials={materials} setMaterials={setMaterials} />
-        ) : (
-          <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-muted">
-            Materiallar (video/PDF) qo'shish uchun avval darsni saqlang.
-          </p>
-        )}
-      </div>
+      {typing ? (
+        <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-muted">
+          Klaviatura mashqi kursi: darsda video va material bo'lmaydi.
+          Mashq matni darsni saqlagandan so'ng quyidagi "Yozish mashqi" bo'limida kiritiladi.
+        </p>
+      ) : (
+        <>
+          <input className="input mb-2 text-sm" placeholder="Asosiy video URL (YouTube/Vimeo/mp4) — ixtiyoriy" value={form.videoUrl} onChange={(e) => setForm({ ...form, videoUrl: e.target.value })} />
+          <textarea className="input mb-2 min-h-[80px] text-sm" placeholder="Matnli material (ixtiyoriy)" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
+            <input type="checkbox" checked={form.isFreePreview} onChange={(e) => setForm({ ...form, isFreePreview: e.target.checked })} className="h-4 w-4 rounded text-primary focus:ring-primary" />
+            Bepul ko'rish (preview)
+          </label>
+
+          {/* Materiallar bo'limi — faqat saqlangan darsda */}
+          <div className="mt-3 border-t border-line pt-3">
+            <p className="mb-2 text-xs font-semibold uppercase text-muted">Qo'shimcha materiallar (video / PDF)</p>
+            {lesson ? (
+              <MaterialsManager lessonId={lesson.id} materials={materials} setMaterials={setMaterials} />
+            ) : (
+              <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-muted">
+                Materiallar (video/PDF) qo'shish uchun avval darsni saqlang.
+              </p>
+            )}
+          </div>
+        </>
+      )}
 
       <div className="mt-3 flex gap-2">
         <button onClick={save} disabled={saving} className="btn-primary py-1.5 text-sm">

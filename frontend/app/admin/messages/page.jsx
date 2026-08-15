@@ -112,7 +112,7 @@ export default function AdminMessagesPage() {
           {result.email && <span className="text-indigo-600">· email: {result.email.mocked ? 'mock (log)' : 'yuborildi'} ({result.email.attempted} ta)</span>}
           {result.telegram && (
             <span className="text-indigo-600">
-              · Telegram: {result.telegram.sent} ta yuborildi
+              · Telegram: {result.telegram.queued} ta navbatga qo'yildi
               {result.telegram.skipped > 0 && `, ${result.telegram.skipped} ta hisobini ulamagan`}
             </span>
           )}

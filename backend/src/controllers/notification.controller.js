@@ -7,12 +7,8 @@ const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 const { assertCourseAccess } = require('../utils/courseAccess');
 const { sendMail } = require('../utils/mailer');
-const { sendMessage } = require('../telegram/bot');
 const { formatTelegram } = require('../utils/notify');
-
-// Telegram sekundiga ~30 xabarni qabul qiladi — shu hajmda bo'lib yuboramiz
-const TG_CHUNK = 25;
-const sleep = (ms) => new Promise((r) => { setTimeout(r, ms); });
+const { enqueueMany } = require('../jobs/telegramQueue');
 
 const sendSchema = z.object({
   mode: z.enum(['users', 'course', 'all']),
@@ -90,25 +86,19 @@ const send = asyncHandler(async (req, res) => {
   if (recipients.length === 0) throw ApiError.badRequest('Qabul qiluvchilar topilmadi');
 
   // Telegram (best-effort). Faqat hisobini ulaganlarga ketadi.
-  // Telegram sekundiga ~30 xabar qabul qiladi — shuning uchun bo'lib yuboramiz.
+  //
+  // Xabarlar navbatga qo'yiladi (jobs/telegramQueue): admin javobni kutib
+  // turmaydi, tezlik chegarasi saqlanadi va uzilishda qayta urinib ko'riladi.
   let telegramInfo = null;
-  const tgSent = new Set();
+  const tgQueued = new Set();
   if (data.sendTelegram) {
     const withTg = recipients.filter((r) => r.telegramChatId);
     const text = formatTelegram({ title: data.title, body: data.body });
-    for (let i = 0; i < withTg.length; i += TG_CHUNK) {
-      const chunk = withTg.slice(i, i + TG_CHUNK);
-      /* eslint-disable no-await-in-loop */
-      const results = await Promise.all(
-        chunk.map((r) => sendMessage(r.telegramChatId, text))
-      );
-      chunk.forEach((r, idx) => { if (results[idx].sent) tgSent.add(r.id); });
-      if (i + TG_CHUNK < withTg.length) await sleep(1000);
-      /* eslint-enable no-await-in-loop */
-    }
+    await enqueueMany(withTg.map((r) => ({ chatId: r.telegramChatId, text })));
+    withTg.forEach((r) => tgQueued.add(r.id));
     telegramInfo = {
       attempted: withTg.length,
-      sent: tgSent.size,
+      queued: withTg.length,
       skipped: recipients.length - withTg.length, // hisobini ulamaganlar
     };
   }
@@ -134,7 +124,7 @@ const send = asyncHandler(async (req, res) => {
       title: data.title,
       body: data.body,
       emailSent: !!data.sendEmail,
-      telegramSent: tgSent.has(r.id),
+      telegramSent: tgQueued.has(r.id),
     })),
   });
 

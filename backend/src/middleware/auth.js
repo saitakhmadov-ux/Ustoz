@@ -28,6 +28,11 @@ const protect = asyncHandler(async (req, res, next) => {
   } catch (e) {
     throw ApiError.unauthorized('Token yaroqsiz yoki muddati o\'tgan');
   }
+  // Maxsus maqsadli token (masalan scope='verify') seans tokeni emas —
+  // u faqat o'zi mo'ljallangan endpointda ishlaydi, API ni ochmaydi.
+  if (decoded.scope) {
+    throw ApiError.unauthorized('Token yaroqsiz yoki muddati o\'tgan');
+  }
   const user = await prisma.user.findUnique({
     where: { id: decoded.id },
     select: { id: true, fullName: true, email: true, role: true, avatarUrl: true },
@@ -45,6 +50,7 @@ const optionalAuth = asyncHandler(async (req, res, next) => {
   if (token) {
     try {
       const decoded = verifyToken(token);
+      if (decoded.scope) throw new Error('maxsus maqsadli token');
       const user = await prisma.user.findUnique({
         where: { id: decoded.id },
         select: { id: true, fullName: true, email: true, role: true, avatarUrl: true },

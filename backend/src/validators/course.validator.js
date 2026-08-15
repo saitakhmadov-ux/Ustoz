@@ -23,6 +23,8 @@ const courseSchema = z.object({
   accessMonths: z.number().int().min(1, 'Kamida 1 oy').max(60, 'Ko\'pi bilan 60 oy').optional().nullable(),
   // Kod maydoni (dasturlash kursi) yoqilganmi
   codePlayground: z.boolean().optional(),
+  // Kurs turi: odatiy (video/test) yoki klaviatura mashqi
+  kind: z.enum(['STANDARD', 'TYPING']).optional(),
   categoryId: z.string({ required_error: 'Kategoriya tanlanishi shart' }).min(1),
   published: z.boolean().optional(),
   instructorId: z.string().min(1).optional().nullable().or(z.literal('')),

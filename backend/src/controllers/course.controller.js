@@ -17,6 +17,7 @@ const cardSelect = {
   price: true,
   isFree: true,
   level: true,
+  kind: true, // katalogda "Klaviatura mashqi" belgisini ko'rsatish uchun
   createdAt: true,
   category: { select: { name: true, slug: true } },
   _count: { select: { enrollments: true } },
@@ -163,6 +164,7 @@ const create = asyncHandler(async (req, res) => {
       level: data.level,
       accessMonths: data.accessMonths ?? null,
       codePlayground: data.codePlayground ?? false,
+      kind: data.kind || 'STANDARD',
       categoryId: data.categoryId,
       published: data.published ?? false,
       instructorId: data.instructorId || null,
@@ -207,6 +209,7 @@ const update = asyncHandler(async (req, res) => {
       ...(data.instructorId !== undefined && { instructorId: data.instructorId || null }),
       ...(data.accessMonths !== undefined && { accessMonths: data.accessMonths ?? null }),
       ...(data.codePlayground !== undefined && { codePlayground: data.codePlayground }),
+      ...(data.kind !== undefined && { kind: data.kind }),
     });
   }
 

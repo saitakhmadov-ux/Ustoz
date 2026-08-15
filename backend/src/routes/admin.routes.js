@@ -51,6 +51,10 @@ router.put('/content', adminOnly, settings.updateContent);
 router.get('/about', adminOnly, settings.getAbout);
 router.put('/about', adminOnly, settings.updateAbout);
 
+// "Kontaktlar" sahifasi mazmuni
+router.get('/contact', adminOnly, settings.getContact);
+router.put('/contact', adminOnly, settings.updateContact);
+
 // Ustoz AI boshqaruvi + analitika (faqat bosh admin)
 router.get('/ai/config', adminOnly, aiAdmin.getConfig);
 router.put('/ai/config', adminOnly, aiAdmin.updateConfig);
@@ -143,6 +147,10 @@ router.delete('/sections/:id', adminOrInstructor, cur.deleteSection);
 router.post('/lessons', adminOrInstructor, cur.createLesson);
 router.put('/lessons/:id', adminOrInstructor, cur.updateLesson);
 router.delete('/lessons/:id', adminOrInstructor, cur.deleteLesson);
+
+// Klaviatura mashqi (TYPING kurslaridagi darslar uchun)
+router.put('/lessons/:id/typing', adminOrInstructor, cur.saveDrill);
+router.delete('/lessons/:id/typing', adminOrInstructor, cur.deleteDrill);
 
 // Test savollari
 router.post('/questions', adminOrInstructor, cur.createQuestion);

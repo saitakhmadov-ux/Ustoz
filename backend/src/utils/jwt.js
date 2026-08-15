@@ -2,8 +2,9 @@
 const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 
-function signToken(payload) {
-  return jwt.sign(payload, env.jwt.secret, { expiresIn: env.jwt.expiresIn });
+// options bilan muddatni qisqartirish mumkin (masalan tasdiqlash uchun 30 daqiqa)
+function signToken(payload, options = {}) {
+  return jwt.sign(payload, env.jwt.secret, { expiresIn: env.jwt.expiresIn, ...options });
 }
 
 function verifyToken(token) {

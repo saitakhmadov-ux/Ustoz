@@ -10,4 +10,8 @@ router.post('/:lessonId/complete', protect, ctrl.completeLesson);
 router.post('/:lessonId/quiz/start', protect, ctrl.startQuiz);
 router.post('/:lessonId/quiz', protect, ctrl.submitQuiz);
 
+// Klaviatura mashqi (TYPING kurslari)
+router.post('/:lessonId/typing/start', protect, ctrl.startTyping);
+router.post('/:lessonId/typing', protect, ctrl.submitTyping);
+
 module.exports = router;

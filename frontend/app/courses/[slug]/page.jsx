@@ -119,7 +119,10 @@ function CourseDetailInner() {
                 </button>
                 <ul className="mt-5 space-y-2 text-sm text-muted">
                   <li className="flex items-center gap-2"><Clock size={16} className="text-primary" /> Foydalanish muddati: <span className="font-medium text-ink">{courseAccessMonthsLabel(course)}</span></li>
-                  <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-primary" /> {course.lessonCount} ta video dars</li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-primary" />
+                    {course.lessonCount} ta {course.kind === 'TYPING' ? 'yozish mashqi' : 'video dars'}
+                  </li>
                   <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-primary" /> Yakuniy sertifikat</li>
                 </ul>
                 <p className="mt-3 text-xs text-muted">

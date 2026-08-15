@@ -29,11 +29,19 @@ function computeExpiry(months, from = new Date()) {
   return d;
 }
 
-// Berilgan darsning vazifalari ro'yxati (video, matn, materiallar, test).
-// lesson obyekti: { id, videoUrl, content, materials:[{id,type,title}], questions:[...] }
+// Berilgan darsning vazifalari ro'yxati (video, matn, materiallar, test, mashq).
+// lesson obyekti: { id, videoUrl, content, materials:[{id,type,title}], questions:[...],
+//                   typingDrill: {...} | null }
 // Hech qanday komponent bo'lmasa — bitta sun'iy "done" vazifasi qaytadi.
+//
+// DIQQAT: bu funksiyaga uzatiladigan dars Prisma'dan `typingDrill` bilan
+// o'qilishi shart (aks holda klaviatura mashqi vazifasi ko'rinmay qolib,
+// progress foizi noto'g'ri chiqadi).
 function lessonTasks(lesson) {
   const tasks = [];
+  if (lesson.typingDrill) {
+    tasks.push({ key: `typing:${lesson.id}`, type: 'TYPING', label: 'Yozish mashqini bajarish' });
+  }
   if (lesson.videoUrl) {
     tasks.push({ key: `video:${lesson.id}`, type: 'VIDEO', label: 'Asosiy videoni ko\'rish' });
   }
@@ -57,10 +65,12 @@ function lessonTasks(lesson) {
   return tasks;
 }
 
-// Vazifa kaliti — sun'iy testdan tashqari qo'lda belgilanishi mumkinmi?
-// Testning kaliti faqat testdan o'tilganda (submitQuiz) belgilanadi.
+// Vazifa kaliti qo'lda belgilanishi mumkinmi?
+// Test (submitQuiz) va yozish mashqi (submitTyping) kalitlari faqat haqiqatan
+// bajarilganda belgilanadi — "bajardim" tugmasi bilan emas.
 function isManualTaskKey(key) {
-  return !String(key).startsWith('quiz:');
+  const k = String(key);
+  return !k.startsWith('quiz:') && !k.startsWith('typing:');
 }
 
 // ---------- Test (quiz) yordamchilari ----------

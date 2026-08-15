@@ -23,6 +23,7 @@ const BOT_COMMANDS = [
   { command: 'sertifikatlarim', description: 'Olingan sertifikatlarim' },
   { command: 'ustoz', description: 'AI Ustozdan savol so\'rash' },
   { command: 'tugat', description: 'AI suhbatini yakunlash' },
+  { command: 'sozlamalar', description: 'Qaysi xabarlar kelsin' },
   { command: 'yordam', description: 'Buyruqlar ro\'yxati' },
   { command: 'uzish', description: 'Hisobni botdan uzish' },
 ];
@@ -152,6 +153,14 @@ async function handleWebhook(req, res) {
   return state.bot.handleUpdate(req.body, res);
 }
 
+// t.me havolasini qurish uchun bot nomi. Bot sozlanmagan yoki o'chirilgan
+// bo'lsa null — chaqiruvchi tugmani ko'rsatmasligi kerak.
+async function linkBotUsername() {
+  const cfg = await getTelegramConfig();
+  if (!cfg.token || !cfg.enabled) return null;
+  return cfg.botUsername || state.username || null;
+}
+
 // Bitta xabar yuborish. Foydalanuvchi botni bloklagan bo'lsa xato qaytadi,
 // ammo ilova to'xtamaydi.
 async function sendMessage(chatId, text, extra = {}) {
@@ -165,10 +174,26 @@ async function sendMessage(chatId, text, extra = {}) {
     });
     return { sent: true };
   } catch (err) {
-    return { sent: false, error: err.message };
+    // Telegram javobidan qayta urinish uchun kerakli tafsilotlar:
+    //   429 -> parameters.retry_after (necha soniyadan keyin)
+    //   403 -> bloklangan/o'chirilgan chat (qayta urinish foydasiz)
+    const response = err.response || {};
+    return {
+      sent: false,
+      error: err.message,
+      code: response.error_code || null,
+      retryAfter: response.parameters?.retry_after || null,
+    };
   }
 }
 
 module.exports = {
-  startBot, stopBot, restartBot, getStatus, handleWebhook, sendMessage, WEBHOOK_PATH,
+  startBot,
+  stopBot,
+  restartBot,
+  getStatus,
+  handleWebhook,
+  sendMessage,
+  linkBotUsername,
+  WEBHOOK_PATH,
 };

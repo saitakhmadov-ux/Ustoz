@@ -14,7 +14,7 @@ export default function CourseForm({ initial, onSaved }) {
   const [form, setForm] = useState({
     title: '', description: '', thumbnail: '', authorName: '',
     price: 0, isFree: false, level: 'BEGINNER', accessMonths: '', categoryId: '', instructorId: '',
-    codePlayground: false,
+    codePlayground: false, kind: 'STANDARD',
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -41,6 +41,7 @@ export default function CourseForm({ initial, onSaved }) {
         categoryId: initial.categoryId || initial.category?.id || '',
         instructorId: initial.instructorId || initial.instructor?.id || '',
         codePlayground: initial.codePlayground || false,
+        kind: initial.kind || 'STANDARD',
       });
     }
   }, [initial]);
@@ -98,6 +99,21 @@ export default function CourseForm({ initial, onSaved }) {
           <label className="label">Muallif</label>
           <input className="input" value={form.authorName} onChange={(e) => setForm({ ...form, authorName: e.target.value })} required />
         </div>
+
+        {isAdmin && (
+          <div className="md:col-span-2">
+            <label className="label">Kurs turi</label>
+            <select className="input" value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })}>
+              <option value="STANDARD">Odatiy kurs (video, matn, test)</option>
+              <option value="TYPING">Klaviatura mashqi (yozish darslari)</option>
+            </select>
+            <p className="mt-1 text-xs text-muted">
+              {form.kind === 'TYPING'
+                ? 'Har bir dars — yozish mashqi. O\'quvchi matnni yozib chiqadi, tezlik va aniqlik o\'lchanadi.'
+                : 'Darslarda video, matnli material, qo\'shimcha fayllar va testlar bo\'ladi.'}
+            </p>
+          </div>
+        )}
 
         {isAdmin && (
           <div>
@@ -162,10 +178,13 @@ export default function CourseForm({ initial, onSaved }) {
               <input type="checkbox" checked={form.isFree} onChange={(e) => setForm({ ...form, isFree: e.target.checked })} className="h-4 w-4 rounded text-primary focus:ring-primary" />
               Bepul kurs
             </label>
-            <label className="flex cursor-pointer items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.codePlayground} onChange={(e) => setForm({ ...form, codePlayground: e.target.checked })} className="h-4 w-4 rounded text-emerald-600 focus:ring-emerald-500" />
-              Kod maydoni (dasturlash kursi) — o'quvchilar kod yozib sinab ko'ra oladi
-            </label>
+            {/* Kod maydoni klaviatura kursida ma'nosiz — ko'rsatmaymiz */}
+            {form.kind !== 'TYPING' && (
+              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.codePlayground} onChange={(e) => setForm({ ...form, codePlayground: e.target.checked })} className="h-4 w-4 rounded text-emerald-600 focus:ring-emerald-500" />
+                Kod maydoni (dasturlash kursi) — o'quvchilar kod yozib sinab ko'ra oladi
+              </label>
+            )}
           </div>
         )}
       </div>

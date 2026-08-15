@@ -55,6 +55,9 @@ export async function apiFetch(path, { method = 'GET', body, auth = true, header
     const err = new Error(message);
     err.status = res.status;
     if (data?.code) err.code = data.code;
+    // Xatolik bilan kelgan qo'shimcha maydonlar (masalan EMAIL_NOT_VERIFIED
+    // javobidagi pendingToken) yo'qolib ketmasin
+    err.data = data || null;
     throw err;
   }
 

@@ -32,6 +32,7 @@ export default function Navbar() {
     { href: '/courses', label: 'Kurslar' },
     { href: '/categories', label: 'Kategoriyalar' },
     { href: '/about', label: 'Biz haqimizda' },
+    { href: '/contact', label: 'Kontaktlar' },
   ];
 
   const handleLogout = () => {

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Users, BarChart, PlayCircle } from 'lucide-react';
+import { Users, BarChart, PlayCircle, Keyboard } from 'lucide-react';
 import { LEVELS, formatPrice } from '@/lib/constants';
 import { RatingBadge } from '@/components/Stars';
 import TiltCard from '@/components/TiltCard';
@@ -36,6 +36,11 @@ export default function CourseCard({ course }) {
         <span className={`badge absolute left-3 top-3 ${levelColors[course.level] || levelColors.BEGINNER}`}>
           <BarChart size={12} /> {LEVELS[course.level] || course.level}
         </span>
+        {course.kind === 'TYPING' && (
+          <span className="badge absolute right-3 top-3 bg-white/90 text-indigo-700">
+            <Keyboard size={12} /> Klaviatura mashqi
+          </span>
+        )}
       </div>
 
       {/* Kontent */}

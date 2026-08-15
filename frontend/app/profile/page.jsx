@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2, User, KeyRound, Send, Link2, Unlink, CheckCircle2 } from 'lucide-react';
+import { Loader2, User, KeyRound, Send, Link2, Unlink, CheckCircle2, Bell } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import RequireAuth from '@/components/RequireAuth';
@@ -81,6 +81,86 @@ function TelegramCard() {
           </p>
         </>
       )}
+    </div>
+  );
+}
+
+// Qaysi hodisalar Telegram'ga yuborilishi. Sayt ichidagi xabarlar ro'yxati
+// baribir to'ladi — bu sozlama faqat botga ta'sir qiladi (botdagi /sozlamalar
+// bilan bir xil joyda saqlanadi).
+function NotifyPrefsCard() {
+  const [data, setData] = useState(null);
+  const [off, setOff] = useState([]);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [err, setErr] = useState('');
+
+  useEffect(() => {
+    api.get('/me/notify-prefs')
+      .then((res) => { setData(res); setOff(res.off || []); })
+      .catch(() => setData(null));
+  }, []);
+
+  const toggle = (key) => {
+    setMsg('');
+    setOff((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
+  };
+
+  const save = async () => {
+    setSaving(true); setMsg(''); setErr('');
+    try {
+      await api.put('/me/notify-prefs', { off });
+      setMsg('Bildirishnoma sozlamalari saqlandi');
+    } catch (e) {
+      setErr(e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (!data) return null;
+
+  return (
+    <div className="card mt-6 p-6">
+      <div className="mb-1 flex items-center gap-2 font-semibold">
+        <Bell size={18} /> Bildirishnomalar
+      </div>
+      <p className="mb-4 text-sm text-muted">
+        {data.telegramLinked
+          ? 'Qaysi xabarlar Telegram botga kelishini tanlang.'
+          : 'Telegram ulanmagan — sozlama Telegram\'ni ulaganingizda kuchga kiradi.'}
+      </p>
+
+      {msg && <div className="mb-4 rounded-xl bg-emerald-50 px-4 py-2.5 text-sm text-emerald-700">{msg}</div>}
+      {err && <div className="mb-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700">{err}</div>}
+
+      <ul className="divide-y divide-line">
+        {data.events.map((e) => (
+          <li key={e.key} className="flex items-start justify-between gap-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-ink">{e.label}</p>
+              <p className="text-xs text-muted">{e.description}</p>
+            </div>
+            <label className="flex shrink-0 cursor-pointer items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                className="size-4 accent-indigo-600"
+                checked={!off.includes(e.key)}
+                onChange={() => toggle(e.key)}
+              />
+              <span className="text-muted">{off.includes(e.key) ? 'O\'chiq' : 'Yoniq'}</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+
+      <button onClick={save} disabled={saving} className="btn-primary mt-4 disabled:opacity-50">
+        {saving ? <Loader2 size={16} className="animate-spin" /> : <Bell size={16} />} Saqlash
+      </button>
+
+      <p className="mt-3 text-xs text-muted">
+        O'chirilgan xabarlar ham saytdagi "Xabarlar" bo'limida saqlanadi.
+      </p>
     </div>
   );
 }
@@ -174,6 +254,8 @@ function ProfileInner() {
       </form>
 
       <TelegramCard />
+
+      <NotifyPrefsCard />
     </div>
   );
 }

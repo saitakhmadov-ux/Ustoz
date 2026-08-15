@@ -5,6 +5,30 @@ import { api, setToken, clearToken } from './api';
 
 const AuthContext = createContext(null);
 
+// Tasdiqlash kaliti (pendingToken) — ro'yxatdan o'tganda yoki tasdiqlanmagan
+// hisob bilan kirganda serverdan keladi. U bilan Telegram orqali tasdiqlash
+// havolasi olinadi. sessionStorage: faqat shu oyna uchun, yopilsa yo'qoladi.
+const PENDING_KEY = 'ustoz_pending_verify';
+
+export function savePendingToken(email, token) {
+  if (typeof window === 'undefined' || !token) return;
+  sessionStorage.setItem(PENDING_KEY, JSON.stringify({ email, token }));
+}
+
+// Faqat o'sha emailga tegishli bo'lsa qaytaradi — boshqa hisobga aralashmasin
+export function readPendingToken(email) {
+  if (typeof window === 'undefined') return null;
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(PENDING_KEY) || 'null');
+    if (saved?.token && (!email || saved.email === email)) return saved.token;
+  } catch { /* buzilgan qiymat — e'tiborsiz */ }
+  return null;
+}
+
+export function clearPendingToken() {
+  if (typeof window !== 'undefined') sessionStorage.removeItem(PENDING_KEY);
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,19 +65,38 @@ export function AuthProvider({ children }) {
 
   // Kirish
   const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password }, { auth: false });
-    return applySession(res);
+    try {
+      const res = await api.post('/auth/login', { email, password }, { auth: false });
+      clearPendingToken();
+      return applySession(res);
+    } catch (err) {
+      // Parol to'g'ri, ammo hisob tasdiqlanmagan — server tasdiqlash kalitini
+      // ham qaytaradi, shuni saqlab qo'yamiz (Telegram orqali tasdiqlash uchun)
+      if (err.code === 'EMAIL_NOT_VERIFIED' && err.data?.pendingToken) {
+        savePendingToken(err.data.email || email, err.data.pendingToken);
+      }
+      throw err;
+    }
   };
 
-  // Ro'yxatdan o'tish — token BERMAYDI. Avval email tasdiqlanishi kerak,
-  // shuning uchun javobda { needsVerification, email } qaytadi.
+  // Ro'yxatdan o'tish — token BERMAYDI. Avval hisob tasdiqlanishi kerak,
+  // shuning uchun javobda { needsVerification, email, pendingToken } qaytadi.
   const register = async (payload) => {
-    return api.post('/auth/register', payload, { auth: false });
+    const res = await api.post('/auth/register', payload, { auth: false });
+    savePendingToken(res.email || payload.email, res.pendingToken);
+    return res;
   };
 
   // Emailga kelgan kodni tasdiqlash — shu yerda seans boshlanadi
   const verifyEmail = async (email, code) => {
     const res = await api.post('/auth/verify-email', { email, code }, { auth: false });
+    clearPendingToken();
+    return applySession(res);
+  };
+
+  // Telegram orqali tasdiqlanganda ham seans shu ko'rinishda boshlanadi
+  const applyAuthResponse = (res) => {
+    clearPendingToken();
     return applySession(res);
   };
 
@@ -80,6 +123,7 @@ export function AuthProvider({ children }) {
     login,
     register,
     verifyEmail,
+    applyAuthResponse,
     resetPassword,
     logout,
     refresh: loadUser,

@@ -52,6 +52,26 @@ enum VerificationPurpose {
   PASSWORD_RESET // parolni tiklash
 }
 
+// Kurs turi. Mazmuni va o'quv sahifasi shunga qarab o'zgaradi.
+enum CourseKind {
+  STANDARD // video, matn, material va testlardan iborat odatiy kurs
+  TYPING // klaviatura mashqi: har dars — yozib chiqiladigan matn
+}
+
+// Klaviatura mashqining turi (faqat ko'rinish va maslahat matni uchun)
+enum TypingMode {
+  KEYS // alohida harflar/bo'g'inlar: "asdf jkl; fj dk"
+  WORDS // so'zlar ro'yxati
+  TEXT // yaxlit matn (jumlalar)
+  TIMED // vaqtga qarshi: matn takrorlanadi, davomiylik belgilangan
+}
+
+// Telegram ulash havolasining maqsadi
+enum TelegramLinkPurpose {
+  LINK // mavjud (tasdiqlangan) hisobni botga ulash
+  VERIFY // ro'yxatdan o'tishni Telegram orqali tasdiqlash — ulash bilan birga
+}
+
 // Ustoz hisobiga o'tkazma holati
 enum PayoutStatus {
   PENDING // rejalashtirilgan, hali o'tkazilmagan
@@ -90,6 +110,11 @@ model User {
   progressPingAt  DateTime? // oxirgi eslatma vaqti — kuniga bittadan oshmasligi uchun
   progressPingOff Boolean   @default(false) // foydalanuvchi /kunlik bilan o'chirgan
 
+  // Foydalanuvchi o'chirib qo'ygan bildirishnoma turlari (utils/notifyPrefs.js
+  // dagi kalitlar). Bo'sh = hammasi yoqilgan. Faqat Telegram xabariga ta'sir
+  // qiladi — sayt ichidagi xabarlar tarixi baribir saqlanadi.
+  notifyOff String[] @default([])
+
   verificationCodes VerificationCode[]
   telegramLinks     TelegramLink[]
 
@@ -99,6 +124,7 @@ model User {
   progress     LessonProgress[]
   taskProgress TaskProgress[] // vazifa-darajali progress
   quizAttempts QuizAttempt[] // test urinishlari (kuldown)
+  typingAttempts TypingAttempt[] // klaviatura mashqi urinishlari
   taughtCourses Course[] @relation("CourseInstructor") // ustoz sifatida biriktirilgan kurslar
 
   notifications     Notification[] @relation("UserNotifications") // qabul qilingan xabarlar
@@ -149,8 +175,33 @@ model TelegramLink {
   usedAt    DateTime?
   createdAt DateTime  @default(now())
 
+  // VERIFY bo'lsa: bot havolani ochganda emailni ham tasdiqlangan deb belgilaydi.
+  purpose TelegramLinkPurpose @default(LINK)
+  // Brauzer "tasdiqlandimi?" deb shu kalit orqali so'raydi. Ochiq saqlanmaydi
+  // (sha256) — kalitni bilgan odamgina natijani (seans tokenini) ola oladi.
+  pollHash String? @unique
+
   @@index([userId])
   @@index([expiresAt])
+}
+
+// Telegram xabarlari navbati (outbox).
+//
+// Nega kerak: ommaviy yuborishda Telegram sekundiga ~30 xabarni qabul qiladi va
+// vaqtincha 429 qaytaradi. Xabar shu jadvalga yoziladi, `jobs/telegramQueue.js`
+// esa uni tezlikni saqlagan holda yuboradi va xato bo'lsa qayta uradi.
+// Muvaffaqiyatli yuborilgan qator o'chiriladi — jadval o'smaydi.
+model TelegramOutbox {
+  id        String    @id @default(cuid())
+  chatId    String
+  text      String
+  extra     Json? // reply_markup va boshqa Telegram parametrlari
+  attempts  Int       @default(0)
+  nextTryAt DateTime  @default(now()) // shu vaqtdan keyin urinib ko'riladi
+  lastError String?
+  createdAt DateTime  @default(now())
+
+  @@index([nextTryAt])
 }
 
 model Category {
@@ -180,6 +231,9 @@ model Course {
   // Kod maydoni (playground) yoqilganmi — dasturlash kurslari uchun. Admin belgilaydi.
   // false bo'lsa foydalanuvchiga "bu kursda ishlamaydi" xabari ko'rsatiladi.
   codePlayground Boolean @default(false)
+  // Kurs turi. TYPING bo'lsa darslarda video/test o'rniga klaviatura mashqi
+  // bo'ladi va o'quv sahifasi mashq pleerini chizadi.
+  kind CourseKind @default(STANDARD)
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -236,13 +290,25 @@ model Lesson {
   quizTimePerQ      Int @default(20) // har savolga soniya
   quizCooldownHours Int @default(3) // yiqilganda qayta urinishgacha soat
 
+  createdAt DateTime @default(now())
+  // Kurs o'quvchilariga "yangi dars qo'shildi" xabari yuborilgan vaqt.
+  // null = hali xabar berilmagan (jobs/newLessons.js buni qidiradi).
+  // Dars yaratilishi bilan emas, biroz kechikib xabar beriladi — ustoz darsni
+  // to'ldirib ulgursin va bir nechta dars bitta xabarga jamlansin.
+  announcedAt DateTime?
+
   questions    QuizQuestion[]
   progress     LessonProgress[]
   taskProgress TaskProgress[]
   materials    LessonMaterial[]
   quizAttempts QuizAttempt[]
 
+  // Klaviatura mashqi (faqat TYPING kurslarida bo'ladi)
+  typingDrill    TypingDrill?
+  typingAttempts TypingAttempt[]
+
   @@index([sectionId])
+  @@index([announcedAt, createdAt])
 }
 
 // Darsga biriktirilgan qo'shimcha materiallar (video yoki PDF).
@@ -287,6 +353,53 @@ model QuizAttempt {
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@index([userId, lessonId])
+}
+
+// Darsning klaviatura mashqi — yoziladigan matn va o'tish maqsadlari.
+// Dars bilan 1:1: drill bo'lsa, dars "yozish mashqi" darsiga aylanadi va
+// `lessonTasks()` unga `typing:<lessonId>` vazifasini beradi.
+model TypingDrill {
+  id       String @id @default(cuid())
+  lessonId String @unique
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  mode    TypingMode @default(TEXT)
+  content String     @db.Text // yoziladigan matn (KEYS/WORDS uchun probel bilan ajratilgan)
+
+  // O'tish sharti: ikkalasiga ham yetish kerak. Qayta urinish cheksiz.
+  targetWpm      Int @default(15)
+  targetAccuracy Int @default(95)
+
+  // TIMED rejimida mashq shuncha soniya davom etadi (matn takrorlanadi)
+  durationSec  Int?
+  showKeyboard Boolean @default(true) // ekrandagi klaviatura ko'rsatilsinmi
+  hint         String? // "Barmoqlaringizni asdf—jkl ustiga qo'ying"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Klaviatura mashqi urinishi. lessonId null bo'lsa — erkin mashq
+// (progressga ta'sir qilmaydi, faqat shaxsiy rekord uchun saqlanadi).
+model TypingAttempt {
+  id       String  @id @default(cuid())
+  userId   String
+  lessonId String?
+
+  wpm        Int // so'z/daqiqa (to'g'ri belgilar / 5 / daqiqa)
+  accuracy   Int // foiz (0..100)
+  chars      Int // yozilgan belgilar soni
+  errors     Int // xato belgilar soni
+  durationMs Int
+  passed     Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([userId, lessonId])
+  @@index([userId, createdAt])
 }
 
 model Enrollment {

@@ -18,6 +18,8 @@ async function computeProgress(userId, courseId) {
       content: true,
       materials: { select: { id: true, type: true } },
       questions: { select: { id: true } },
+      // Klaviatura mashqi ham vazifa sanaladi — lessonTasks() shu maydonga qaraydi
+      typingDrill: { select: { id: true } },
     },
   });
   const totalLessons = lessons.length;

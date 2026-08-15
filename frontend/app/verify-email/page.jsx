@@ -2,18 +2,22 @@
 
 // Ro'yxatdan o'tgandan keyingi qadam: emailga kelgan 6 xonali kodni kiritish.
 // Kod to'g'ri bo'lsa seans shu yerda boshlanadi.
+//
+// Ikkinchi yo'l — Telegram (TelegramVerify): botda "Start" bosilsa hisob
+// tasdiqlanadi va sahifa o'zi kirib ketadi. Email kelmasa shu yo'l qoladi.
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Loader2, MailCheck } from 'lucide-react';
 import { api } from '@/lib/api';
-import { useAuth } from '@/lib/auth';
+import { useAuth, readPendingToken } from '@/lib/auth';
 import AuthShell from '@/components/AuthShell';
+import TelegramVerify from '@/components/TelegramVerify';
 import { CodeInput, useResendTimer, useQueryParam } from '@/components/auth-bits';
 
 export default function VerifyEmailPage() {
-  const { verifyEmail } = useAuth();
+  const { verifyEmail, applyAuthResponse } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useQueryParam('email');
   const [code, setCode] = useState('');
@@ -21,7 +25,19 @@ export default function VerifyEmailPage() {
   const [info, setInfo] = useState('');
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
+  const [pendingToken, setPendingToken] = useState(null);
   const timer = useResendTimer(60);
+
+  // Tasdiqlash kaliti sessionStorage da (ro'yxatdan o'tish yoki kirish paytida
+  // saqlangan). Bo'lmasa Telegram yo'li ko'rsatilmaydi — faqat email kodi.
+  useEffect(() => {
+    setPendingToken(readPendingToken(email));
+  }, [email]);
+
+  const finish = (res) => {
+    const user = applyAuthResponse(res);
+    router.push(user.role === 'ADMIN' ? '/admin' : '/dashboard');
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -103,6 +119,10 @@ export default function VerifyEmailPage() {
           {resending && <Loader2 size={15} className="animate-spin" />}
           {timer.ready ? 'Kodni qayta yuborish' : `Qayta yuborish (${timer.left} s)`}
         </button>
+
+        {pendingToken && (
+          <TelegramVerify pendingToken={pendingToken} onDone={finish} />
+        )}
       </form>
     </AuthShell>
   );

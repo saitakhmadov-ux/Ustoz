@@ -14,6 +14,8 @@ router.get('/hero', settings.getHero);
 router.get('/content', settings.getContent);
 // "Biz haqimizda" sahifasi mazmuni (ommaviy)
 router.get('/about', settings.getAbout);
+// "Kontaktlar" sahifasi mazmuni (ommaviy)
+router.get('/contact', settings.getContact);
 // Bot himoyasining ommaviy kaliti — formalar CAPTCHA vidjetini shundan oladi
 router.get('/security', system.publicSecurity);
 

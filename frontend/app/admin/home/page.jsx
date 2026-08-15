@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
-  Upload, Trash2, Loader2, Image as ImageIcon, Save, Info, Type, LayoutTemplate, Building2,
+  Upload, Trash2, Loader2, Image as ImageIcon, Save, Info, Type, LayoutTemplate,
+  Building2, Phone,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { fileUrl } from '@/lib/constants';
 import { Spinner, ErrorState } from '@/components/ui';
 import AboutEditor from '@/components/admin/AboutEditor';
+import ContactEditor from '@/components/admin/ContactEditor';
 
 const MAX_IMAGES = 5;
 
@@ -29,7 +31,9 @@ export default function AdminHomePage() {
         <span className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-100 text-primary"><LayoutTemplate size={22} /></span>
         <div>
           <h1 className="text-2xl">Sayt sahifalari</h1>
-          <p className="text-sm text-muted">Bosh sahifadagi rasmlar, matnlar va "Biz haqimizda" sahifasi.</p>
+          <p className="text-sm text-muted">
+            Bosh sahifadagi rasmlar, matnlar hamda "Biz haqimizda" va "Kontaktlar" sahifalari.
+          </p>
         </div>
       </div>
 
@@ -38,6 +42,7 @@ export default function AdminHomePage() {
           { id: 'images', label: 'Rasmlar', icon: ImageIcon },
           { id: 'texts', label: 'Matnlar', icon: Type },
           { id: 'about', label: 'Biz haqimizda', icon: Building2 },
+          { id: 'contact', label: 'Kontaktlar', icon: Phone },
         ].map((t) => {
           const Icon = t.icon;
           return (
@@ -57,6 +62,7 @@ export default function AdminHomePage() {
         {tab === 'images' && <ImagesTab />}
         {tab === 'texts' && <TextsTab />}
         {tab === 'about' && <AboutEditor />}
+        {tab === 'contact' && <ContactEditor />}
       </div>
     </div>
   );

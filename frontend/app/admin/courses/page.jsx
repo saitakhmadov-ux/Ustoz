@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Pencil, Trash2, Eye, EyeOff, ListTree } from 'lucide-react';
+import { Plus, Pencil, Trash2, Eye, EyeOff, ListTree, Keyboard } from 'lucide-react';
 import { api } from '@/lib/api';
 import { formatPrice, LEVELS } from '@/lib/constants';
 import { useAuth } from '@/lib/auth';
@@ -75,7 +75,14 @@ export default function AdminCoursesPage() {
                   {courses.map((c) => (
                     <tr key={c.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3">
-                        <p className="font-medium">{c.title}</p>
+                        <p className="flex items-center gap-2 font-medium">
+                          {c.title}
+                          {c.kind === 'TYPING' && (
+                            <span className="badge bg-indigo-50 text-indigo-700">
+                              <Keyboard size={12} /> Klaviatura
+                            </span>
+                          )}
+                        </p>
                         <p className="text-xs text-muted">{LEVELS[c.level]} · {c._count.sections} bo'lim · {c._count.enrollments} o'quvchi</p>
                       </td>
                       <td className="px-4 py-3 text-muted">{c.category?.name}</td>

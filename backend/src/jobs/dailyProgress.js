@@ -130,6 +130,7 @@ async function runOnce({ force = false } = {}) {
           content: true,
           materials: { select: { id: true, type: true } },
           questions: { select: { id: true } },
+          typingDrill: { select: { id: true } },
           section: { select: { courseId: true } },
         },
       }),

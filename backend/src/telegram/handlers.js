@@ -20,6 +20,7 @@ const {
   registerMentor, handleText, ustozCommand, tugatCommand, getSession,
 } = require('./mentor');
 const { registerOnboarding, welcome } = require('./onboarding');
+const { registerPrefs } = require('./prefs');
 
 // computeProgress ataylab shu yerda emas, ishlatilgan joyda yuklanadi:
 // controller -> utils/notify -> telegram/bot -> handlers halqasi hosil bo'lmasin
@@ -54,10 +55,11 @@ function help(user) {
       '',
       '<i>Tugmalar xabar maydoni ostida. Xohlasangiz buyruq ham yozsa bo\'ladi:</i>',
       '<code>/kurslar /kurslarim /sertifikatlarim /ustoz'
-      + `${isTeacher(user) ? ' /maosh /oquvchilarim' : ''} /yordam /uzish</code>`,
+      + `${isTeacher(user) ? ' /maosh /oquvchilarim' : ''} /sozlamalar /yordam /uzish</code>`,
       '',
       `📊 Tugatilmagan kurslaringiz bo'yicha kuniga bir marta eslatma keladi${
         user.progressPingOff ? ' <b>(hozir o\'chirilgan)</b>' : ''} — /kunlik`,
+      '🔔 Qaysi xabarlar kelishini tanlash — /sozlamalar',
     );
   }
 
@@ -325,12 +327,18 @@ function registerHandlers(bot) {
     if (token) {
       const res = await consumeLinkToken(token, ctx.chat.id, ctx.from?.username);
       if (res.ok) {
-        return ctx.reply(
-          `Salom, ${esc(res.user.fullName)}! ✅\n\n`
-          + 'Hisobingiz botga ulandi. Endi kurslaringiz va xabarlaringizni shu yerdan olasiz.\n\n'
-          + help(res.user),
-          { parse_mode: 'HTML', ...mainKeyboard(res.user) },
-        );
+        // Tasdiqlash havolasi bo'lsa — hisob shu daqiqada faollashdi va
+        // saytdagi oyna o'zi kirib ketadi; odam nima bo'lganini bilib tursin.
+        const intro = res.purpose === 'VERIFY'
+          ? `Salom, ${esc(res.user.fullName)}! ✅\n\n`
+            + '<b>Hisobingiz tasdiqlandi</b> va botga ulandi.\n'
+            + 'Saytdagi oynaga qayting — u yerda avtomatik kirasiz.\n\n'
+          : `Salom, ${esc(res.user.fullName)}! ✅\n\n`
+            + 'Hisobingiz botga ulandi. Endi kurslaringiz va xabarlaringizni shu yerdan olasiz.\n\n';
+        return ctx.reply(intro + help(res.user), {
+          parse_mode: 'HTML',
+          ...mainKeyboard(res.user),
+        });
       }
       const reasons = {
         invalid: 'Havola yaroqsiz yoki muddati tugagan. Saytdan yangi havola oling.',
@@ -410,6 +418,7 @@ function registerHandlers(bot) {
   registerOnboarding(bot, findUserQuiet);
   registerTeacherCommands(bot, findUser);
   registerMentor(bot, findUser);
+  registerPrefs(bot, findUser);
 
   bot.on('text', async (ctx) => {
     const text = ctx.message.text || '';

@@ -194,10 +194,19 @@ deploy qilish shart emas:
 | Bo'lim | Nima boshqariladi |
 |--------|-------------------|
 | **Ustoz AI** | Gemini API kaliti, model, yo'naltiruvchi ko'rsatmalar |
-| **Bosh sahifa** | Hero rasmlari, matnlar, "Biz haqimizda" sahifasi |
+| **Bosh sahifa** | Hero rasmlari, matnlar, "Biz haqimizda" va "Kontaktlar" sahifalari |
 | **Aloqa va himoya** → Email (SMTP) | Jo'natuvchi, SMTP server/port/SSL, login-parol, mock rejim, sinov xati |
 | **Aloqa va himoya** → Telegram bot | Bot tokeni, yoqish/o'chirish, sinov xabari, ulangan hisoblar soni |
 | **Aloqa va himoya** → CAPTCHA | Cloudflare Turnstile ommaviy va maxfiy kalitlari |
+
+**"Kontaktlar" sahifasi** (`Bosh sahifa` → `Kontaktlar`): sarlavha, aloqa
+kartochkalari (nomi, qiymati, ikonka va ixtiyoriy havola — ko'pi bilan 10 ta),
+ish vaqti, Google Maps xaritasi va aloqa formasining ko'rinishi. Havolalar
+serverda tekshiriladi: faqat `https://`, `mailto:`, `tel:` va sayt ichidagi
+manzillar qabul qilinadi (`javascript:` kabi sxemalar tashlab yuboriladi),
+xarita esa faqat `https://` bo'lishi mumkin. Sahifadagi forma hozircha **namuna**
+— xabar hech qayerga yuborilmaydi, shuning uchun uni panel orqali yashirsa
+bo'ladi.
 
 Qoida: paneldagi qiymat `.env` dan ustun turadi. Email uchun panelda SMTP
 serveri ko'rsatilsa, butun SMTP bloki (port, login, parol) ham paneldan olinadi;
@@ -206,6 +215,69 @@ panelga niqoblangan holda qaytariladi va bo'sh yuborilsa o'zgarmaydi.
 
 > Sinov xati mock rejimni chetlab o'tadi — "Haqiqiy xat yuborish" ni yoqishdan
 > oldin sozlamani tekshirib olish mumkin. Terminaldan: `npm run mail:test [email]`
+
+## Klaviatura mashqi kursi (typing)
+
+`Course.kind` maydoni kursning turini bildiradi: `STANDARD` (video, matn, test)
+yoki **`TYPING`** — klaviaturada tez yozishni o'rgatuvchi kurs. Typing kursi
+alohida tizim emas, oddiy kurs: katalog, bepul yozilish, qulflar kaskadi,
+progress foizi, sertifikat va Telegram xabarlari o'zgarishsiz ishlaydi.
+Boshqaruvi ham odatdagidek — admin panel → **Kurslar**.
+
+Farqi ikki joyda: darsda video/test o'rniga **mashq matni** (`TypingDrill`)
+turadi va `/learn/<slug>` sahifasi mashq pleerini chizadi.
+
+**Tayyor kurs:** `npm run db:seed:typing` — "Klaviaturada tez yozish"
+(7 bo'lim, 51 dars, bepul). Skript idempotent: qayta ishga tushirilsa mavjud
+kursni yangilaydi, hech narsani o'chirmaydi va o'quvchilar progressiga tegmaydi
+(shu sababli mazmun kengaytirilganda dars nomlari o'zgartirilmaydi — faqat
+yangilari qo'shiladi).
+
+Mazmuni `backend/prisma/typingCourse.js` da: alohida F va J tugmalaridan
+boshlanib, asosiy qator → yuqori/pastki qator → butun klaviatura, Shift, tinish
+belgilari va raqamlar → oʻ, gʻ, ch, sh, ng va tutuq belgisi → so'zlar va
+iboralar → matnlar hamda 30/60 soniyalik tezlik testlari bilan yakunlanadi.
+
+**O'tish sharti.** Har mashqda ikkita maqsad bor: tezlik (so'z/daqiqa) va
+aniqlik. Ikkalasiga yetilmasa dars yakunlanmaydi, ammo **qayta urinish
+cheklanmagan** (testdagidek kutish muddati yo'q).
+
+**O'zbek lotin yozuvi qoidalari** (`backend/src/utils/typing.js` va uning
+brauzerdagi juftligi `frontend/lib/typing.js` — ikkalasi bir xil bo'lishi shart):
+
+- `oʻ`, `gʻ` va tutuq belgisi turli belgilar bilan yoziladi (`ʻ ʼ ' ’ \``) —
+  solishtirishda hammasi bittaga keltiriladi, ya'ni klaviaturadagi oddiy `'`
+  ham to'g'ri hisoblanadi.
+- `WPM = to'g'ri belgilar / 5 / daqiqa`, aniqlik esa yakuniy matn bo'yicha:
+  xatoni backspace bilan tuzatsangiz aniqlik tiklanadi, ammo vaqt ketadi.
+- Matn `<div>` ichida chiziladi (input emas), shuning uchun nusxa-ko'chirib
+  qo'yib bo'lmaydi.
+
+**Natijaga ishonch.** Brauzer yozilgan matnni va davomiylikni yuboradi, server
+esa aniqlik va tezlikni **o'zi qaytadan hisoblaydi** (mashq matni bazadan
+olinadi). Imkonsiz tezlik (>220 so'z/daqiqa), juda qisqa davomiylik va
+o'lchangan vaqtdan uzun davomiylik rad etiladi. Shunga qaramay natija baribir
+brauzerdan keladi — maxsus vosita yozgan odam sertifikat ololishi mumkin;
+bepul mashq kursi uchun bu maqbul deb hisoblandi.
+
+**Erkin mashq** (`/api/typing/practice`) — Monkeytype uslubidagi vaqtli test:
+15/30/60/120 soniya yoki 40/60/100/200 so'z, tasodifiy o'zbek so'zlari
+(`backend/src/utils/typingWords.js`), shaxsiy rekord bilan. Matnni server tuzadi
+va o'zi tekshiradi. Kurs progressiga ta'sir qilmaydi (`TypingAttempt.lessonId = null`).
+
+**Ekrandagi klaviatura** barmoqlar bo'yicha ranglangan va keyingi bosiladigan
+tugmani yoqib turadi; katta harf kerak bo'lsa qarama-qarshi qo'lning Shift
+tugmasi ham yonadi.
+
+**Matn maydoni ekranga moslashadi.** Bir qatorga nechta belgi sig'ishi qat'iy
+belgilanmagan — pleer maydon ichida ko'rinmas namuna (`MMMM…`) chizib, belgi
+kengligini o'lchaydi va `ResizeObserver` bilan oyna o'lchami o'zgarganda qayta
+hisoblaydi. Shu sababli matn har qanday kenglikda o'ng chetgacha to'ladi, shrift
+esa ekran bilan birga o'sadi (20px → 24px → 30px). Maydon balandligi doim uch
+qatorga teng — matn qisqa bo'lsa ham sahifa "sakramaydi".
+
+> Mobil qurilmada mashq ishlaydi, ammo pleer "bu mashq kompyuter klaviaturasi
+> uchun" degan ogohlantirish ko'rsatadi va klaviatura tasvirini yashiradi.
 
 ## Telegram bot
 
@@ -245,6 +317,27 @@ formasida** hisobiga kiradi → ulanish avtomatik bajariladi va botga salom kela
 martalik havola (`t.me/<bot>?start=<token>`, 15 daqiqa). Token bazada ochiq
 saqlanmaydi (sha256) va bir marta ishlatiladi.
 
+### Ro'yxatdan o'tishni Telegram orqali tasdiqlash
+
+Email kodi kelmasa (spam papkasi, Gmail'ning kunlik ~500 chegarasi), tasdiqlash
+sahifasida **"Telegram orqali tasdiqlash"** tugmasi bor: bir martalik `t.me`
+havolasi ochiladi, odam botda "Start" bosadi — hisob **shu zahoti tasdiqlanadi**,
+ayni paytda botga ham ulanadi, sahifa esa o'zi kirib ketadi.
+
+- Havolani olish uchun **`pendingToken`** kerak — u ro'yxatdan o'tishda yoki
+  tasdiqlanmagan hisob bilan **parol kiritib kirganda** beriladi. Ya'ni havolani
+  faqat parolni bilgan odam ola oladi; aks holda begona odam birovning yangi
+  hisobini o'z Telegramiga ulab olishi mumkin bo'lardi.
+- `pendingToken` ichida `scope: 'verify'` bor va `protect` middleware **scope'li
+  tokenni rad etadi** — u seans tokeni o'rniga ishlatilmaydi. Muddati 30 daqiqa.
+- Brauzer natijani `pollKey` bilan so'rab turadi (3 soniyada bir, 5 daqiqagacha;
+  keyin "Tekshirish" tugmasi qoladi). Kalit **bir martalik**.
+- Havola turi `TelegramLink.purpose` da (`LINK` / `VERIFY`) saqlanadi.
+
+**Parolni tiklash** kodi ham Telegram ulangan bo'lsa **botga** yuboriladi (email
+o'rniga) — tezroq yetadi va email chegarasini yemaydi. Ulanmagan bo'lsa email
+zaxira yo'l bo'lib qoladi.
+
 **Tugmalar va buyruqlar.** Asosiy yo'l — xabar maydoni ostidagi doimiy tugmalar
 paneli (`backend/src/telegram/keyboard.js`). Panel holatga qarab o'zgaradi:
 
@@ -270,6 +363,7 @@ ishlatsa bo'ladi:
 | `/oquvchilarim` | `👥 O'quvchilarim` | Yozilishlar, holat kesimi, o'rtacha progress |
 | `/yordam` | `❓ Yordam` | Ro'yxat (rolga qarab) |
 | `/kunlik` | — | Kunlik progress eslatmasini yoqish/o'chirish |
+| `/sozlamalar` | — | Qaysi turdagi xabarlar kelishini tanlash (✅/⬜ tugmalar) |
 | `/uzish` | — | Hisobni botdan uzish (panel ulash holatiga qaytadi) |
 
 > Tugma bosilganda Telegram uning **matnini** oddiy xabar sifatida yuboradi.
@@ -323,12 +417,43 @@ sayt bildirishnomasi sifatida ham saqlanadi):
 | To'lov qabul qilindi | O'quvchi |
 | Kurs tugatildi — sertifikat tayyor | O'quvchi |
 | Kirish muddati 3 kundan keyin tugaydi | O'quvchi (bir marta) |
+| Kursga yangi dars qo'shildi | Kurs o'quvchilari (jamlangan holda) |
 | Kursiga yangi o'quvchi yozildi | Ustoz |
 | Kursiga yangi sharh qoldirildi | Ustoz |
 
 Admin `Xabarlar` bo'limida qo'lda yuborganda "Telegram botga ham yuborilsin"
 belgisi bor. Avtomatik xabarlar **email yubormaydi** — Telegram bepul, email esa
 kunlik chegarali; email faqat admin qo'lda tanlaganda ketadi.
+
+**Foydalanuvchi sozlamalari.** Har bir hodisaning kaliti bor
+(`backend/src/utils/notifyPrefs.js`); foydalanuvchi kerakmasini profil sahifasida
+yoki botda `/sozlamalar` orqali o'chirib qo'yadi (ikkalasi bir joyda saqlanadi:
+`User.notifyOff`, kunlik eslatma esa `User.progressPingOff`). Sozlama **faqat
+Telegram kanaliga** ta'sir qiladi — sayt ichidagi xabarlar tarixi baribir to'ladi,
+aks holda odam to'lov yoki sertifikat yozuvini butunlay yo'qotib qo'yardi. Admin
+qo'lda yuborgan xabarlar har doim yetkaziladi (ular hodisa emas).
+
+**Yangi dars xabari** darrov emas, **30 daqiqadan keyin** yuboriladi va bitta kurs
+bo'yicha barcha yangi darslar **bitta xabarga** jamlanadi
+(`backend/src/jobs/newLessons.js`, soatiga bir marta). Sabab: ustoz darsni bo'sh
+yaratib keyin to'ldiradi, va bir o'tirishda 10 ta dars qo'shilsa 10 ta xabar spam
+bo'lardi. Har dars uchun bir marta ketadi (`Lesson.announcedAt`); faqat nashr
+etilgan kurslar va muddati tugamagan o'quvchilar hisobga olinadi.
+
+### Xabarlar navbati (outbox)
+
+Telegram sekundiga ~30 xabarni qabul qiladi, undan oshsa `429` qaytaradi. Ommaviy
+yuborish shuning uchun **`TelegramOutbox` jadvali orqali** ketadi
+(`backend/src/jobs/telegramQueue.js`): so'rov darhol tugaydi, vazifa esa sekundiga
+20 tadan yuboradi.
+
+- Yuborilgan qator **o'chiriladi** — jadval o'smaydi, tozalash vazifasi kerak emas.
+- `429` kelsa Telegram aytgan vaqt kutiladi (butun navbat pauza qiladi).
+- Bot bloklangan / chat topilmagan bo'lsa qayta urinilmaydi va foydalanuvchining
+  Telegram bog'lanishi tozalanadi.
+- Boshqa xatolarda o'sib boruvchi kechikish bilan 5 martagacha urinib ko'riladi.
+- Bitta xabar (`notifyUser`) avval **to'g'ridan-to'g'ri** yuboriladi — natija darhol
+  bilinsin; faqat vaqtinchalik xato bo'lsa navbatga tushadi.
 
 Muddat ogohlantirishi serverning o'zida (12 soatda bir) tekshiriladi — alohida
 cron xizmati kerak emas. Har yozilish uchun bir marta yuboriladi va muddat
@@ -425,6 +550,11 @@ naqshni shu uch faylga ham qo'llash kerak.
       → "Aloqa va himoya" bo'limidan SMTP to'ldirilib yoqiladi
 - [x] **Telegram bot — 3-bosqich** — AI Ustoz bot ichida, ustoz uchun
       `/maosh` va `/oquvchilarim` buyruqlari
+- [x] **Telegram bot — 4-bosqich** — ro'yxatdan o'tishni Telegram orqali
+      tasdiqlash, xabarlar navbati (qayta urinish bilan), foydalanuvchi
+      bildirishnoma sozlamalari (`/sozlamalar`), yangi dars xabari
+- [x] **Klaviatura mashqi kursi** — bepul typing kursi (7 bo'lim, 51 dars),
+      erkin mashq rejimi va admin paneldagi mashq tahrirlagichi
 
 ## Litsenziya
 

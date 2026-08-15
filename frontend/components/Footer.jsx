@@ -40,7 +40,7 @@ export default async function Footer() {
     {
       title: 'Yordam',
       links: [
-        { href: '/contact', label: 'Bog\'lanish' },
+        { href: '/contact', label: 'Kontaktlar' },
         { href: '/faq', label: 'Ko\'p so\'raladigan savollar' },
       ],
     },

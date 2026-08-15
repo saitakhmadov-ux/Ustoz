@@ -203,6 +203,90 @@ async function getAboutConfig() {
   return normalizeAboutConfig(await getSetting(ABOUT_KEY, null));
 }
 
+// ---- "Kontaktlar" sahifasi ----
+// Sahifa mazmuni to'liq admin panelidan boshqariladi: sarlavha, aloqa
+// kartochkalari (email, telefon, manzil, ijtimoiy tarmoqlar), ish vaqti,
+// xarita va aloqa formasining ko'rinishi.
+const CONTACT_KEY = 'contact_page';
+const CONTACT_MAX_ITEMS = 10;
+// Admin tanlay oladigan ikonkalar (frontendda lib/contactIcons.js bilan bir xil)
+const CONTACT_ICONS = [
+  'Mail', 'Phone', 'MapPin', 'Send', 'MessageCircle', 'Clock',
+  'Globe', 'Instagram', 'Youtube', 'Facebook', 'Building2', 'Headset',
+];
+
+function contactDefaults() {
+  return {
+    title: 'Kontaktlar',
+    subtitle: 'Savollaringiz bo\'lsa, biz bilan bog\'laning',
+    items: [
+      {
+        id: 'c1', icon: 'Mail', label: 'Email', value: 'info@ustoz.uz', url: 'mailto:info@ustoz.uz',
+      },
+      {
+        id: 'c2', icon: 'Phone', label: 'Telefon', value: '+998 90 123 45 67', url: 'tel:+998901234567',
+      },
+      {
+        id: 'c3', icon: 'MapPin', label: 'Manzil', value: 'Toshkent, O\'zbekiston', url: '',
+      },
+    ],
+    workHours: '',
+    mapUrl: '',
+    formEnabled: true,
+    formNote: 'Demo forma — hozircha xabar yuborilmaydi',
+  };
+}
+
+// Havolani xavfsiz ko'rinishga keltiradi. `javascript:` va shunga o'xshash
+// sxemalar rad etiladi — admin panelidan kelsa ham, sahifada bosiladigan
+// havola bo'lgani uchun ishonmaymiz.
+function contactUrl(v) {
+  const url = aboutStr(v, 500);
+  if (!url) return '';
+  if (/^(https?:\/\/|mailto:|tel:|\/)/i.test(url)) return url;
+  return '';
+}
+
+// Xarita faqat HTTPS iframe bo'lishi mumkin (Google Maps "embed" havolasi)
+function contactMapUrl(v) {
+  const url = aboutStr(v, 800);
+  return /^https:\/\//i.test(url) ? url : '';
+}
+
+function normalizeContactConfig(cfg) {
+  const d = contactDefaults();
+  if (!cfg || typeof cfg !== 'object') return d;
+
+  const items = Array.isArray(cfg.items)
+    ? cfg.items
+      .slice(0, CONTACT_MAX_ITEMS)
+      .map((it, i) => ({
+        id: aboutStr(it && it.id, 40) || `c${i + 1}`,
+        icon: CONTACT_ICONS.includes(it && it.icon) ? it.icon : CONTACT_ICONS[0],
+        label: aboutStr(it && it.label, 80),
+        value: aboutStr(it && it.value, 200),
+        url: contactUrl(it && it.url),
+      }))
+      // Qiymati yo'q kartochka sahifada bo'sh joy bo'lib turmasin
+      .filter((it) => it.value || it.label)
+    : d.items;
+
+  return {
+    title: aboutStr(cfg.title, 160) || d.title,
+    subtitle: aboutStr(cfg.subtitle, 600) || d.subtitle,
+    items,
+    workHours: aboutStr(cfg.workHours, 300),
+    mapUrl: contactMapUrl(cfg.mapUrl),
+    // Standart: forma ko'rinadi (avvalgi sahifadagidek)
+    formEnabled: cfg.formEnabled !== false,
+    formNote: aboutStr(cfg.formNote, 300),
+  };
+}
+
+async function getContactConfig() {
+  return normalizeContactConfig(await getSetting(CONTACT_KEY, null));
+}
+
 // ---- AI Ustoz (Gemini) sozlamalari ----
 const AI_CONFIG_KEY = 'ai_config';
 const AI_DEFAULT_MODEL = 'gemini-3.6-flash';
@@ -354,6 +438,12 @@ module.exports = {
   aboutDefaults,
   normalizeAboutConfig,
   getAboutConfig,
+  CONTACT_KEY,
+  CONTACT_ICONS,
+  CONTACT_MAX_ITEMS,
+  contactDefaults,
+  normalizeContactConfig,
+  getContactConfig,
   AI_CONFIG_KEY,
   AI_DEFAULT_MODEL,
   AI_MAX_INSTRUCTIONS,

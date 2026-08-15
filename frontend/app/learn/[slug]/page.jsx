@@ -17,6 +17,7 @@ import AccessChip from '@/components/AccessChip';
 import AIChat from '@/components/AIChat';
 import CodePlayground from '@/components/CodePlayground';
 import CourseRatingForm from '@/components/CourseRatingForm';
+import TypingCourseView from '@/components/typing/TypingCourseView';
 import { Spinner, ErrorState } from '@/components/ui';
 
 function LearnInner() {
@@ -127,7 +128,22 @@ function LearnInner() {
   }
 
   if (error) return <div className="container-page py-10"><ErrorState message={error} /></div>;
-  if (!course || !current) return <div className="container-page py-10"><ErrorState message="Kurs kontenti topilmadi" /></div>;
+  if (!course) return <div className="container-page py-10"><ErrorState message="Kurs kontenti topilmadi" /></div>;
+
+  // Klaviatura mashqi kursi — butunlay boshqa ko'rinish (video/test yo'q)
+  if (course.kind === 'TYPING') {
+    return (
+      <TypingCourseView
+        course={course}
+        progress={progress}
+        access={access}
+        certificate={certificate}
+        onReload={() => load(true)}
+      />
+    );
+  }
+
+  if (!current) return <div className="container-page py-10"><ErrorState message="Kurs kontenti topilmadi" /></div>;
 
   const currentLocked = current.locked;
 

@@ -5,9 +5,10 @@ const ApiError = require('../utils/ApiError');
 const { computeProgress } = require('./enrollment.controller');
 const { issueCertificateIfComplete } = require('./certificate.controller');
 const {
-  lessonTasks, accessInfo, accessMonthsFor,
+  lessonTasks, accessInfo, accessMonthsFor, isManualTaskKey,
   quizRequiredBank, isPureTestLesson, quizCooldownInfo, pickRandom,
 } = require('../utils/learnProgress');
+const { gradeAttempt, expandDrill, normalizeDrill } = require('../utils/typing');
 
 // Foydalanuvchining kursga kirish huquqi + muddatini tekshirish.
 // Qaytaradi: { staff, enrollment }. staff=true bo'lsa muddatsiz (admin/kurs ustozi).
@@ -47,6 +48,8 @@ async function loadOrderedLessons(courseId) {
           content: true,
           materials: { select: { id: true, type: true } },
           questions: { select: { id: true } },
+          // Klaviatura mashqi ham vazifa — lessonTasks() shu maydonga qaraydi
+          typingDrill: { select: { id: true } },
         },
       },
     },
@@ -113,6 +116,8 @@ const getCourseContent = asyncHandler(async (req, res) => {
               // qarshi + yodlashga qarshi). Faqat baza hajmini bilish uchun id olamiz.
               questions: { select: { id: true } },
               materials: { orderBy: { createdAt: 'asc' } },
+              // Mashq matni yashirin emas — pleer uni ekranga chiqaradi
+              typingDrill: true,
             },
           },
         },
@@ -136,6 +141,20 @@ const getCourseContent = asyncHandler(async (req, res) => {
   const latestAttempt = new Map();
   for (const a of attempts) {
     if (!latestAttempt.has(a.lessonId)) latestAttempt.set(a.lessonId, a);
+  }
+
+  // Klaviatura mashqlari bo'yicha eng yaxshi natija (dars kartochkasida ko'rsatiladi).
+  // Eng yaxshi = eng tez; teng bo'lsa aniqroq.
+  const typingBest = new Map();
+  if (course.kind === 'TYPING') {
+    const rows = await prisma.typingAttempt.findMany({
+      where: { userId: req.user.id, lesson: { section: { courseId: course.id } } },
+      orderBy: [{ wpm: 'desc' }, { accuracy: 'desc' }],
+      select: { lessonId: true, wpm: true, accuracy: true },
+    });
+    for (const r of rows) {
+      if (!typingBest.has(r.lessonId)) typingBest.set(r.lessonId, r);
+    }
   }
 
   const sections = course.sections.map((s) => ({
@@ -176,10 +195,29 @@ const getCourseContent = asyncHandler(async (req, res) => {
       // materiallar (matn/PDF/test) bloklanadi. Staff (admin/ustoz) uchun qo'llanmaydi.
       const videoTask = tasks.find((t) => t.type === 'VIDEO');
       const videoGate = !staff && !!videoTask && !videoTask.done;
+
+      // Klaviatura mashqi: matn, maqsadlar va shu darsdagi eng yaxshi natija
+      let typing = null;
+      if (l.typingDrill) {
+        const best = typingBest.get(l.id) || null;
+        typing = {
+          mode: l.typingDrill.mode,
+          content: l.typingDrill.content,
+          targetWpm: l.typingDrill.targetWpm,
+          targetAccuracy: l.typingDrill.targetAccuracy,
+          durationSec: l.typingDrill.durationSec,
+          showKeyboard: l.typingDrill.showKeyboard,
+          hint: l.typingDrill.hint,
+          passed: doneKeys.has(`typing:${l.id}`),
+          best,
+        };
+      }
+
       // Savol identifikatorlarini ham chiqarmaymiz
-      const { questions, ...rest } = l;
+      const { questions, typingDrill, ...rest } = l;
       return {
         ...rest,
+        typing,
         tasks,
         tasksTotal: tasks.length,
         tasksDone: doneCount,
@@ -270,8 +308,12 @@ const completeTask = asyncHandler(async (req, res) => {
 
   const validKeys = new Set(lessonTasks(lesson).map((t) => t.key));
   if (!validKeys.has(taskKey)) throw ApiError.badRequest('Bunday vazifa topilmadi');
-  if (taskKey.startsWith('quiz:')) {
-    throw ApiError.badRequest('Test vazifasi faqat testdan o\'tilganda belgilanadi');
+  if (!isManualTaskKey(taskKey)) {
+    throw ApiError.badRequest(
+      taskKey.startsWith('typing:')
+        ? 'Yozish mashqi faqat bajarilganda belgilanadi'
+        : 'Test vazifasi faqat testdan o\'tilganda belgilanadi',
+    );
   }
 
   const result = await applyTaskCompletion(req.user, lesson, lesson.section.course, [taskKey]);
@@ -291,10 +333,11 @@ const completeLesson = asyncHandler(async (req, res) => {
   });
   if (!lesson) throw ApiError.notFound('Dars topilmadi');
 
-  // Testdan va videodan tashqari barcha vazifa kalitlari.
-  // Video faqat pleerda to'liq ko'rilgach belgilanadi (ommaviy belgilashдан chiqarilgan).
+  // Faqat qo'lda belgilanadigan vazifalar. Test va yozish mashqi bundan
+  // tashqarida (ular haqiqatan bajarilganda belgilanadi), video esa faqat
+  // pleerda to'liq ko'rilgach.
   const keys = lessonTasks(lesson).map((t) => t.key)
-    .filter((k) => !k.startsWith('quiz:') && !k.startsWith('video:'));
+    .filter((k) => isManualTaskKey(k) && !k.startsWith('video:'));
   const result = await applyTaskCompletion(req.user, lesson, lesson.section.course, keys);
 
   const message = result.lessonCompleted
@@ -459,4 +502,161 @@ const submitQuiz = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getCourseContent, completeTask, completeLesson, startQuiz, submitQuiz, getAccess };
+/* ---------------- Klaviatura mashqi (TYPING kurslari) ---------------- */
+
+// Urinish boshlangan vaqtlar — soxta davomiylikka qarshi zaxira o'lchov.
+// Bazaga yozmaymiz: bu ma'lumot bir necha daqiqalik va yo'qolsa ham
+// halokat emas (server qayta yuklansa tekshiruv shunchaki o'tkazib yuboriladi).
+const typingStarts = new Map(); // `${userId}:${lessonId}` -> boshlangan vaqt (ms)
+const TYPING_START_TTL_MS = 30 * 60 * 1000;
+
+function rememberTypingStart(key) {
+  const now = Date.now();
+  // Eskirganlarini tozalaymiz — xotira cheksiz o'smasin
+  for (const [k, at] of typingStarts) {
+    if (now - at > TYPING_START_TTL_MS) typingStarts.delete(k);
+  }
+  typingStarts.set(key, now);
+}
+
+// Mashq-darsni yuklaydi va kirish/qulf tekshiruvlarini bajaradi
+async function loadTypingContext(user, lessonId) {
+  const lesson = await prisma.lesson.findUnique({
+    where: { id: lessonId },
+    include: { section: { include: { course: true } }, typingDrill: true },
+  });
+  if (!lesson) throw ApiError.notFound('Dars topilmadi');
+  if (!lesson.typingDrill) throw ApiError.badRequest('Bu darsda yozish mashqi yo\'q');
+
+  const course = lesson.section.course;
+  const { staff } = await getAccess(user, course);
+
+  const orderedLessons = await loadOrderedLessons(course.id);
+  const doneKeys = await userDoneKeys(user.id, course.id);
+  if (!isUnlocked(orderedLessons, doneKeys, lesson.id, staff)) {
+    throw ApiError.forbidden('Bu dars hali ochilmagan. Avval oldingi darsni yakunlang.');
+  }
+
+  return { lesson, course, orderedLessons, drill: lesson.typingDrill };
+}
+
+// TIMED mashqda matn vaqtni to'ldirishga yetishi kerak. Juda tez yozadigan
+// odam ham matn tugab qolmasligi uchun 200 wpm hisobidan zaxira bilan uzaytiramiz.
+function expectedTextFor(drill) {
+  if (drill.mode !== 'TIMED' || !drill.durationSec) return normalizeDrill(drill.content);
+  const maxChars = Math.ceil((200 * 5 * drill.durationSec) / 60) + 50;
+  return expandDrill(drill.content, maxChars);
+}
+
+// POST /api/lessons/:lessonId/typing/start — mashqni boshlash
+const startTyping = asyncHandler(async (req, res) => {
+  const { drill, lesson } = await loadTypingContext(req.user, req.params.lessonId);
+  rememberTypingStart(`${req.user.id}:${lesson.id}`);
+
+  res.json({
+    success: true,
+    drill: {
+      mode: drill.mode,
+      text: expectedTextFor(drill),
+      targetWpm: drill.targetWpm,
+      targetAccuracy: drill.targetAccuracy,
+      durationSec: drill.durationSec,
+      showKeyboard: drill.showKeyboard,
+      hint: drill.hint,
+    },
+  });
+});
+
+// POST /api/lessons/:lessonId/typing — natijani yuborish
+// body: { typed, durationMs }
+//
+// Natijaga ishonmaymiz: server yozilgan matnni mashq matni bilan o'zi
+// solishtiradi va WPM/aniqlikni qaytadan hisoblaydi.
+const submitTyping = asyncHandler(async (req, res) => {
+  const { typed, durationMs } = req.body || {};
+  if (typeof typed !== 'string') throw ApiError.badRequest('typed matn bo\'lishi kerak');
+
+  const {
+    lesson, course, orderedLessons, drill,
+  } = await loadTypingContext(req.user, req.params.lessonId);
+
+  const startKey = `${req.user.id}:${lesson.id}`;
+  const startedAt = typingStarts.get(startKey);
+  const serverMs = startedAt ? Date.now() - startedAt : undefined;
+
+  const graded = gradeAttempt({
+    expected: expectedTextFor(drill),
+    typed,
+    durationMs,
+    serverMs,
+    targetWpm: drill.targetWpm,
+    targetAccuracy: drill.targetAccuracy,
+    timedMs: drill.mode === 'TIMED' && drill.durationSec ? drill.durationSec * 1000 : null,
+  });
+
+  if (!graded.ok) {
+    const messages = {
+      empty: 'Hech narsa yozilmadi.',
+      duration: 'Mashq vaqti noto\'g\'ri — qaytadan boshlang.',
+      impossible: 'Natija ishonarli emas — mashqni qaytadan bajaring.',
+      'no-drill': 'Mashq matni topilmadi.',
+    };
+    throw ApiError.badRequest(messages[graded.reason] || 'Natijani qabul qilib bo\'lmadi');
+  }
+
+  const r = graded.result;
+  typingStarts.delete(startKey);
+
+  await prisma.typingAttempt.create({
+    data: {
+      userId: req.user.id,
+      lessonId: lesson.id,
+      wpm: r.wpm,
+      accuracy: r.accuracy,
+      chars: r.chars,
+      errors: r.errors,
+      durationMs: r.durationMs,
+      passed: r.passed,
+    },
+  });
+
+  let progress = null;
+  let certificate = null;
+  let lessonCompleted = false;
+
+  if (r.passed) {
+    const key = `typing:${lesson.id}`;
+    await prisma.taskProgress.upsert({
+      where: { userId_taskKey: { userId: req.user.id, taskKey: key } },
+      update: {},
+      create: { userId: req.user.id, taskKey: key, lessonId: lesson.id },
+    });
+    const doneKeys = await userDoneKeys(req.user.id, course.id);
+    const freshLesson = orderedLessons.find((l) => l.id === lesson.id) || lesson;
+    lessonCompleted = await syncLessonProgress(req.user.id, freshLesson, doneKeys);
+    progress = await computeProgress(req.user.id, course.id);
+    if (progress.percent === 100) {
+      certificate = await issueCertificateIfComplete(req.user.id, course.id);
+    }
+  }
+
+  res.json({
+    success: true,
+    result: r,
+    target: { wpm: drill.targetWpm, accuracy: drill.targetAccuracy },
+    progress,
+    lessonCompleted,
+    certificate,
+  });
+});
+
+module.exports = {
+  getCourseContent,
+  completeTask,
+  completeLesson,
+  startQuiz,
+  submitQuiz,
+  startTyping,
+  submitTyping,
+  getAccess,
+};

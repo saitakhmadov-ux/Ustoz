@@ -7,6 +7,7 @@ const {
   assertCourseAccess, assertSectionAccess, assertLessonAccess,
   assertQuestionAccess, assertMaterialAccess,
 } = require('../utils/courseAccess');
+const { normalizeDrill } = require('../utils/typing');
 
 // ---------- Validatsiya ----------
 const sectionSchema = z.object({
@@ -60,6 +61,7 @@ const getCurriculum = asyncHandler(async (req, res) => {
             include: {
               questions: { orderBy: { id: 'asc' } },
               materials: { orderBy: { createdAt: 'asc' } },
+              typingDrill: true, // klaviatura mashqi (TYPING kurslarida)
             },
           },
         },
@@ -196,10 +198,64 @@ const deleteMaterial = asyncHandler(async (req, res) => {
   res.json({ success: true, message: 'Material o\'chirildi' });
 });
 
+// ---------- Klaviatura mashqi (TYPING kurslari) ----------
+
+// Mashq matnini tozalash pleerdagi bilan bir xil bo'lishi uchun shu yerda ham
+// normalizeDrill ishlatiladi (ortiqcha probel/qator olib tashlanadi).
+const drillSchema = z.object({
+  mode: z.enum(['KEYS', 'WORDS', 'TEXT', 'TIMED']).default('TEXT'),
+  content: z.string({ required_error: 'Mashq matni shart' }).min(4, 'Mashq matni juda qisqa').max(4000),
+  targetWpm: z.number().int().min(1, 'Kamida 1').max(200).default(15),
+  targetAccuracy: z.number().int().min(50, 'Kamida 50%').max(100).default(95),
+  durationSec: z.number().int().min(10).max(600).optional().nullable(),
+  showKeyboard: z.boolean().optional(),
+  hint: z.string().max(300).optional().nullable(),
+});
+
+// PUT /api/admin/lessons/:id/typing — mashqni yaratadi yoki yangilaydi
+const saveDrill = asyncHandler(async (req, res) => {
+  await assertLessonAccess(req.user, req.params.id);
+  const data = drillSchema.parse(req.body);
+
+  const content = normalizeDrill(data.content);
+  if (content.length < 4) throw ApiError.badRequest('Mashq matni juda qisqa');
+  // TIMED rejimida davomiylik shart — aks holda mashq qachon tugashi noma'lum
+  if (data.mode === 'TIMED' && !data.durationSec) {
+    throw ApiError.badRequest('Vaqtli mashq uchun davomiylikni belgilang');
+  }
+
+  const values = {
+    mode: data.mode,
+    content,
+    targetWpm: data.targetWpm,
+    targetAccuracy: data.targetAccuracy,
+    durationSec: data.mode === 'TIMED' ? data.durationSec : null,
+    showKeyboard: data.showKeyboard ?? true,
+    hint: data.hint || null,
+  };
+
+  const drill = await prisma.typingDrill.upsert({
+    where: { lessonId: req.params.id },
+    update: values,
+    create: { lessonId: req.params.id, ...values },
+  });
+  res.json({ success: true, message: 'Mashq saqlandi', drill });
+});
+
+// DELETE /api/admin/lessons/:id/typing — mashqni olib tashlash
+const deleteDrill = asyncHandler(async (req, res) => {
+  await assertLessonAccess(req.user, req.params.id);
+  await prisma.typingDrill.deleteMany({ where: { lessonId: req.params.id } });
+  // Mashq yo'q bo'lgach uning vazifasi ham ma'nosiz — progress yozuvini tozalaymiz
+  await prisma.taskProgress.deleteMany({ where: { taskKey: `typing:${req.params.id}` } });
+  res.json({ success: true, message: 'Mashq o\'chirildi' });
+});
+
 module.exports = {
   getCurriculum,
   createSection, updateSection, deleteSection,
   createLesson, updateLesson, deleteLesson,
   createQuestion, updateQuestion, deleteQuestion,
   createMaterial, deleteMaterial,
+  saveDrill, deleteDrill,
 };

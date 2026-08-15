@@ -5,11 +5,12 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, Plus, Trash2, Pencil, ChevronDown, PlayCircle, FileText,
-  HelpCircle, Loader2, GripVertical,
+  HelpCircle, Loader2, GripVertical, Keyboard,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import LessonEditor from '@/components/admin/LessonEditor';
 import QuizManager from '@/components/admin/QuizManager';
+import TypingDrillEditor from '@/components/admin/TypingDrillEditor';
 import { Spinner, ErrorState } from '@/components/ui';
 
 export default function CurriculumPage() {
@@ -73,6 +74,9 @@ export default function CurriculumPage() {
   if (error) return <ErrorState message={error} />;
   if (!course) return null;
 
+  // Klaviatura mashqi kursida darsda video/test emas, mashq matni bo'ladi
+  const isTyping = course.kind === 'TYPING';
+
   return (
     <div>
       <Link href="/admin/courses" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-primary">
@@ -81,7 +85,14 @@ export default function CurriculumPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl">O'quv dasturi</h1>
-          <p className="mt-1 text-sm text-muted">{course.title}</p>
+          <p className="mt-1 text-sm text-muted">
+            {course.title}
+            {isTyping && (
+              <span className="ml-2 badge bg-indigo-50 text-indigo-700">
+                <Keyboard size={13} /> Klaviatura mashqi
+              </span>
+            )}
+          </p>
         </div>
         <Link href={`/admin/courses/${id}`} className="btn-outline"><Pencil size={16} /> Kurs sozlamalari</Link>
       </div>
@@ -118,26 +129,40 @@ export default function CurriculumPage() {
                       <div key={lesson.id} className="rounded-xl border border-line">
                         {editingLesson === lesson.id ? (
                           <div className="p-3">
-                            <LessonEditor lesson={lesson} onDone={refresh} onCancel={() => setEditingLesson(null)} />
+                            <LessonEditor lesson={lesson} typing={isTyping} onDone={refresh} onCancel={() => setEditingLesson(null)} />
                           </div>
                         ) : (
                           <>
                             <div className="flex items-center gap-2.5 px-3 py-2.5">
                               <GripVertical size={15} className="text-slate-300" />
-                              {lesson.videoUrl ? <PlayCircle size={16} className="text-primary" /> : <FileText size={16} className="text-muted" />}
+                              {isTyping ? <Keyboard size={16} className="text-primary" />
+                                : lesson.videoUrl ? <PlayCircle size={16} className="text-primary" />
+                                  : <FileText size={16} className="text-muted" />}
                               <span className="flex-1 text-sm">{lesson.title}</span>
                               {lesson.isFreePreview && <span className="badge bg-indigo-50 text-indigo-700">Bepul</span>}
-                              <button
-                                onClick={() => setOpenQuiz({ ...openQuiz, [lesson.id]: !openQuiz[lesson.id] })}
-                                className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-muted hover:bg-slate-100"
-                                title="Test"
-                              >
-                                <HelpCircle size={14} /> {lesson.questions?.length || 0}
-                              </button>
+                              {isTyping ? (
+                                // Klaviatura kursida test/material yo'q — faqat mashq
+                                !lesson.typingDrill && (
+                                  <span className="badge bg-amber-50 text-amber-700">Mashq yo'q</span>
+                                )
+                              ) : (
+                                <button
+                                  onClick={() => setOpenQuiz({ ...openQuiz, [lesson.id]: !openQuiz[lesson.id] })}
+                                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-muted hover:bg-slate-100"
+                                  title="Test"
+                                >
+                                  <HelpCircle size={14} /> {lesson.questions?.length || 0}
+                                </button>
+                              )}
                               <button onClick={() => setEditingLesson(lesson.id)} className="grid h-7 w-7 place-items-center rounded-lg hover:bg-slate-100"><Pencil size={14} /></button>
                               <button onClick={() => deleteLesson(lesson.id, lesson.title)} className="grid h-7 w-7 place-items-center rounded-lg text-red-500 hover:bg-red-50"><Trash2 size={14} /></button>
                             </div>
-                            {openQuiz[lesson.id] && (
+                            {isTyping && (
+                              <div className="px-3 pb-3">
+                                <TypingDrillEditor lesson={lesson} onChange={load} />
+                              </div>
+                            )}
+                            {!isTyping && openQuiz[lesson.id] && (
                               <div className="px-3 pb-3">
                                 <QuizManager lesson={lesson} onChange={load} />
                               </div>
@@ -151,7 +176,7 @@ export default function CurriculumPage() {
                   {/* Dars qo'shish */}
                   {addingLessonTo === section.id ? (
                     <div className="mt-3">
-                      <LessonEditor sectionId={section.id} onDone={refresh} onCancel={() => setAddingLessonTo(null)} />
+                      <LessonEditor sectionId={section.id} typing={isTyping} onDone={refresh} onCancel={() => setAddingLessonTo(null)} />
                     </div>
                   ) : (
                     <button onClick={() => setAddingLessonTo(section.id)} className="mt-3 flex items-center gap-1 text-sm font-medium text-primary hover:underline">
