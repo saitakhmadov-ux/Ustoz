@@ -14,7 +14,7 @@ export default function EditCoursePage() {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState('');
 
   useEffect(() => {
     api.get(`/admin/courses/${id}/curriculum`)
@@ -36,12 +36,16 @@ export default function EditCoursePage() {
         <Link href={`/admin/courses/${id}/curriculum`} className="btn-outline"><ListTree size={16} /> Darslarni boshqarish</Link>
       </div>
 
-      {saved && <div className="mt-4 rounded-xl bg-indigo-50 px-4 py-2.5 text-sm text-indigo-700">Saqlandi ✓</div>}
+      {/* Serverdan kelgan xabar: muddat nechta o'quvchiga qo'llangani ham shunda */}
+      {saved && <div className="mt-4 rounded-xl bg-indigo-50 px-4 py-2.5 text-sm text-indigo-700">{saved}</div>}
 
       <div className="mt-6 max-w-3xl">
         <CourseForm
           initial={course}
-          onSaved={() => { setSaved(true); setTimeout(() => setSaved(false), 2000); }}
+          onSaved={(c, message) => {
+            setSaved(message || 'Saqlandi ✓');
+            setTimeout(() => setSaved(''), 6000);
+          }}
         />
       </div>
     </div>

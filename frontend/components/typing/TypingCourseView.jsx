@@ -9,19 +9,22 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
-  CheckCircle2, Circle, Lock, Keyboard, Menu, X, Award, Zap, Loader2, ChevronRight,
+  CheckCircle2, Circle, Lock, Keyboard, Menu, X, Award, Zap, Loader2, ChevronRight, Trophy,
+  PenLine,
 } from 'lucide-react';
 import { api } from '@/lib/api';
-import { MODE_LABEL } from '@/lib/typing';
+import { MODE_LABEL, styleFor } from '@/lib/typing';
 import AccessChip from '@/components/AccessChip';
 import TypingPlayer from './TypingPlayer';
 import TypingResults from './TypingResults';
 import FreePractice from './FreePractice';
+import Leaderboard from './Leaderboard';
+import IeltsSection from '@/components/ielts/IeltsSection';
 
 export default function TypingCourseView({
   course, progress, access, certificate, onReload,
 }) {
-  const [tab, setTab] = useState('lessons'); // 'lessons' | 'practice'
+  const [tab, setTab] = useState('lessons'); // 'lessons' | 'practice' | 'records'
   const [currentId, setCurrentId] = useState(null);
   const [drill, setDrill] = useState(null);
   const [result, setResult] = useState(null);
@@ -48,6 +51,9 @@ export default function TypingCourseView({
   const current = lessons.find((l) => l.id === currentId) || null;
   const currentIndex = lessons.findIndex((l) => l.id === currentId);
   const next = currentIndex >= 0 ? lessons[currentIndex + 1] : null;
+  // Animatsiya uslubi dars tartibiga bog'langan: ketma-ket darslar bir xil
+  // ko'rinmaydi, ammo bitta dars har safar o'zining uslubi bilan ochiladi.
+  const anim = styleFor(currentIndex);
 
   // Mashqni serverdan olish (matn shu yerdan keladi — vaqtli mashqda uzaytirilgan holda)
   const loadDrill = useCallback(async (lessonId) => {
@@ -181,9 +187,32 @@ export default function TypingCourseView({
         >
           <Zap size={16} /> Erkin mashq
         </button>
+        {/* IELTS bo'limi — yashil urg'u bilan ajratilgan */}
+        <button
+          type="button"
+          onClick={() => setTab('ielts')}
+          className={`flex items-center gap-2 rounded-t-lg border-b-2 px-4 py-2.5 text-sm font-medium transition-colors
+            ${tab === 'ielts'
+              ? 'border-accent bg-accent/10 text-accent-dark'
+              : 'border-transparent bg-accent/5 text-accent-dark hover:bg-accent/10'}`}
+        >
+          <PenLine size={16} /> IELTS Writing
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab('records')}
+          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors
+            ${tab === 'records' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-ink'}`}
+        >
+          <Trophy size={16} /> Rekordlar
+        </button>
       </div>
 
-      {tab === 'practice' ? (
+      {tab === 'ielts' ? (
+        <div className="mt-6"><IeltsSection slug={course.slug} /></div>
+      ) : tab === 'records' ? (
+        <div className="mt-6"><Leaderboard /></div>
+      ) : tab === 'practice' ? (
         <div className="mt-6"><FreePractice /></div>
       ) : (
         <div className="mt-6 grid gap-6 lg:grid-cols-[280px_1fr]">
@@ -222,6 +251,7 @@ export default function TypingCourseView({
                     }}
                     certificate={cert && result.passed ? cert : null}
                     hasNext={Boolean(next)}
+                    anim={anim}
                     onRetry={() => loadDrill(currentId)}
                     onNext={() => next && setCurrentId(next.id)}
                   />
@@ -238,6 +268,7 @@ export default function TypingCourseView({
                     targetAccuracy={drill.targetAccuracy}
                     showKeyboard={drill.showKeyboard}
                     hint={drill.hint}
+                    anim={anim}
                     busy={busy}
                     onFinish={finish}
                     onRestart={() => loadDrill(currentId)}

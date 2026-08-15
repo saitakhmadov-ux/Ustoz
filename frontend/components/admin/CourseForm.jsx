@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import { api } from '@/lib/api';
 import { LEVELS, ACCESS_MONTHS } from '@/lib/constants';
 import { useAuth } from '@/lib/auth';
@@ -72,7 +72,8 @@ export default function CourseForm({ initial, onSaved }) {
       } else {
         res = await api.post('/courses', payload);
       }
-      onSaved?.(res.course);
+      // Xabarni ham uzatamiz — muddat nechta o'quvchiga qo'llangani shunda
+      onSaved?.(res.course, res.message);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -146,6 +147,12 @@ export default function CourseForm({ initial, onSaved }) {
             />
             <p className="mt-1 text-xs text-muted">
               Bo'sh qoldirsangiz daraja bo'yicha standart ({ACCESS_MONTHS[form.level] ?? 1} oy) qo'llanadi.
+            </p>
+            <p className="mt-1 flex items-start gap-1.5 text-xs text-amber-700">
+              <AlertTriangle size={13} className="mt-px shrink-0" />
+              Saqlaganda muddat <b>mavjud o'quvchilarga ham</b> qo'llanadi — har birida
+              yozilgan sanadan boshlab qayta hisoblanadi. Qo'lda uzaytirilgan muddatlar
+              ham shu qiymatga tushadi.
             </p>
           </div>
         )}

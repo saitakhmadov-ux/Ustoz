@@ -698,18 +698,24 @@ const enrollUserToCourse = asyncHandler(async (req, res) => {
   if (!course) throw ApiError.notFound('Kurs topilmadi');
 
   const n = Number.isInteger(months) && months > 0 ? months : accessMonthsFor(course);
-  const expiresAt = computeExpiry(n);
+  const startedAt = new Date();
+  const expiresAt = computeExpiry(n, startedAt);
 
-  // Mavjud bo'lsa muddatni yangilaymiz (progress saqlanadi), aks holda yaratamiz
+  // Mavjud bo'lsa muddatni yangilaymiz (progress saqlanadi), aks holda yaratamiz.
+  // Ikkala holatda ham yangi davr boshlanadi — startedAt bugundan.
   const existing = await prisma.enrollment.findUnique({
     where: { userId_courseId: { userId: user.id, courseId } },
   });
   const enrollment = existing
     ? await prisma.enrollment.update({
       where: { id: existing.id },
-      data: { expiresAt, expiryWarnedAt: null },
+      data: { startedAt, expiresAt, expiryWarnedAt: null },
     })
-    : await prisma.enrollment.create({ data: { userId: user.id, courseId, expiresAt } });
+    : await prisma.enrollment.create({
+      data: {
+        userId: user.id, courseId, startedAt, expiresAt,
+      },
+    });
 
   // O'quvchi kursga qo'lda qo'shilganini bilsin
   if (!existing) notifyEnrolled(user.id, course);

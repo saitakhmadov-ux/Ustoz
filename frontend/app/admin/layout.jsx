@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, BookOpen, FolderTree, Users, BarChart3, Send,
   LayoutTemplate, Bot, ArrowLeft, MessageSquare, Award, UserCheck, Coins,
-  Menu, X, Search as SearchIcon, Mail,
+  Menu, X, Search as SearchIcon, Mail, PenLine,
 } from 'lucide-react';
 import RequireAuth from '@/components/RequireAuth';
 import { useAuth } from '@/lib/auth';
@@ -41,6 +41,7 @@ const adminGroups = [
     title: "Ta'lim",
     items: [
       { href: '/admin/courses', label: 'Kurslar', icon: BookOpen },
+      { href: '/admin/ielts', label: 'IELTS topshiriqlari', icon: PenLine },
       { href: '/admin/categories', label: 'Kategoriyalar', icon: FolderTree },
     ],
   },

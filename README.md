@@ -216,6 +216,26 @@ panelga niqoblangan holda qaytariladi va bo'sh yuborilsa o'zgarmaydi.
 > Sinov xati mock rejimni chetlab o'tadi — "Haqiqiy xat yuborish" ni yoqishdan
 > oldin sozlamani tekshirib olish mumkin. Terminaldan: `npm run mail:test [email]`
 
+## Kursdan foydalanish muddati
+
+Muddat kurs sozlamasidan (`Course.accessMonths`, bo'sh bo'lsa daraja bo'yicha
+standart) hisoblanadi va yozilishda `Enrollment.expiresAt` ga yoziladi.
+Hisob **doim `Enrollment.startedAt` dan** boshlanadi — bu amaldagi foydalanish
+davrining boshlanishi (qayta yozilganda yangilanadi, `createdAt` esa birinchi
+yozilish sanasi bo'lib qoladi).
+
+Bosh admin kurs formasida muddatni saqlaganda **mavjud yozilishlar ham qayta
+hisoblanadi** (`course.controller.js → syncEnrollmentExpiry`): har bir o'quvchida
+`expiresAt = startedAt + N oy`, `expiryWarnedAt` esa tozalanadi. Shu sababli
+paneldagi qiymat bilan o'quvchi ko'radigan "N kun qoldi" doim mos keladi.
+
+> Bu qo'lda uzaytirilgan muddatlarni ham qayta hisoblaydi — kurs sozlamasi
+> yakuniy hukm. Alohida o'quvchiga imtiyoz kerak bo'lsa, kursni saqlagandan
+> **keyin** "Muddatni uzaytirish" orqali beriladi.
+
+Seed skriptlari mavjud kursning sozlamalariga tegmaydi (narx, muddat, nashr
+holati, kategoriya) — ular faqat admin panelidan boshqariladi.
+
 ## Klaviatura mashqi kursi (typing)
 
 `Course.kind` maydoni kursning turini bildiradi: `STANDARD` (video, matn, test)
@@ -260,6 +280,23 @@ o'lchangan vaqtdan uzun davomiylik rad etiladi. Shunga qaramay natija baribir
 brauzerdan keladi — maxsus vosita yozgan odam sertifikat ololishi mumkin;
 bepul mashq kursi uchun bu maqbul deb hisoblandi.
 
+**Yulduzchali baho.** Har bir mashq yakunida natija foizi hisoblanadi:
+aniqlik 60%, maqsadli tezlikka yetish darajasi 40% (`lib/typing.js → scoreOf`).
+90% dan yuqori natija — to'liq 5 yulduz, pastida yarimtalab kamayadi.
+
+**Animatsiyalar darsga qarab o'zgaradi.** `TYPING_STYLES` da beshta uslub bor
+(kursor puls / sakrash / porlash, belgi paydo bo'lishi, tantana turi, konfetti);
+dars tartib raqami bo'yicha biriktiriladi — ketma-ket darslar bir xil
+ko'rinmaydi, ammo bitta dars har safar o'z uslubi bilan ochiladi.
+`prefers-reduced-motion` yoqilgan bo'lsa animatsiyalar butunlay o'chadi.
+
+**Rekordlar** (`/api/typing/leaderboard`) — kurs darslari va erkin mashq
+natijalari birga hisoblanib, eng tez yozgan 20 ta foydalanuvchi ko'rsatiladi
+(ism, tezlik, aniqlik, manba, urinishlar soni; o'z qatoringiz ajratib turadi).
+Jadvalga faqat **kamida 100 belgi va 15 soniya** davom etgan urinishlar kiradi —
+qisqa mashqda tezlik sun'iy ravishda yuqori chiqadi va ro'yxatni buzardi.
+Ro'yxatdan tashqarida qolsangiz ham o'z o'rningiz alohida ko'rsatiladi.
+
 **Erkin mashq** (`/api/typing/practice`) — Monkeytype uslubidagi vaqtli test:
 15/30/60/120 soniya yoki 40/60/100/200 so'z, tasodifiy o'zbek so'zlari
 (`backend/src/utils/typingWords.js`), shaxsiy rekord bilan. Matnni server tuzadi
@@ -278,6 +315,63 @@ qatorga teng — matn qisqa bo'lsa ham sahifa "sakramaydi".
 
 > Mobil qurilmada mashq ishlaydi, ammo pleer "bu mashq kompyuter klaviaturasi
 > uchun" degan ogohlantirish ko'rsatadi va klaviatura tasvirini yashiradi.
+
+## IELTS Computer Writing moduli
+
+Klaviatura kursi ichidagi bo'lim (`Erkin mashq` va `Rekordlar` orasida, yashil
+urg'u bilan). Kompyuterda IELTS yozish formatiga mashq: taymer, minimal so'z
+talabi, jonli hisob. **Rasmiy imtihon emas** — mashq bo'limi.
+
+Kirish: ro'yxatdan o'tgan va **"Klaviaturada tez yozish" kursiga yozilgan**
+foydalanuvchilar. Yo'nalishlar `/api/learn/:slug/ielts/...` ostida, ya'ni
+huquq mavjud `getAccess` bilan tekshiriladi (AI mentor bilan bir xil qoida).
+
+**To'rt rejim:**
+
+| Rejim | Nima bo'ladi |
+|---|---|
+| Writing Task 1 | Academic (diagramma) yoki General (xat) — 20 daqiqa, 150 so'z |
+| Writing Task 2 | Esse — 40 daqiqa, 250 so'z |
+| Typing Practice | Inglizcha paragrafni ko'chirib yozish |
+| Vocabulary Practice | IELTS akademik lug'ati (Easy / Medium / Hard) |
+
+Typing va Vocabulary rejimlari **mavjud `TypingPlayer` dvigatelini** ishlatadi —
+yangi yozish tizimi qurilmagan.
+
+**Topshiriqlar banki:** `npm run db:seed:ielts` — 10 Academic T1, 10 General T1,
+20 Task 2, 6 lug'at to'plami (60 so'z), 20 paragraf. Mazmun
+`backend/prisma/ieltsTasks.js` da; seed `code` bo'yicha faqat yetishmayotganini
+qo'shadi va **mavjudini qayta yozmaydi** (admin tahriri saqlanadi).
+
+**Diagrammalar.** Line/Bar/Pie/Table uchun rasm emas, **ma'lumotning o'zi**
+saqlanadi (`chartData`: yorliqlar + seriyalar) va sayt uni SVG bilan chizadi:
+yangi kutubxona kerak emas, ranglar saytniki, har qanday ekranda tiniq. Eng
+muhimi — **AI baholovchi sonlarni matn sifatida o'qiydi** va talabaning
+ma'lumot haqidagi da'volarini tekshira oladi. Process va Map uchun esa admin
+panel orqali rasm yuklanadi; rasm yuklanmaguncha o'quvchiga inglizcha matnli
+tavsif ko'rsatiladi (topshiriq baribir ishlaydi).
+
+**Vaqt va matn xavfsizligi.** Taymer birinchi harfda boshlanadi. Vaqt tugaganda
+muharrir qulflanadi va javob **avtomatik yuboriladi**. Bundan tashqari qoralama
+har o'zgarishda `localStorage` ga yoziladi — sahifa yangilansa yoki brauzer
+yopilsa ham matn tiklanadi.
+
+**AI baholash** (`utils/ieltsGrader.js`) — "Esseni baholash" tugmasi bosilganda
+ishlaydi (avtomatik emas: token sarfi nazorat qilinadi). Gemini 4 ta IELTS
+mezoni bo'yicha taxminiy ball, o'zbekcha izoh va talabaning o'z matnidan olingan
+tuzatish namunalarini qaytaradi. Natija urinishga saqlanadi — takroriy so'rovda
+qayta hisoblanmaydi. Chegara: soatiga 10 ta esse; har chaqiruv `AiUsage` ga
+yoziladi. Talabaning matni ko'rsatma emas, **ma'lumot** sifatida uzatiladi
+(prompt-injection himoyasi). Ekranda "taxminiy baho, rasmiy IELTS natijasi emas"
+deb yozib qo'yilgan.
+
+**Admin:** `Ta'lim → IELTS topshiriqlari` — savol matni, diagramma jadvali,
+rasm yuklash, minimal so'z, davomiylik, faol/nofaol. Ishlangan topshiriqni
+o'chirib bo'lmaydi (tarix buzilmasligi uchun) — uni nofaol qilish taklif etiladi.
+
+> IELTS urinishlari kurs progressiga, sertifikatga va klaviatura "Rekordlar"
+> jadvaliga ta'sir qilmaydi — inglizcha va o'zbekcha yozish tezligini bitta
+> ro'yxatda solishtirish adolatsiz bo'lardi.
 
 ## Telegram bot
 

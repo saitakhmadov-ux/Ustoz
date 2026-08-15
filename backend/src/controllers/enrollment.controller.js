@@ -86,8 +86,13 @@ const enroll = asyncHandler(async (req, res) => {
     if (expired && (course.isFree || course.price === 0)) {
       const renewed = await prisma.enrollment.update({
         where: { id: existing.id },
-        // Yangi muddat — eski ogohlantirish belgisi bekor qilinadi
-        data: { expiresAt: computeExpiry(accessMonthsFor(course)), expiryWarnedAt: null },
+        // Yangi davr boshlandi: startedAt yangilanadi (muddat shundan
+        // hisoblanadi), eski ogohlantirish belgisi bekor qilinadi
+        data: {
+          startedAt: new Date(),
+          expiresAt: computeExpiry(accessMonthsFor(course)),
+          expiryWarnedAt: null,
+        },
       });
       return res.json({ success: true, message: 'Foydalanish muddati yangilandi', enrollment: renewed, renewed: true });
     }
@@ -99,8 +104,14 @@ const enroll = asyncHandler(async (req, res) => {
     throw ApiError.badRequest('Bu pullik kurs. Iltimos, avval to\'lovni amalga oshiring');
   }
 
+  const now = new Date();
   const enrollment = await prisma.enrollment.create({
-    data: { userId: req.user.id, courseId, expiresAt: computeExpiry(accessMonthsFor(course)) },
+    data: {
+      userId: req.user.id,
+      courseId,
+      startedAt: now,
+      expiresAt: computeExpiry(accessMonthsFor(course), now),
+    },
   });
 
   // Bildirishnomalar javobni kutib turmaydi (ichida xatolar ushlanadi)

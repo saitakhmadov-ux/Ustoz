@@ -32,6 +32,7 @@ async function pickCategory() {
 async function main() {
   const category = await pickCategory();
 
+  // Kurs birinchi marta yaratilganda qo'llanadigan qiymatlar
   const base = {
     title: COURSE.title,
     description: COURSE.description,
@@ -46,12 +47,20 @@ async function main() {
     categoryId: category.id,
   };
 
-  const course = await prisma.course.upsert({
-    where: { slug: COURSE.slug },
-    update: base,
-    create: { slug: COURSE.slug, ...base },
-  });
+  // MUHIM: kurs allaqachon mavjud bo'lsa, uning sozlamalariga TEGILMAYDI.
+  // Narx, foydalanish muddati, nashr holati, kategoriya va sarlavha —
+  // bularning hammasi bosh admin panelidan boshqariladi. Aks holda seed
+  // qayta ishga tushirilganda admin kiritgan qiymatlar bekor bo'lardi.
+  // Faqat `kind` majburlanadi — u kursning tuzilishini belgilaydi.
+  const existing = await prisma.course.findUnique({ where: { slug: COURSE.slug } });
+  const course = existing
+    ? await prisma.course.update({ where: { id: existing.id }, data: { kind: 'TYPING' } })
+    : await prisma.course.create({ data: { slug: COURSE.slug, ...base } });
+
   console.log(`📘 Kurs: ${course.title} (${course.slug}) — kategoriya: ${category.name}`);
+  if (existing) {
+    console.log('   (mavjud kurs — sozlamalari o\'zgartirilmadi, faqat darslar yangilandi)');
+  }
 
   let lessonCount = 0;
   for (const [si, s] of SECTIONS.entries()) {

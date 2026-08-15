@@ -14,6 +14,7 @@
     "prisma:studio": "prisma studio",
     "db:seed": "node prisma/seed.js",
     "db:seed:typing": "node prisma/seed_typing.js",
+    "db:seed:ielts": "node prisma/seed_ielts.js",
     "mail:test": "node scripts/test-mail.js"
   },
   "prisma": {

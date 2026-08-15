@@ -35,6 +35,9 @@ export default function TypingPlayer({
   busy = false, // natija serverga yuborilmoqda
   onFinish, // (typed, durationMs)
   onRestart, // yangi urinish so'raladi (server yangi matn beradi)
+  // Darsga biriktirilgan animatsiya uslubi (lib/typing.js -> styleFor).
+  // Ketma-ket darslar bir xil ko'rinmasligi uchun har darsda boshqacha.
+  anim = {},
 }) {
   const [typed, setTyped] = useState('');
   const [startedAt, setStartedAt] = useState(null);
@@ -220,10 +223,16 @@ export default function TypingPlayer({
               const isTyped = i < typed.length;
               const correct = isTyped && normalizeChar(typed[i]) === normalizeChar(ch);
               const isCurrent = i === typed.length;
+              // Animatsiya sinfi belgining holati o'zgarganda qo'shiladi,
+              // shuning uchun har bir belgi aynan bir marta "jonlanadi".
+              const animClass = isCurrent
+                ? anim.cursor || ''
+                : isTyped && (correct ? anim.hit || '' : 'tp-miss-shake');
               return (
                 <span
                   key={i}
-                  className={`${isCurrent ? 'rounded-sm bg-primary/15 text-ink underline decoration-primary decoration-2 underline-offset-4' : ''}
+                  className={`inline-block ${animClass || ''}
+                    ${isCurrent ? 'rounded-sm bg-primary/15 text-ink underline decoration-primary decoration-2 underline-offset-4' : ''}
                     ${isTyped ? (correct ? 'text-ink' : 'rounded-sm bg-red-100 text-red-600') : ''}
                     ${!isTyped && !isCurrent ? 'text-slate-400' : ''}`}
                 >

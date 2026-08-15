@@ -6,6 +6,27 @@ const { courseSchema } = require('../validators/course.validator');
 const { uniqueSlug } = require('../utils/slug');
 const { assertCourseAccess } = require('../utils/courseAccess');
 const { attachRatingsToCourses, getCourseRating } = require('../utils/rating');
+const { accessMonthsFor } = require('../utils/learnProgress');
+
+// Kursning foydalanish muddati o'zgarganda barcha yozilishlarni qayta hisoblaydi.
+//
+// Muddat DOIM yozilishning `startedAt` sanasidan boshlab hisoblanadi, ya'ni
+// natija bosh admin panelidagi qiymatga to'liq bo'ysunadi: muddatni qisqartirsa
+// qisqaradi, uzaytirsa uzayadi. `expiryWarnedAt` tozalanadi — yangi muddat
+// uchun ogohlantirish qaytadan yuboriladi.
+//
+// Qaytaradi: nechta yozilish yangilangani.
+async function syncEnrollmentExpiry(courseId, months) {
+  // `::int` majburiy: Prisma sonni bigint qilib uzatadi, make_interval esa
+  // integer kutadi (aks holda "функция make_interval(months => bigint)
+  // не существует" xatosi chiqadi).
+  return prisma.$executeRaw`
+    UPDATE "Enrollment"
+    SET "expiresAt" = "startedAt" + make_interval(months => ${months}::int),
+        "expiryWarnedAt" = NULL
+    WHERE "courseId" = ${courseId}
+  `;
+}
 
 // Kartochka uchun kurs shakli
 const cardSelect = {
@@ -214,7 +235,30 @@ const update = asyncHandler(async (req, res) => {
   }
 
   const course = await prisma.course.update({ where: { id: req.params.id }, data: updateData });
-  res.json({ success: true, message: 'Kurs yangilandi', course });
+
+  // Muddat sozlamasi yuborilgan bo'lsa — mavjud yozilishlar ham shu qiymatga
+  // keltiriladi. Aks holda expiresAt yozilish paytida "muzlab" qolar edi va
+  // paneldagi qiymat bilan o'quvchi ko'radigan "N kun qoldi" bir-biriga mos
+  // kelmasdi (aynan shu nomuvofiqlik kuzatilgan).
+  //
+  // DIQQAT: bu qo'lda uzaytirilgan muddatlarni ham qayta hisoblaydi —
+  // kurs sozlamasi yakuniy hukm. Alohida o'quvchiga imtiyoz kerak bo'lsa,
+  // kursni saqlagandan KEYIN "Muddatni uzaytirish" orqali beriladi.
+  const monthsTouched = isAdmin
+    && (data.accessMonths !== undefined || data.level !== undefined);
+  const months = accessMonthsFor(course);
+  const enrollmentsUpdated = monthsTouched
+    ? await syncEnrollmentExpiry(course.id, months)
+    : 0;
+
+  res.json({
+    success: true,
+    message: enrollmentsUpdated > 0
+      ? `Kurs yangilandi. Muddat (${months} oy) ${enrollmentsUpdated} ta o'quvchiga qo'llandi.`
+      : 'Kurs yangilandi',
+    course,
+    enrollmentsUpdated,
+  });
 });
 
 // PATCH /api/courses/:id/publish (admin) — nashr holatini almashtirish

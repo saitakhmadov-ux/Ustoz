@@ -4,6 +4,7 @@ const admin = require('../controllers/admin.controller');
 const cur = require('../controllers/curriculum.controller');
 const notif = require('../controllers/notification.controller');
 const aiAdmin = require('../controllers/ai.admin.controller');
+const ieltsAdmin = require('../controllers/ielts.admin.controller');
 const teaching = require('../controllers/teaching.controller');
 const earnings = require('../controllers/earnings.controller');
 const promo = require('../controllers/promo.controller');
@@ -151,6 +152,12 @@ router.delete('/lessons/:id', adminOrInstructor, cur.deleteLesson);
 // Klaviatura mashqi (TYPING kurslaridagi darslar uchun)
 router.put('/lessons/:id/typing', adminOrInstructor, cur.saveDrill);
 router.delete('/lessons/:id/typing', adminOrInstructor, cur.deleteDrill);
+
+// IELTS topshiriqlari (faqat bosh admin)
+router.get('/ielts/tasks', adminOnly, ieltsAdmin.list);
+router.post('/ielts/tasks', adminOnly, ieltsAdmin.create);
+router.put('/ielts/tasks/:id', adminOnly, ieltsAdmin.update);
+router.delete('/ielts/tasks/:id', adminOnly, ieltsAdmin.remove);
 
 // Test savollari
 router.post('/questions', adminOrInstructor, cur.createQuestion);

@@ -10,5 +10,6 @@ router.use(protect); // mashq natijasi hisobga bog'lanadi
 router.get('/practice', ctrl.startPractice);
 router.post('/practice', ctrl.submitPractice);
 router.get('/records', ctrl.records);
+router.get('/leaderboard', ctrl.leaderboard);
 
 module.exports = router;

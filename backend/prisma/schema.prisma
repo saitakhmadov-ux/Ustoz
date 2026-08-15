@@ -66,6 +66,28 @@ enum TypingMode {
   TIMED // vaqtga qarshi: matn takrorlanadi, davomiylik belgilangan
 }
 
+// IELTS mashq topshirig'ining turi
+enum IeltsTaskType {
+  ACADEMIC_T1 // Academic Writing Task 1 — diagramma tavsifi
+  GENERAL_T1 // General Training Task 1 — xat
+  TASK2 // Writing Task 2 — esse
+  TYPING // inglizcha paragrafni ko'chirib yozish
+  VOCAB // IELTS lug'ati so'zlarini terish
+}
+
+// Academic Task 1 dagi vizual turi.
+// LINE/BAR/PIE/TABLE — ma'lumot `chartData` da, sayt o'zi chizadi.
+// PROCESS/MAP — sxema/xarita, admin rasm yuklaydi (`imageUrl`).
+enum IeltsVisual {
+  NONE
+  LINE
+  BAR
+  PIE
+  TABLE
+  PROCESS
+  MAP
+}
+
 // Telegram ulash havolasining maqsadi
 enum TelegramLinkPurpose {
   LINK // mavjud (tasdiqlangan) hisobni botga ulash
@@ -125,6 +147,7 @@ model User {
   taskProgress TaskProgress[] // vazifa-darajali progress
   quizAttempts QuizAttempt[] // test urinishlari (kuldown)
   typingAttempts TypingAttempt[] // klaviatura mashqi urinishlari
+  ieltsAttempts  IeltsAttempt[] // IELTS mashq urinishlari
   taughtCourses Course[] @relation("CourseInstructor") // ustoz sifatida biriktirilgan kurslar
 
   notifications     Notification[] @relation("UserNotifications") // qabul qilingan xabarlar
@@ -402,11 +425,89 @@ model TypingAttempt {
   @@index([userId, createdAt])
 }
 
+// IELTS mashq topshirig'i. Barcha savol/matn ma'lumoti shu yerda —
+// komponentlar ichida emas. Admin panelidan boshqariladi, seed esa faqat
+// yetishmayotganini qo'shadi (`code` bo'yicha), mavjudini qayta yozmaydi.
+model IeltsTask {
+  id   String @id @default(cuid())
+  code String @unique // barqaror identifikator (seed uchun): "AC-T1-01"
+
+  type    IeltsTaskType
+  subtype String? // "Line Graph" | "Formal Letter" | "Opinion Essay" ...
+  level   String? // VOCAB uchun: EASY | MEDIUM | HARD
+  title   String // admin ro'yxatidagi qisqa nom
+  prompt  String  @db.Text // IELTS uslubidagi savol (inglizcha)
+
+  // Academic Task 1 vizuali
+  visual      IeltsVisual @default(NONE)
+  chartData   Json? // { labels:[], series:[{name, values:[]}], unit, caption }
+  imageUrl    String? // PROCESS / MAP uchun yuklangan rasm
+  dataSummary String?     @db.Text // inglizcha qisqa tavsif: AI konteksti + alt matn
+
+  // TYPING paragrafi yoki VOCAB so'zlari (probel bilan)
+  body String? @db.Text
+
+  minWords    Int? // 150 (Task 1) / 250 (Task 2)
+  durationSec Int? // 1200 / 2400
+  active      Boolean @default(true)
+  order       Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attempts IeltsAttempt[]
+
+  @@index([type, active])
+}
+
+// IELTS mashq urinishi. Kurs progressiga, sertifikatga va klaviatura
+// "Rekordlar" jadvaliga TA'SIR QILMAYDI — bu alohida mashq tarixi.
+model IeltsAttempt {
+  id     String        @id @default(cuid())
+  userId String
+  taskId String?
+  type   IeltsTaskType
+
+  text  String @db.Text // yozilgan esse (TYPING/VOCAB da bo'sh)
+  words Int    @default(0)
+  chars Int    @default(0)
+  wpm   Int    @default(0)
+
+  // Faqat TYPING/VOCAB uchun (matn bilan solishtiriladi)
+  accuracy     Int?
+  errors       Int?
+  correctWords Int?
+
+  durationMs  Int
+  minWords    Int?
+  metMinWords Boolean?
+
+  // Gemini bahosi (tugma bosilganda hisoblanadi va shu yerda saqlanadi)
+  aiBand     Float? // taxminiy umumiy band (0..9) — rasmiy baho EMAS
+  aiCriteria Json? // 4 ta mezon: { name, band, comment }
+  aiFeedback String? @db.Text
+  aiStatus   String? // null = so'ralmagan | done | failed
+
+  createdAt DateTime @default(now())
+
+  user User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task IeltsTask? @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([taskId])
+}
+
 model Enrollment {
   id        String    @id @default(cuid())
   userId    String
   courseId  String
   createdAt DateTime  @default(now())
+  // Amaldagi foydalanish davrining boshlanishi. Qayta yozilganda (muddat
+  // yangilanganda) shu sana ham yangilanadi, createdAt esa birinchi yozilish
+  // sanasi bo'lib qoladi. Muddat DOIM shu sanadan hisoblanadi — shu sababli
+  // admin kursning muddatini o'zgartirsa, mavjud yozilishlar ham qayta
+  // hisoblanadi (course.controller.js -> syncEnrollmentExpiry).
+  startedAt DateTime  @default(now())
   // Kursdan foydalanish muddati tugaydigan sana. Kurs qiyinchilik darajasiga
   // qarab yoziluvda hisoblanadi (BEGINNER 1 oy, INTERMEDIATE 2 oy, ADVANCED 3 oy).
   // null = eski (muddatsiz) yozilishlar bilan mosligi uchun.

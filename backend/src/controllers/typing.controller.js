@@ -121,4 +121,105 @@ const records = asyncHandler(async (req, res) => {
   res.json({ success: true, best, recent });
 });
 
-module.exports = { startPractice, submitPractice, records };
+// ---------- Rekordlar jadvali ----------
+//
+// Barcha urinishlar hisobga olinadi: erkin mashq ham, kurs darslari ham.
+//
+// MUHIM: qisqa mashqlarda tezlik sun'iy ravishda yuqori chiqadi (10 ta belgini
+// hamma ham tez uradi), shuning uchun jadvalga faqat YETARLI UZUN urinishlar
+// kiradi — aks holda birinchi darsni yozgan odam ro'yxat boshiga chiqib qolardi.
+const RANK_MIN_CHARS = 100;
+const RANK_MIN_MS = 15000;
+const RANK_LIMIT = 20;
+// Reyting o'rnini aniqlash uchun ko'riladigan maksimal foydalanuvchi soni
+const RANK_SCAN = 500;
+
+const rankWhere = {
+  chars: { gte: RANK_MIN_CHARS },
+  durationMs: { gte: RANK_MIN_MS },
+};
+
+// GET /api/typing/leaderboard — eng kuchli natijalar (top 20)
+const leaderboard = asyncHandler(async (req, res) => {
+  // 1) Har bir foydalanuvchining eng yaxshi tezligi
+  const grouped = await prisma.typingAttempt.groupBy({
+    by: ['userId'],
+    where: rankWhere,
+    _max: { wpm: true },
+    _count: { _all: true },
+    orderBy: { _max: { wpm: 'desc' } },
+    take: RANK_SCAN,
+  });
+
+  if (grouped.length === 0) {
+    return res.json({
+      success: true, rows: [], me: null, minChars: RANK_MIN_CHARS,
+    });
+  }
+
+  const top = grouped.slice(0, RANK_LIMIT);
+  const ids = top.map((g) => g.userId);
+
+  // 2) Shu tezlikdagi urinishning tafsilotlari (aniqlik, sana, manba)
+  const [attempts, users] = await Promise.all([
+    prisma.typingAttempt.findMany({
+      where: {
+        ...rankWhere,
+        OR: top.map((g) => ({ userId: g.userId, wpm: g._max.wpm })),
+      },
+      select: {
+        userId: true, wpm: true, accuracy: true, lessonId: true, createdAt: true,
+      },
+      orderBy: [{ accuracy: 'desc' }, { createdAt: 'asc' }],
+    }),
+    prisma.user.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, fullName: true },
+    }),
+  ]);
+
+  const bestOfUser = new Map();
+  for (const a of attempts) if (!bestOfUser.has(a.userId)) bestOfUser.set(a.userId, a);
+  const nameOf = new Map(users.map((u) => [u.id, u.fullName]));
+
+  const rows = top.map((g, i) => {
+    const best = bestOfUser.get(g.userId);
+    return {
+      rank: i + 1,
+      userId: g.userId,
+      fullName: nameOf.get(g.userId) || 'Foydalanuvchi',
+      wpm: g._max.wpm,
+      accuracy: best ? best.accuracy : null,
+      attempts: g._count._all,
+      source: best && best.lessonId ? 'lesson' : 'practice',
+      achievedAt: best ? best.createdAt : null,
+      isMe: g.userId === req.user.id,
+    };
+  });
+
+  // 3) Foydalanuvchining o'z o'rni (ro'yxatga kirmagan bo'lsa ham ko'rsatamiz)
+  const myIndex = grouped.findIndex((g) => g.userId === req.user.id);
+  let me = null;
+  if (myIndex >= 0) {
+    const mine = grouped[myIndex];
+    me = {
+      rank: myIndex + 1,
+      wpm: mine._max.wpm,
+      attempts: mine._count._all,
+      inTop: myIndex < RANK_LIMIT,
+    };
+  }
+
+  return res.json({
+    success: true,
+    rows,
+    me,
+    total: grouped.length,
+    minChars: RANK_MIN_CHARS,
+    minSec: RANK_MIN_MS / 1000,
+  });
+});
+
+module.exports = {
+  startPractice, submitPractice, records, leaderboard,
+};

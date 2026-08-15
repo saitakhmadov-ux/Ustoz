@@ -146,3 +146,60 @@ export const MODE_LABEL = {
   TEXT: 'Matn',
   TIMED: 'Vaqtli test',
 };
+
+// ---------- Baho (yulduzchalar) ----------
+
+// Mashq natijasining umumiy foizi: aniqlik va maqsadli tezlikka yetish
+// darajasidan iborat. Aniqlik og'irroq (60%), chunki xatosiz yozish tezlikdan
+// muhimroq — tezlik mashq bilan o'zi keladi.
+export function scoreOf(result, target) {
+  const accuracy = Math.max(0, Math.min(100, result?.accuracy ?? 0));
+  const targetWpm = target?.wpm > 0 ? target.wpm : null;
+  if (!targetWpm) return Math.round(accuracy);
+  const speed = Math.max(0, Math.min(100, ((result?.wpm ?? 0) / targetWpm) * 100));
+  return Math.round(accuracy * 0.6 + speed * 0.4);
+}
+
+// Foizdan yulduzchalar soni (yarimta aniqligida).
+// 90% dan yuqori natija — to'liq 5 ta yulduz.
+export function starsOf(score) {
+  if (score >= 90) return 5;
+  return Math.max(0.5, Math.round((score / 20) * 2) / 2);
+}
+
+// Yulduzchalar soniga qarab qisqa izoh
+export function starLabel(stars) {
+  if (stars >= 5) return "A'lo!";
+  if (stars >= 4) return 'Juda yaxshi';
+  if (stars >= 3) return 'Yaxshi';
+  if (stars >= 2) return "O'rtacha";
+  return 'Mashq kerak';
+}
+
+// ---------- Dars uslublari (animatsiya) ----------
+//
+// Har bir darsga ro'yxatdagi uslublardan biri navbat bilan biriktiriladi
+// (dars tartib raqami bo'yicha) — shunda ketma-ket darslar bir xil ko'rinmaydi,
+// ammo bitta darsning uslubi har safar bir xil bo'ladi.
+export const TYPING_STYLES = [
+  {
+    id: 'pulse', cursor: 'tp-cursor-pulse', hit: 'tp-hit-pop', win: 'tp-win-rise', confetti: false,
+  },
+  {
+    id: 'bounce', cursor: 'tp-cursor-bounce', hit: 'tp-hit-drop', win: 'tp-win-zoom', confetti: false,
+  },
+  {
+    id: 'glow', cursor: 'tp-cursor-glow', hit: 'tp-hit-pop', win: 'tp-win-rise', confetti: true,
+  },
+  {
+    id: 'calm', cursor: '', hit: 'tp-hit-drop', win: 'tp-win-zoom', confetti: false,
+  },
+  {
+    id: 'festive', cursor: 'tp-cursor-bounce', hit: 'tp-hit-pop', win: 'tp-win-zoom', confetti: true,
+  },
+];
+
+export function styleFor(index = 0) {
+  const i = Number.isInteger(index) && index >= 0 ? index : 0;
+  return TYPING_STYLES[i % TYPING_STYLES.length];
+}

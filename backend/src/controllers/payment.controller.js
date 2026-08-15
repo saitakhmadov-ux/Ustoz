@@ -67,16 +67,20 @@ const createPayment = asyncHandler(async (req, res) => {
   // va to'lov tasdiqlangach webhook orqali holat yangilanadi.
   if (env.paymentMock) {
     // To'lovni darhol "to'langan" deb belgilaymiz va kursga yozamiz (muddat bilan)
-    const expiresAt = computeExpiry(accessMonthsFor(course));
+    const startedAt = new Date();
+    const expiresAt = computeExpiry(accessMonthsFor(course), startedAt);
     const enrollmentOp = existingEnrollment
       ? prisma.enrollment.update({
           where: { id: existingEnrollment.id },
           // muddati tugagan yozilishni yangilaymiz (progress saqlanadi);
-          // yangi muddat uchun ogohlantirish belgisi ham tozalanadi
-          data: { expiresAt, expiryWarnedAt: null },
+          // yangi davr boshlangani uchun startedAt ham yangilanadi, yangi
+          // muddat uchun ogohlantirish belgisi tozalanadi
+          data: { startedAt, expiresAt, expiryWarnedAt: null },
         })
       : prisma.enrollment.create({
-          data: { userId: req.user.id, courseId, expiresAt },
+          data: {
+            userId: req.user.id, courseId, startedAt, expiresAt,
+          },
         });
     const [updated] = await prisma.$transaction([
       prisma.payment.update({
