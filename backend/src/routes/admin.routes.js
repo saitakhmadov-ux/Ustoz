@@ -11,6 +11,7 @@ const promo = require('../controllers/promo.controller');
 const { uploadFile, uploadImageFile } = require('../controllers/upload.controller');
 const settings = require('../controllers/settings.controller');
 const system = require('../controllers/system.controller');
+const db = require('../controllers/db.controller');
 const { upload, uploadImage } = require('../middleware/upload');
 const { protect, adminOnly, adminOrInstructor } = require('../middleware/auth');
 
@@ -76,6 +77,13 @@ router.post('/telegram/test', adminOnly, system.testTelegram);
 // Bot himoyasi (Cloudflare Turnstile) kalitlari (faqat bosh admin)
 router.get('/security', adminOnly, system.getSecurity);
 router.put('/security', adminOnly, system.updateSecurity);
+
+// Baza: holat, tozalash muddatlari va zaxira (faqat bosh admin).
+// Tiklash (restore) ataylab yo'q — terminal orqali, README ga qarang.
+router.get('/db/stats', adminOnly, db.stats);
+router.put('/db/retention', adminOnly, db.updateRetention);
+router.post('/db/cleanup', adminOnly, db.cleanup);
+router.get('/db/backup', adminOnly, db.backup);
 
 // Sharhlar moderatsiyasi (faqat bosh admin)
 router.get('/reviews', adminOnly, admin.listReviews);

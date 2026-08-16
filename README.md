@@ -127,6 +127,7 @@ Seed 6 ta kategoriya va 6 ta namunaviy kurs (bepul + pullik, bo'lim/dars/testlar
 | `npm run prisma:studio` | Ma'lumotlar bazasini vizual ko'rish |
 | `npm run prisma:migrate` | Yangi migratsiya yaratish |
 | `npm run db:seed` | Boshlang'ich ma'lumotlarni qayta yuklash |
+| `npm run db:restore -- <fayl>` | Bazani zaxiradan tiklash (panelda emas — pastga qarang) |
 
 ## Foydalanuvchi rollari
 
@@ -198,6 +199,7 @@ deploy qilish shart emas:
 | **Aloqa va himoya** → Email (SMTP) | Jo'natuvchi, SMTP server/port/SSL, login-parol, mock rejim, sinov xati |
 | **Aloqa va himoya** → Telegram bot | Bot tokeni, yoqish/o'chirish, sinov xabari, ulangan hisoblar soni |
 | **Aloqa va himoya** → CAPTCHA | Cloudflare Turnstile ommaviy va maxfiy kalitlari |
+| **Baza** | Jadval hajmlari, avtomatik tozalash muddatlari, zaxira yuklab olish |
 
 **"Kontaktlar" sahifasi** (`Bosh sahifa` → `Kontaktlar`): sarlavha, aloqa
 kartochkalari (nomi, qiymati, ikonka va ixtiyoriy havola — ko'pi bilan 10 ta),
@@ -579,23 +581,83 @@ webhook, lokalda polling. Webhook so'rovlari maxfiy sarlavha bilan tekshiriladi.
 
 ### Cheksiz o'sadigan jadvallar va tozalash
 
-`backend/src/jobs/dbCleanup.js` kuniga bir marta vaqtinchalik yozuvlarni
-o'chiradi. Muddatlar shu faylning boshida — kerak bo'lsa o'zgartiring:
+`backend/src/jobs/dbCleanup.js` kuniga bir marta eskirgan va haddan ortiq
+to'plangan yozuvlarni o'chiradi. **Muddatlar admin panelidan boshqariladi**
+(*Baza* bo'limi) — kodni o'zgartirish yoki qayta deploy qilish shart emas.
 
-| Jadval | Nima o'chadi | Muddat |
-|--------|--------------|--------|
+| Jadval | Nima o'chadi | Standart |
+|--------|--------------|----------|
 | `VerificationCode` | muddati o'tgan tasdiqlash kodlari | 1 kun |
 | `TelegramLink` | ishlatilgan / eskirgan ulash havolalari | 7 kun |
-| `Notification` | **faqat o'qilgan** eski bildirishnomalar | 180 kun |
+| `Notification` | o'qilgan bildirishnomalar | 180 kun |
+| `Notification` | o'qilmagan bildirishnomalar | 365 kun |
 | `AiUsage` | AI so'rovlari tarixi (analitika) | 365 kun |
+| `TypingAttempt` | klaviatura mashqi urinishlari | 180 kun · oxirgi 20 ta |
+| `QuizAttempt` | test urinishlari | 365 kun · oxirgi 20 ta |
+| `IeltsAttempt` | IELTS insholari (matn + AI izohi) | 365 kun · oxirgi 10 ta |
+
+Urinishlar uchun qoida ikki shartli: yozuv **eski** bo'lsa yoki **chegaradan
+ortiq** bo'lsa o'chadi. "Oxirgi N ta" — har (o'quvchi × dars) juftligi uchun
+alohida, ya'ni o'quvchi o'z so'nggi natijalarini doim ko'radi. Bu shart Prisma
+bilan ifodalanmaydi, shuning uchun `ROW_NUMBER()` bilan xom SQL ishlatilgan va
+o'chirish 5000 tadan porsiyalab bajariladi (uzoq lock bo'lmasligi uchun).
 
 **Hech qachon o'chirilmaydi:** to'lovlar, daromadlar, o'tkazmalar, sertifikatlar,
-yozilishlar, progress va sharhlar — bular hisobot va huquqiy ma'lumot.
-O'qilmagan bildirishnoma ham o'chirilmaydi.
+yozilishlar, progress (`TaskProgress` / `LessonProgress`) va sharhlar — bular
+hisobot va huquqiy ma'lumot. Urinishlar o'chsa ham o'quvchining bajargan vazifasi
+va sertifikati saqlanadi, chunki ular alohida jadvalda.
 
-Nima uchun muhim: eng tez o'sadigan jadval — `AiUsage` (har savol = bitta qator).
-O'rtacha qator ~170 bayt. 1000 faol o'quvchi kuniga 3 tadan savol bersa yiliga
-~1.1 mln qator ≈ **0.2 GB**; tozalashsiz bu har yili ortib boradi.
+Nima uchun muhim: `AiUsage` har savolda, `TypingAttempt` har mashqda, `QuizAttempt`
+har testda bitta qator qo'shadi. 1000 faol o'quvchi kuniga 3 tadan savol bersa
+yiliga ~1.1 mln qator ≈ **0.2 GB** — va bu faqat bitta jadval.
+
+`runOnce({ dryRun: true })` hech narsa o'chirmasdan nechta qator tegishini
+qaytaradi — panelda "Nima o'chishini ko'rish" tugmasi shuni ishlatadi.
+
+### Zaxira (backup)
+
+Admin panel → **Baza** → *Zaxira nusxa*. Ikki format:
+
+| Format | Fayl | Izoh |
+|--------|------|------|
+| **JSON** (asosiy) | `.ndjson.gz` | Hech qanday tashqi dastur talab qilmaydi — Railway'da ham ishlaydi |
+| **SQL** (qo'shimcha) | `.dump` | `pg_dump` custom formati; faqat server'da `pg_dump` bo'lsa ko'rinadi |
+
+JSON zaxirada jadvallar ro'yxati **Prisma sxemasidan** (`Prisma.dmmf`) o'qiladi
+va tashqi kalitlar bo'yicha tartiblanadi — shuning uchun sxemaga **yangi model
+qo'shilsa, u avtomatik zaxiraga tushadi**, `backend/src/utils/backup.js` ga hech
+narsa yozish kerak emas. Fayl oqim bilan yoziladi: butun baza server xotirasiga
+yig'ilmaydi.
+
+Fayl boshida sarlavha bor: yaratilgan vaqt, oxirgi migratsiya nomi, jadvallar
+ro'yxati, har jadvaldagi qatorlar soni va **sxema izi** (tiklashda mos-nomosligini
+tekshirish uchun).
+
+> ⚠️ Zaxira faylida parol hash'lari, emaillar, Telegram chat ID lari va
+> `SiteSetting` dagi maxfiy kalitlar (bot tokeni, SMTP paroli, AI kaliti) bo'ladi.
+> Uni ochiq joyga qo'ymang.
+
+### Tiklash (restore)
+
+Panelda tiklash tugmasi **ataylab yo'q** — bitta tasodifiy bosish butun bazani
+almashtirib yuborishi mumkin. Tiklash serverga kirish huquqi bo'lgan odam
+qo'lida, terminal orqali:
+
+```bash
+npm --prefix backend run db:restore -- zaxira.ndjson.gz
+```
+
+Skript sxema izini solishtiradi, `TIKLASH` deb yozishni so'raydi, so'ng barcha
+jadvalni teskari tartibda tozalab, to'g'ri tartibda qaytaradi — hammasi **bitta
+tranzaksiyada**, ya'ni o'rtada xato bo'lsa baza umuman o'zgarmaydi.
+Bayroqlar: `--yes` (tasdiq so'ramaydi), `--force` (sxema izi mos kelmasa ham
+davom etadi, nomaʼlum jadval/maydonlarni tashlab ketadi).
+
+SQL zaxira uchun odatdagi buyruq:
+
+```bash
+pg_restore --clean --if-exists --no-owner --dbname "$DATABASE_URL" zaxira.dump
+```
 
 ### Indekslar
 
@@ -617,20 +679,32 @@ tez-tez o'qiladi — har bot xabari, har AI savoli, har bosh sahifa ochilishi.
 `utils/settings.js` ularni 60 soniya keshlaydi va **`setSetting` chaqirilganda
 keshni darhol bo'shatadi** — admin paneldagi o'zgarish o'sha zahoti amal qiladi.
 
-### Ma'lum cheklov (hali tuzatilmagan)
+### Hisobotlar bazada hisoblanadi
 
-Admin va ustoz hisobotlarining bir qismi yozuvlarni **to'liq o'qib, xotirada**
-hisoblaydi (`take` chegarasi yo'q):
+Ilgari admin va ustoz hisobotlari yozuvlarni **to'liq o'qib, xotirada**
+hisoblardi. Endi hisob-kitob bazaga topshirilgan — Node'ga faqat tayyor
+yig'indilar va bitta sahifa keladi:
 
-- `earnings.controller.js` — `myEarnings`, `adminOverview`, CSV eksport
-- `teaching.controller.js` — `listStudents`, `getStudentDetail`
-- `admin.controller.js` — dashboard statistikasi
+| Joy | Nima o'zgardi |
+|-----|----------------|
+| `earnings.controller.js` — `myEarnings`, `adminOverview`, ustoz tafsiloti | `aggregate` (davr yig'indilari) va `groupBy` (kurs × manba, ustoz × manba) |
+| `earnings.controller.js` — CSV eksport | kursor bo'yicha 500 tadan o'qib, javobga oqim sifatida yoziladi (`startCsv`) |
+| `teaching.controller.js` — `listStudents` | filtr, holat, saralash, sahifalash va yorliq sonlari — bitta SQL so'rovda; batafsil progress faqat joriy sahifadagi o'quvchilar uchun |
+| `admin.controller.js` — `stats` | sonlar `count`/`aggregate`, grafik qatorlari sana kesimidagi SQL guruhlash |
+| `admin.controller.js` — `teachingStats` | `groupBy` (yozilish, sertifikat, to'lov) + faol o'quvchilar uchun `COUNT(DISTINCT)` |
 
-Hozirgi hajmda muammo yo'q. Sotuvlar ~50 000 dan, bitta kursdagi o'quvchilar
-~5 000 dan oshganda bu sahifalar sekinlashadi va serverning xotirasini yeydi.
-Yechim: `groupBy`/`aggregate` bilan hisobni bazaga o'tkazish — Telegram
-botidagi `/maosh` shu tarzda qayta yozilgan (`telegram/teacher.js`), o'sha
-naqshni shu uch faylga ham qo'llash kerak.
+Sana kesimidagi guruhlash `utils/reportSql.js` da (Prisma `groupBy` kun/oy
+bo'yicha guruhlay olmaydi), bo'sh kun/oylarni nol bilan to'ldirish esa
+`utils/period.js` da. Naqsh Telegram botidagi `/maosh` bilan bir xil
+(`telegram/teacher.js`).
+
+**Vaqt mintaqasi tuzatildi.** Grafik kalitlari endi hamma joyda Toshkent
+vaqti (UTC+5) bo'yicha. Ilgari boshqaruv panelidagi kunlik grafik UTC bo'yicha
+guruhlanardi — kechqurun 05:00 dan keyingi sotuv oldingi kunga tushib qolardi.
+
+**Bitta ma'lum farq:** `getStudentDetail` hali ham bitta o'quvchining barcha
+yozuvlarini o'qiydi. Bu hajm o'quvchilar soniga emas, kurs mazmuniga bog'liq
+(bitta o'quvchi × uning kurslari), shuning uchun o'sish xavfi yo'q.
 
 ## Rejadagi ishlar
 

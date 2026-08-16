@@ -405,6 +405,54 @@ async function getSecurityConfig() {
   };
 }
 
+// ---- Bazani tozalash muddatlari ----
+// `jobs/dbCleanup.js` shu qiymatlar bo'yicha ishlaydi. Paneldan o'zgartiriladi —
+// muddatni almashtirish uchun qayta deploy qilish shart emas.
+//
+// `...Days` — shuncha kundan eski yozuv o'chadi.
+// `...Keep`  — har (o'quvchi × dars/topshiriq) uchun shuncha oxirgi urinish
+//              yoshidan qat'i nazar saqlanadi; ortiqchasi o'chadi.
+// Ikkalasi ham 0 bo'lsa qoida o'chiriladi (hech narsa o'chirilmaydi).
+const DB_RETENTION_KEY = 'db_retention';
+
+const RETENTION_DEFAULTS = {
+  verificationCodeDays: 1, // muddati o'tgan tasdiqlash kodlari
+  telegramLinkDays: 7, // ishlatilgan/eskirgan Telegram ulash havolalari
+  notificationReadDays: 180, // O'QILGAN bildirishnomalar
+  notificationUnreadDays: 365, // o'qilmaganlari (ilgari umuman o'chmasdi)
+  aiUsageDays: 365, // AI so'rovlari tarixi
+  typingAttemptDays: 180, // klaviatura mashqi urinishlari
+  typingAttemptKeep: 20,
+  quizAttemptDays: 365, // test urinishlari
+  quizAttemptKeep: 20,
+  ieltsAttemptDays: 365, // IELTS insholari (matn + AI izohi bilan og'ir)
+  ieltsAttemptKeep: 10,
+};
+
+const RETENTION_MAX_DAYS = 3650; // 10 yil
+const RETENTION_MAX_KEEP = 1000;
+
+// Butun, manfiy bo'lmagan va chegara ichidagi qiymat; noto'g'ri bo'lsa standart
+function retentionNumber(value, fallback, max) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(0, Math.round(n)));
+}
+
+function normalizeRetention(raw) {
+  const cfg = raw && typeof raw === 'object' ? raw : {};
+  const out = {};
+  for (const [key, fallback] of Object.entries(RETENTION_DEFAULTS)) {
+    const max = key.endsWith('Keep') ? RETENTION_MAX_KEEP : RETENTION_MAX_DAYS;
+    out[key] = retentionNumber(cfg[key], fallback, max);
+  }
+  return out;
+}
+
+async function getRetentionConfig() {
+  return normalizeRetention(await getSetting(DB_RETENTION_KEY, null));
+}
+
 // ---- Ustoz maoshi (soliq va ulush foizlari) ----
 const { PAYOUT_KEY, normalizePayoutConfig } = require('./earnings');
 
@@ -418,6 +466,10 @@ module.exports = {
   getSetting,
   setSetting,
   clearSettingsCache,
+  DB_RETENTION_KEY,
+  RETENTION_DEFAULTS,
+  normalizeRetention,
+  getRetentionConfig,
   PAYOUT_KEY,
   getPayoutConfig,
   getHeroConfig,

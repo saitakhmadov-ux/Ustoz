@@ -15,6 +15,7 @@
     "db:seed": "node prisma/seed.js",
     "db:seed:typing": "node prisma/seed_typing.js",
     "db:seed:ielts": "node prisma/seed_ielts.js",
+    "db:restore": "node scripts/restore.js",
     "mail:test": "node scripts/test-mail.js"
   },
   "prisma": {
