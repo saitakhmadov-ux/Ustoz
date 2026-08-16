@@ -1,5 +1,20 @@
 // Davr (period) bo'yicha hisobot yordamchilari — dashboard va maosh hisobotlari
 // uchun umumiy. Sof funksiyalar (prisma'siz).
+//
+// Yig'indilar bazada hisoblanadi (`utils/reportSql.js`), bu yerdagi funksiyalar
+// esa faqat bazadan kelgan kun/oy kalitlari ustida ishlaydi: bo'sh oraliqlarni
+// nol bilan to'ldiradi. Kalitlar Toshkent vaqti (UTC+5) bo'yicha — bazadagi
+// guruhlash bilan bir xil bo'lishi shart.
+
+// Toshkent (UTC+5, yozgi vaqt yo'q). Kalitlarni shu surilma bilan hisoblaymiz,
+// shunda server qaysi mintaqada turishidan qat'i nazar natija bir xil bo'ladi.
+const TZ_OFFSET_HOURS = 5;
+const TZ_OFFSET_MS = TZ_OFFSET_HOURS * 60 * 60 * 1000;
+
+// Hozirgi vaqt Toshkent mintaqasida — kalitlar UTC getter'lari bilan o'qiladi
+function tzNow() {
+  return new Date(Date.now() + TZ_OFFSET_MS);
+}
 
 // Davr parametrini kunlarga aylantirish. 'all' -> null (butun davr).
 const PERIOD_DAYS = { '7d': 7, '30d': 30, '90d': 90, '1y': 365 };
@@ -26,103 +41,66 @@ function growthPct(current, previous) {
   return Math.round(((current - previous) / previous) * 100);
 }
 
-// Sanalar bo'yicha guruhlash (kunlik yoki oylik) — grafik uchun.
-// days null yoki 90 dan katta bo'lsa oylik guruhlanadi.
-function bucketByDate(rows, days, valueFn = () => 1) {
-  const monthly = days === null || days > 90;
-  const map = {};
-  for (const r of rows) {
-    const d = new Date(r.createdAt);
-    const key = monthly
-      ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-      : d.toISOString().slice(0, 10);
-    map[key] = (map[key] || 0) + valueFn(r);
-  }
-  return Object.entries(map)
-    .map(([date, value]) => ({ date, value }))
-    .sort((a, b) => a.date.localeCompare(b.date));
+// Grafik qanday kesimda chiziladi: qisqa davrlarda kunlik, uzunlarida oylik.
+function granularityFor(days) {
+  return days === null || days > 90 ? 'month' : 'day';
 }
 
-// Oxirgi N oy uchun uzluksiz qator (bo'sh oylar 0 bilan to'ldiriladi).
-// rows — { createdAt } bo'lgan yozuvlar; valueFn — har yozuvdan olinadigan qiymat.
-// Qaytaradi: [{ month: '2026-08', value }] — eskidan yangiga.
-function monthlySeries(rows, months = 12, valueFn = () => 1) {
-  const map = {};
-  for (const r of rows) {
-    const d = new Date(r.createdAt);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    map[key] = (map[key] || 0) + valueFn(r);
-  }
+// Oxirgi N kun uchun uzluksiz qator (bo'sh kunlar 0 bilan to'ldiriladi).
+// map — bazadan kelgan { '2026-08-16': 1200, ... }
+function fillDays(map, days) {
+  const now = tzNow();
+  const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
   const out = [];
-  const now = new Date();
-  for (let i = months - 1; i >= 0; i -= 1) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    out.push({ month: key, value: map[key] || 0 });
+  for (let i = days - 1; i >= 0; i -= 1) {
+    const key = new Date(today - i * 86400000).toISOString().slice(0, 10);
+    out.push({ key, value: map[key] || 0 });
   }
   return out;
 }
 
-// Sana kalitlari — mahalliy vaqt bo'yicha (monthlySeries bilan bir xil mantiq,
-// UTC'ga o'tib ketmaslik uchun)
-const pad = (n) => String(n).padStart(2, '0');
-const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-const monthKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
-
-// Oxirgi N kun uchun uzluksiz qator (bo'sh kunlar 0 bilan to'ldiriladi).
-function dailySeries(rows, days, valueFn = () => 1) {
-  const map = {};
-  for (const r of rows) {
-    const k = dayKey(new Date(r.createdAt));
-    map[k] = (map[k] || 0) + valueFn(r);
-  }
+// Oxirgi N oy uchun uzluksiz qator. map — { '2026-08': 1200, ... }
+function fillMonths(map, months = 12) {
+  const now = tzNow();
   const out = [];
-  const now = new Date();
-  for (let i = days - 1; i >= 0; i -= 1) {
-    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-    const k = dayKey(d);
-    out.push({ key: k, value: map[k] || 0 });
+  for (let i = months - 1; i >= 0; i -= 1) {
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+    const key = d.toISOString().slice(0, 7);
+    out.push({ key, value: map[key] || 0 });
   }
   return out;
 }
 
 // Eng eski yozuvdan bugungacha bo'lgan barcha oylar ("butun davr" uchun).
-function allMonthsSeries(rows, valueFn = () => 1) {
-  if (rows.length === 0) {
-    return monthlySeries(rows, 12, valueFn).map((m) => ({ key: m.month, value: m.value }));
-  }
-  const map = {};
-  let earliest = null;
-  for (const r of rows) {
-    const d = new Date(r.createdAt);
-    const k = monthKey(d);
-    map[k] = (map[k] || 0) + valueFn(r);
-    if (!earliest || d < earliest) earliest = d;
-  }
+// Yozuv bo'lmasa — oxirgi 12 oy nol bilan.
+function fillAllMonths(map) {
+  const keys = Object.keys(map).sort();
+  if (keys.length === 0) return fillMonths(map, 12);
+  const [year, month] = keys[0].split('-').map(Number);
+  const now = tzNow();
+  const end = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1);
   const out = [];
-  const now = new Date();
-  const cursor = new Date(earliest.getFullYear(), earliest.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth(), 1);
+  let cursor = Date.UTC(year, month - 1, 1);
   while (cursor <= end) {
-    const k = monthKey(cursor);
-    out.push({ key: k, value: map[k] || 0 });
-    cursor.setMonth(cursor.getMonth() + 1);
+    const d = new Date(cursor);
+    const key = d.toISOString().slice(0, 7);
+    out.push({ key, value: map[key] || 0 });
+    cursor = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1);
   }
   return out;
 }
 
 // Tanlangan davrga mos qator: qisqa davrlarda kunlik, uzunlarida oylik.
+// dayMap — kunlik kalitlar, monthMap — oylik kalitlar (bazadan).
 // Qaytaradi: { granularity: 'day'|'month', points: [{ key, value }] }
-function timeSeries(rows, days, valueFn = () => 1) {
-  if (days === null) return { granularity: 'month', points: allMonthsSeries(rows, valueFn) };
-  if (days <= 90) return { granularity: 'day', points: dailySeries(rows, days, valueFn) };
-  return {
-    granularity: 'month',
-    points: monthlySeries(rows, 12, valueFn).map((m) => ({ key: m.month, value: m.value })),
-  };
+function seriesFor(days, { dayMap = {}, monthMap = {} } = {}) {
+  if (days === null) return { granularity: 'month', points: fillAllMonths(monthMap) };
+  if (days <= 90) return { granularity: 'day', points: fillDays(dayMap, days) };
+  return { granularity: 'month', points: fillMonths(monthMap, 12) };
 }
 
 module.exports = {
-  PERIOD_DAYS, PERIODS, periodRange, growthPct, bucketByDate, monthlySeries,
-  dailySeries, allMonthsSeries, timeSeries,
+  PERIOD_DAYS, PERIODS, periodRange, growthPct,
+  TZ_OFFSET_HOURS, TZ_OFFSET_MS, tzNow,
+  granularityFor, fillDays, fillMonths, fillAllMonths, seriesFor,
 };

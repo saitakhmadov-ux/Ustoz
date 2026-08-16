@@ -1,6 +1,7 @@
 // Ustozning o'quvchilari — ro'yxat va tafsilot.
 // Bosh admin (ADMIN) barcha kurslarni, ustoz (INSTRUCTOR) faqat o'ziga
 // biriktirilgan kurslarni ko'radi. Egalik `courseScope` orqali cheklanadi.
+const { Prisma } = require('@prisma/client');
 const prisma = require('../config/prisma');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
@@ -26,12 +27,76 @@ function pageParams(query) {
 
 const STATUSES = ['completed', 'expired', 'notStarted', 'inProgress'];
 
+// ILIKE uchun qidiruv matnini qalqonlash — `%` va `_` oddiy belgi sifatida
+// qidirilsin (foydalanuvchi kiritgan matn shablonga aylanib ketmasin).
+function likePattern(q) {
+  return `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+}
+
+// Yozilishlar ustidagi umumiy SQL: har bir (o'quvchi × kurs) uchun bajarilgan
+// vazifalar soni, oxirgi faollik, sertifikat va shundan kelib chiqadigan HOLAT.
+//
+// Nega xom SQL: holat bo'yicha filtrlash, progress bo'yicha saralash va
+// yorliqlardagi sonlar butun ro'yxat ustida hisoblanadi. Buni xotirada qilish
+// uchun BARCHA TaskProgress yozuvlarini o'qish kerak edi (o'quvchi × dars ×
+// vazifa) — o'quvchilar soni o'sganda bu serverni yiqitadi. Endi hisob bazada
+// bajariladi, Node'ga faqat bitta sahifa keladi.
+function studentRowsSql({ ids, validKeys, totals, q }) {
+  const search = q
+    ? Prisma.sql`AND (u."fullName" ILIKE ${likePattern(q)} OR u.email ILIKE ${likePattern(q)})`
+    : Prisma.empty;
+  // Kurs -> undagi amaldagi vazifalar soni (progress foizi uchun)
+  const totalsValues = Prisma.join(
+    ids.map((id) => Prisma.sql`(${id}::text, ${totals.get(id) || 0}::int)`),
+    ', '
+  );
+  return Prisma.sql`
+    WITH prog AS (
+      SELECT tp."userId", s."courseId",
+             COUNT(*) FILTER (WHERE tp."taskKey" = ANY(${validKeys})) AS done
+      FROM "TaskProgress" tp
+      JOIN "Lesson" l ON l.id = tp."lessonId"
+      JOIN "Section" s ON s.id = l."sectionId"
+      WHERE s."courseId" = ANY(${ids})
+      GROUP BY 1, 2
+    ),
+    course_totals (course_id, total_tasks) AS (VALUES ${totalsValues})
+    SELECT e.id,
+           e."createdAt" AS enrolled_at,
+           u."fullName" AS full_name,
+           CASE
+             WHEN cert.id IS NOT NULL THEN 'completed'
+             WHEN e."expiresAt" IS NOT NULL AND e."expiresAt" <= now() THEN 'expired'
+             WHEN COALESCE(p.done, 0) = 0 THEN 'notStarted'
+             ELSE 'inProgress'
+           END AS status,
+           CASE
+             WHEN COALESCE(t.total_tasks, 0) = 0 THEN 0
+             ELSE ROUND(COALESCE(p.done, 0) * 100.0 / t.total_tasks)
+           END AS percent
+    FROM "Enrollment" e
+    JOIN "User" u ON u.id = e."userId"
+    LEFT JOIN "Certificate" cert ON cert."userId" = e."userId" AND cert."courseId" = e."courseId"
+    LEFT JOIN prog p ON p."userId" = e."userId" AND p."courseId" = e."courseId"
+    LEFT JOIN course_totals t ON t.course_id = e."courseId"
+    WHERE e."courseId" = ANY(${ids}) ${search}
+  `;
+}
+
+// Saralash tartibi — SQL ifodasi. Teng qiymatlarda tartib aniq bo'lishi uchun
+// har birida qo'shimcha mezon bor (sahifalar orasida yozuv takrorlanmasin).
+const ORDER_SQL = {
+  recent: Prisma.sql`r.enrolled_at DESC, r.id DESC`,
+  progress: Prisma.sql`r.percent DESC, r.enrolled_at DESC, r.id DESC`,
+  name: Prisma.sql`r.full_name ASC, r.id ASC`,
+};
+
 // GET /api/admin/teaching/students
 // Ustozning kurslariga yozilgan o'quvchilar ro'yxati (yozilish kesimida: o'quvchi × kurs).
 // Filtrlar: q (ism/email), courseId, status, sort. Sahifalash: page/limit.
 //
-// Ma'lumot hajmi seed darajasida bo'lgani uchun (teachingStats bilan bir xil yondashuv)
-// yozilishlar to'liq o'qiladi va filtrlash/saralash xotirada bajariladi.
+// Filtrlash, saralash, sahifalash va yorliq sonlari — bazada. Node'da faqat
+// joriy sahifadagi yozilishlar uchun batafsil progress hisoblanadi.
 const listStudents = asyncHandler(async (req, res) => {
   const { page, limit, skip } = pageParams(req.query);
   const q = (req.query.q || '').trim().toLowerCase();
@@ -62,9 +127,56 @@ const listStudents = asyncHandler(async (req, res) => {
     });
   }
 
-  const [enrollments, lessons, taskRows, certificates] = await Promise.all([
-    prisma.enrollment.findMany({
-      where: { courseId: { in: ids } },
+  // Kurs mazmuni — vazifa indeksi uchun. Hajmi darslar soniga bog'liq
+  // (o'quvchilar soniga emas), shuning uchun o'sishdan xavotir yo'q.
+  const lessons = await prisma.lesson.findMany({
+    where: { section: { courseId: { in: ids } } },
+    select: {
+      id: true,
+      videoUrl: true,
+      content: true,
+      materials: { select: { id: true, type: true } },
+      questions: { select: { id: true } },
+      typingDrill: { select: { id: true } },
+      section: { select: { courseId: true } },
+    },
+  });
+
+  const taskIndex = buildTaskIndex(lessons);
+  const lessonCourse = new Map(lessons.map((l) => [l.id, l.section.courseId]));
+  const validKeys = [];
+  const totals = new Map();
+  for (const [courseId, entry] of taskIndex) {
+    totals.set(courseId, entry.validKeys.size);
+    validKeys.push(...entry.validKeys);
+  }
+
+  const base = studentRowsSql({ ids, validKeys, totals, q });
+  const statusFilter = status ? Prisma.sql`WHERE r.status = ${status}` : Prisma.empty;
+
+  // Yorliqlar uchun sonlar (holat filtridan OLDIN) va joriy sahifa —
+  // ikkalasi ham bazada hisoblanadi
+  const [counts, pageIds] = await Promise.all([
+    prisma.$queryRaw`SELECT r.status, COUNT(*)::int AS count FROM (${base}) r GROUP BY r.status`,
+    prisma.$queryRaw`
+      SELECT r.id FROM (${base}) r
+      ${statusFilter}
+      ORDER BY ${ORDER_SQL[sort]}
+      LIMIT ${limit} OFFSET ${skip}
+    `,
+  ]);
+
+  const summary = { ...emptySummary };
+  for (const c of counts) {
+    summary[c.status] = c.count;
+    summary.all += c.count;
+  }
+  const total = status ? summary[status] : summary.all;
+
+  const orderedIds = pageIds.map((r) => r.id);
+  const enrollments = orderedIds.length
+    ? await prisma.enrollment.findMany({
+      where: { id: { in: orderedIds } },
       select: {
         id: true,
         userId: true,
@@ -73,31 +185,28 @@ const listStudents = asyncHandler(async (req, res) => {
         expiresAt: true,
         user: { select: { id: true, fullName: true, email: true, avatarUrl: true } },
       },
-    }),
-    prisma.lesson.findMany({
-      where: { section: { courseId: { in: ids } } },
-      select: {
-        id: true,
-        videoUrl: true,
-        content: true,
-        materials: { select: { id: true, type: true } },
-        questions: { select: { id: true } },
-        typingDrill: { select: { id: true } },
-        section: { select: { courseId: true } },
-      },
-    }),
-    prisma.taskProgress.findMany({
-      where: { lesson: { section: { courseId: { in: ids } } } },
-      select: { userId: true, taskKey: true, completedAt: true, lessonId: true },
-    }),
-    prisma.certificate.findMany({
-      where: { courseId: { in: ids } },
-      select: { id: true, userId: true, courseId: true, serial: true, issuedAt: true },
-    }),
-  ]);
+    })
+    : [];
+  const enrollmentById = new Map(enrollments.map((e) => [e.id, e]));
 
-  const taskIndex = buildTaskIndex(lessons);
-  const lessonCourse = new Map(lessons.map((l) => [l.id, l.section.courseId]));
+  // Batafsil progress faqat SHU SAHIFADAGI o'quvchilar uchun o'qiladi
+  const pageUserIds = [...new Set(enrollments.map((e) => e.userId))];
+  const pageCourseIds = [...new Set(enrollments.map((e) => e.courseId))];
+  const [taskRows, certificates] = pageUserIds.length
+    ? await Promise.all([
+      prisma.taskProgress.findMany({
+        where: {
+          userId: { in: pageUserIds },
+          lesson: { section: { courseId: { in: pageCourseIds } } },
+        },
+        select: { userId: true, taskKey: true, completedAt: true, lessonId: true },
+      }),
+      prisma.certificate.findMany({
+        where: { userId: { in: pageUserIds }, courseId: { in: pageCourseIds } },
+        select: { id: true, userId: true, courseId: true, serial: true, issuedAt: true },
+      }),
+    ])
+    : [[], []];
 
   // (userId:courseId) -> bajarilgan kalitlar to'plami va oxirgi faollik vaqti
   const doneBy = new Map();
@@ -114,8 +223,9 @@ const listStudents = asyncHandler(async (req, res) => {
 
   const certBy = new Map(certificates.map((c) => [`${c.userId}:${c.courseId}`, c]));
 
-  // Har bir yozilish uchun qator tayyorlaymiz
-  let rows = enrollments.map((e) => {
+  // Bazadagi tartibni saqlab qolgan holda qatorlarni tayyorlaymiz
+  const students = orderedIds.map((id) => {
+    const e = enrollmentById.get(id);
     const key = `${e.userId}:${e.courseId}`;
     const done = doneBy.get(key) || new Set();
     const course = courseById.get(e.courseId);
@@ -141,29 +251,9 @@ const listStudents = asyncHandler(async (req, res) => {
     };
   });
 
-  // Qidiruv (ism yoki email)
-  if (q) {
-    rows = rows.filter(
-      (r) => r.user.fullName.toLowerCase().includes(q) || r.user.email.toLowerCase().includes(q)
-    );
-  }
-
-  // Holat kesimidagi sonlar — status filtridan OLDIN hisoblanadi (yorliqlar uchun)
-  const summary = { ...emptySummary, all: rows.length };
-  for (const r of rows) summary[r.status] += 1;
-
-  if (status) rows = rows.filter((r) => r.status === status);
-
-  rows.sort((a, b) => {
-    if (sort === 'progress') return b.progress.percent - a.progress.percent;
-    if (sort === 'name') return a.user.fullName.localeCompare(b.user.fullName, 'uz');
-    return new Date(b.enrolledAt) - new Date(a.enrolledAt);
-  });
-
-  const total = rows.length;
   res.json({
     success: true,
-    students: rows.slice(skip, skip + limit),
+    students,
     courses,
     summary,
     pagination: { page, limit, total, pages: Math.max(1, Math.ceil(total / limit)) },

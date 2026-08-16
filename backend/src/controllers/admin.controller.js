@@ -1,12 +1,16 @@
 // Admin controlleri — statistika, foydalanuvchilar va ustoz adminlar
 const bcrypt = require('bcryptjs');
 const { z } = require('zod');
+const { Prisma } = require('@prisma/client');
 const prisma = require('../config/prisma');
 const asyncHandler = require('../utils/asyncHandler');
 const ApiError = require('../utils/ApiError');
 const { computeProgress } = require('./enrollment.controller');
 const { computeExpiry, accessInfo, accessMonthsFor } = require('../utils/learnProgress');
-const { periodRange, growthPct, bucketByDate } = require('../utils/period');
+const {
+  periodRange, growthPct, granularityFor, tzNow, TZ_OFFSET_MS,
+} = require('../utils/period');
+const { dateBuckets } = require('../utils/reportSql');
 const { notifyEnrolled } = require('../utils/notify');
 
 // Davr yordamchilari maosh hisoboti bilan umumiy — utils/period.js da.
@@ -50,21 +54,44 @@ const stats = asyncHandler(async (req, res) => {
   });
 
   // ---- Davr bo'yicha dinamika (joriy vs oldingi) ----
-  // Grafik uchun joriy davrdagi xom yozuvlar
+  // Sonlar ham, grafik qatorlari ham BAZADA hisoblanadi — yozuvlarni Node
+  // xotirasiga tortib olmaymiz (foydalanuvchilar va to'lovlar soni o'sib boradi).
   const periodWhere = from ? { createdAt: { gte: from } } : {};
   const prevWhere = from ? { createdAt: { gte: prevFrom, lt: from } } : null;
 
-  const [curUsers, curEnroll, curPayments] = await Promise.all([
-    prisma.user.findMany({
-      where: { role: 'USER', ...periodWhere },
-      select: { createdAt: true },
-    }),
-    prisma.enrollment.findMany({ where: periodWhere, select: { createdAt: true } }),
-    prisma.payment.findMany({
-      where: { status: 'PAID', ...periodWhere },
-      select: { createdAt: true, amount: true },
-    }),
-  ]);
+  // Xuddi shu shartning xom SQL ko'rinishi (sana kesimidagi guruhlash uchun)
+  const sinceSql = from ? Prisma.sql`"createdAt" >= ${from}` : Prisma.sql`TRUE`;
+  const unit = granularityFor(days);
+  const asChart = (rows, field) => rows.map((r) => ({ date: r.key, value: r[field] }));
+
+  const [curUsers, curEnroll, curPayments, userChart, enrollChart, revenueChart] =
+    await Promise.all([
+      prisma.user.count({ where: { role: 'USER', ...periodWhere } }),
+      prisma.enrollment.count({ where: periodWhere }),
+      prisma.payment.aggregate({
+        where: { status: 'PAID', ...periodWhere },
+        _sum: { amount: true },
+        _count: true,
+      }),
+      dateBuckets({
+        table: 'User',
+        metrics: { value: 'COUNT(*)' },
+        where: Prisma.sql`"role"::text = ${'USER'} AND ${sinceSql}`,
+        unit,
+      }),
+      dateBuckets({
+        table: 'Enrollment',
+        metrics: { value: 'COUNT(*)' },
+        where: sinceSql,
+        unit,
+      }),
+      dateBuckets({
+        table: 'Payment',
+        metrics: { value: 'SUM("amount")' },
+        where: Prisma.sql`"status"::text = ${'PAID'} AND ${sinceSql}`,
+        unit,
+      }),
+    ]);
 
   // Oldingi davr — faqat sonlar (taqqoslash uchun)
   let prev = { users: 0, enrollments: 0, revenue: 0, sales: 0 };
@@ -82,10 +109,10 @@ const stats = asyncHandler(async (req, res) => {
   }
 
   const current = {
-    users: curUsers.length,
-    enrollments: curEnroll.length,
-    revenue: curPayments.reduce((s, p) => s + p.amount, 0),
-    sales: curPayments.length,
+    users: curUsers,
+    enrollments: curEnroll,
+    revenue: curPayments._sum.amount || 0,
+    sales: curPayments._count || 0,
   };
 
   res.json({
@@ -111,9 +138,9 @@ const stats = asyncHandler(async (req, res) => {
       },
       // Grafik uchun qatorlar
       charts: {
-        users: bucketByDate(curUsers, days),
-        enrollments: bucketByDate(curEnroll, days),
-        revenue: bucketByDate(curPayments, days, (p) => p.amount),
+        users: asChart(userChart, 'value'),
+        enrollments: asChart(enrollChart, 'value'),
+        revenue: asChart(revenueChart, 'value'),
       },
     },
   });
@@ -467,66 +494,67 @@ const teachingStats = asyncHandler(async (req, res) => {
     });
   }
 
-  // Kerakli xom ma'lumotlar (seed hajmida — findMany yetarli)
-  const [enrollments, certificates, payments, progressRows] = await Promise.all([
-    prisma.enrollment.findMany({
+  // Barcha ko'rsatkichlar BAZADA guruhlanadi — yozilish, to'lov va dars
+  // progressi yozuvlari Node xotirasiga tortilmaydi (ular o'quvchilar soniga
+  // ko'payib boradi).
+  const thisYear = tzNow().getUTCFullYear();
+  // Yil boshi Toshkent vaqti bo'yicha (UTC'da 31-dekabr 19:00)
+  const yearStart = new Date(Date.UTC(thisYear, 0, 1) - TZ_OFFSET_MS);
+
+  const [enrolled, enrolledThisYear, certs, paid, active, years] = await Promise.all([
+    prisma.enrollment.groupBy({
+      by: ['courseId'],
       where: { courseId: { in: ids } },
-      select: { courseId: true, userId: true, createdAt: true },
+      _count: { _all: true },
     }),
-    prisma.certificate.findMany({
+    prisma.enrollment.groupBy({
+      by: ['courseId'],
+      where: { courseId: { in: ids }, createdAt: { gte: yearStart } },
+      _count: { _all: true },
+    }),
+    prisma.certificate.groupBy({
+      by: ['courseId'],
       where: { courseId: { in: ids } },
-      select: { courseId: true },
+      _count: { _all: true },
     }),
-    prisma.payment.findMany({
+    prisma.payment.groupBy({
+      by: ['courseId'],
       where: { courseId: { in: ids }, status: 'PAID' },
-      select: { courseId: true, amount: true },
+      _count: { _all: true },
+      _sum: { amount: true },
     }),
-    prisma.lessonProgress.findMany({
-      where: { completed: true, lesson: { section: { courseId: { in: ids } } } },
-      select: { userId: true, lesson: { select: { section: { select: { courseId: true } } } } },
+    // Faol o'quvchilar — kamida bitta darsni tugatganlar (kurs bo'yicha noyob)
+    prisma.$queryRaw`
+      SELECT s."courseId" AS "courseId", COUNT(DISTINCT lp."userId")::int AS active
+      FROM "LessonProgress" lp
+      JOIN "Lesson" l ON l.id = lp."lessonId"
+      JOIN "Section" s ON s.id = l."sectionId"
+      WHERE lp.completed = true AND s."courseId" = ANY(${ids})
+      GROUP BY 1
+    `,
+    // Yillar bo'yicha yozilishlar (barcha kurslar bo'yicha jami)
+    dateBuckets({
+      table: 'Enrollment',
+      metrics: { value: 'COUNT(*)' },
+      where: Prisma.sql`"courseId" = ANY(${ids})`,
+      unit: 'year',
     }),
   ]);
 
-  const thisYear = new Date().getFullYear();
+  const enrolledBy = countByKey(enrolled, 'courseId', (g) => g._count._all);
+  const enrolledThisYearBy = countByKey(enrolledThisYear, 'courseId', (g) => g._count._all);
+  const certBy = countByKey(certs, 'courseId', (g) => g._count._all);
+  const salesBy = countByKey(paid, 'courseId', (g) => g._count._all);
+  const revenueBy = countByKey(paid, 'courseId', (g) => g._sum.amount || 0);
+  const activeBy = countByKey(active, 'courseId', (g) => g.active);
 
-  // Kurs bo'yicha guruhlash uchun yordamchi hisoblagichlar
-  const enrolledBy = countBy(enrollments, (e) => e.courseId);
-  const enrolledThisYearBy = countBy(
-    enrollments.filter((e) => new Date(e.createdAt).getFullYear() === thisYear),
-    (e) => e.courseId
-  );
-  const certBy = countBy(certificates, (c) => c.courseId);
-
-  // Daromad va sotuvlar kurs bo'yicha
-  const revenueBy = {};
-  const salesBy = {};
-  for (const p of payments) {
-    revenueBy[p.courseId] = (revenueBy[p.courseId] || 0) + p.amount;
-    salesBy[p.courseId] = (salesBy[p.courseId] || 0) + 1;
-  }
-
-  // Faol o'quvchilar (kamida 1 dars tugatgan) — kurs bo'yicha noyob userId to'plami
-  const activeSetBy = {};
-  for (const pr of progressRows) {
-    const cid = pr.lesson.section.courseId;
-    (activeSetBy[cid] = activeSetBy[cid] || new Set()).add(pr.userId);
-  }
-
-  // Yillar bo'yicha yozilishlar (barcha kurslar bo'yicha jami)
-  const byYearMap = {};
-  for (const e of enrollments) {
-    const y = new Date(e.createdAt).getFullYear();
-    byYearMap[y] = (byYearMap[y] || 0) + 1;
-  }
-  const byYear = Object.entries(byYearMap)
-    .map(([year, count]) => ({ year: Number(year), count }))
-    .sort((a, b) => a.year - b.year);
+  const byYear = years.map((y) => ({ year: Number(y.key), count: y.value }));
 
   // Har bir kurs bo'yicha ko'rsatkichlar
   const courseStats = courses.map((c) => {
     const enrolled = enrolledBy[c.id] || 0;
     const completed = certBy[c.id] || 0;
-    const active = activeSetBy[c.id] ? activeSetBy[c.id].size : 0;
+    const active = activeBy[c.id] || 0;
     return {
       id: c.id,
       title: c.title,
@@ -574,12 +602,10 @@ function emptyTotals() {
   };
 }
 
-function countBy(arr, keyFn) {
+// Bazadan kelgan guruhlangan qatorlarni { kalit: qiymat } xaritasiga aylantiradi
+function countByKey(rows, keyField, valueFn) {
   const m = {};
-  for (const item of arr) {
-    const k = keyFn(item);
-    m[k] = (m[k] || 0) + 1;
-  }
+  for (const row of rows) m[row[keyField]] = valueFn(row);
   return m;
 }
 

@@ -19,14 +19,18 @@ function cell(value) {
   return s;
 }
 
+// Bitta yozuvni CSV qatoriga aylantiradi
+function line(columns, row) {
+  return columns
+    .map((c) => cell(c.format ? c.format(row[c.key], row) : row[c.key]))
+    .join(SEP);
+}
+
 // columns — [{ key, label, format? }]
 // rows    — obyektlar massivi
 function toCsv(columns, rows) {
   const head = columns.map((c) => cell(c.label)).join(SEP);
-  const body = rows.map((r) => columns
-    .map((c) => cell(c.format ? c.format(r[c.key], r) : r[c.key]))
-    .join(SEP));
-  return BOM + [head, ...body].join('\r\n') + '\r\n';
+  return BOM + [head, ...rows.map((r) => line(columns, r))].join('\r\n') + '\r\n';
 }
 
 // Express javobiga CSV faylni yuklab berish sarlavhalari bilan yozadi.
@@ -37,10 +41,29 @@ function sendCsv(res, filename, columns, rows) {
   res.send(toCsv(columns, rows));
 }
 
+// Katta hisobotlar uchun: qatorlarni bo'lak-bo'lak yozadi va butun jadvalni
+// xotirada yig'maydi. Chaqiruvchi yozuvlarni bazadan porsiya-porsiya o'qib
+// `write(rows)` ga uzatadi, oxirida `end()` chaqiradi.
+function startCsv(res, filename, columns) {
+  const safe = String(filename).replace(/[^\w.-]/g, '_');
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="${safe}"`);
+  res.write(BOM + columns.map((c) => cell(c.label)).join(SEP) + '\r\n');
+  return {
+    write(rows) {
+      if (!rows || rows.length === 0) return;
+      res.write(rows.map((r) => line(columns, r)).join('\r\n') + '\r\n');
+    },
+    end() {
+      res.end();
+    },
+  };
+}
+
 // Sanani hisobot uchun o'qiladigan ko'rinishda (2026-08-10)
 function csvDate(d) {
   if (!d) return '';
   return new Date(d).toISOString().slice(0, 10);
 }
 
-module.exports = { toCsv, sendCsv, csvDate };
+module.exports = { toCsv, sendCsv, startCsv, csvDate };
