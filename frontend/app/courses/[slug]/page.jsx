@@ -70,7 +70,7 @@ function CourseDetailInner() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-ink text-white">
+      <section className="bg-inverse text-on-inverse">
         <div className="container-page grid gap-8 py-12 lg:grid-cols-[1fr_380px]">
           <div>
             <Link href={`/categories/${course.category?.slug}`} className="text-sm font-medium text-indigo-300 hover:underline">

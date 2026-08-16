@@ -214,11 +214,11 @@ export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
     <div className="fixed inset-0 z-[60] flex justify-end">
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl animate-[slideIn_.25s_ease]">
+      <div className="relative flex h-full w-full max-w-2xl flex-col bg-surface shadow-2xl animate-[slideIn_.25s_ease]">
         <style>{`@keyframes slideIn{from{transform:translateX(24px);opacity:.6}to{transform:translateX(0);opacity:1}}`}</style>
 
         {/* Sarlavha (yashil) */}
-        <div className="flex items-center gap-3 border-b border-line bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-4 text-white">
+        <div className="flex items-center gap-3 border-b border-line bg-gradient-to-r from-band-accent-from to-band-accent-to px-5 py-4 text-white">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/20"><Code2 size={22} /></span>
           <div className="flex-1">
             <p className="font-display font-semibold leading-tight">Kod maydoni</p>
@@ -245,14 +245,14 @@ export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
               <select
                 value={lang}
                 onChange={(e) => { setLang(e.target.value); setLogs([]); }}
-                className="rounded-lg border border-line bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500"
+                className="rounded-lg border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-emerald-500"
               >
                 {LANGS.map((l) => <option key={l.id} value={l.id}>{l.label}{l.local ? ' (brauzerda)' : ''}</option>)}
               </select>
               <button
                 onClick={run}
                 disabled={running}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-on-accent transition-colors hover:bg-accent-dark disabled:opacity-60"
               >
                 {running ? <Loader2 size={15} className="animate-spin" /> : <Play size={15} />}
                 {running ? 'Ishlayapti...' : 'Ishga tushirish'}
@@ -266,7 +266,7 @@ export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
               <button
                 onClick={() => onAskAI?.({ code, errorText: lastErrorText || undefined })}
                 className={`ml-auto inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors
-                  ${lastErrorText ? 'bg-amber-500 text-white hover:bg-amber-600' : 'border border-primary/40 bg-indigo-50 text-primary hover:bg-indigo-100'}`}
+                  ${lastErrorText ? 'bg-amber-500 text-inverse hover:bg-amber-400' : 'border border-primary/40 bg-indigo-50 text-primary hover:bg-indigo-100'}`}
                 title="Kodni AI Ustozga yuborib, yordam so'rang"
               >
                 <Sparkles size={15} /> AI Ustozdan so'rash

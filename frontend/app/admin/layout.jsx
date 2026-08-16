@@ -129,7 +129,7 @@ function NavGroups({ groups, pathname, onNavigate }) {
                   href={item.href}
                   onClick={onNavigate}
                   className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors
-                    ${isActive(item, pathname) ? 'bg-primary text-white' : 'text-muted hover:bg-slate-100'}`}
+                    ${isActive(item, pathname) ? 'bg-primary text-on-primary' : 'text-muted hover:bg-slate-100'}`}
                 >
                   <Icon size={18} /> {item.label}
                 </Link>
@@ -187,7 +187,7 @@ export default function AdminLayout({ children }) {
       {isAdmin && <CommandPalette />}
 
       {/* Mobil yuqori panel — menyuni drawer sifatida ochadi */}
-      <div className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur lg:hidden">
+      <div className="sticky top-0 z-30 border-b border-line bg-surface-glass backdrop-blur lg:hidden">
         <div className="container-page flex items-center gap-3 py-3">
           <button
             type="button"
@@ -208,11 +208,11 @@ export default function AdminLayout({ children }) {
       {drawerOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-ink/40"
+            className="absolute inset-0 bg-scrim"
             onClick={() => setDrawerOpen(false)}
             aria-hidden="true"
           />
-          <aside className="absolute inset-y-0 left-0 flex w-[280px] max-w-[85vw] flex-col overflow-y-auto bg-white p-4 shadow-xl">
+          <aside className="absolute inset-y-0 left-0 flex w-[280px] max-w-[85vw] flex-col overflow-y-auto bg-surface p-4 shadow-xl">
             <div className="mb-4 flex items-center justify-between">
               {roleBadge}
               <button

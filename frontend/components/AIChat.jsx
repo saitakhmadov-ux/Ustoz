@@ -134,11 +134,11 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative flex h-full w-full max-w-lg flex-col bg-white shadow-2xl animate-[slideIn_.25s_ease]">
+      <div className="relative flex h-full w-full max-w-lg flex-col bg-surface shadow-2xl animate-[slideIn_.25s_ease]">
         <style>{`@keyframes slideIn{from{transform:translateX(24px);opacity:.6}to{transform:translateX(0);opacity:1}}`}</style>
 
         {/* Sarlavha */}
-        <div className="flex items-center gap-3 border-b border-line bg-gradient-to-r from-indigo-500 to-indigo-600 px-5 py-4 text-white">
+        <div className="flex items-center gap-3 border-b border-line bg-gradient-to-r from-band-from to-band-to px-5 py-4 text-white">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/20"><Bot size={22} /></span>
           <div className="flex-1">
             <p className="font-display font-semibold leading-tight">AI Ustoz</p>
@@ -161,7 +161,7 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
                   <button
                     key={s}
                     onClick={() => send(s)}
-                    className="block w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-left text-sm transition-colors hover:border-primary hover:bg-indigo-50/50"
+                    className="block w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-left text-sm transition-colors hover:border-primary hover:bg-indigo-50/50"
                   >
                     {s}
                   </button>
@@ -176,7 +176,7 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
                 {mm.role === 'user' ? <User size={16} /> : <Bot size={16} />}
               </span>
               <div className="max-w-[85%]">
-                <div className={`rounded-2xl px-3.5 py-2.5 text-[14px] ${mm.role === 'user' ? 'bg-primary text-white' : 'border border-line bg-white text-ink'}`}>
+                <div className={`rounded-2xl px-3.5 py-2.5 text-[14px] ${mm.role === 'user' ? 'bg-primary text-on-primary' : 'border border-line bg-surface text-ink'}`}>
                   <RichText text={mm.text} />
                 </div>
                 {/* Foydalilik bahosi — faqat model javoblarida */}
@@ -206,7 +206,7 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
           {loading && (
             <div className="flex gap-2.5">
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-indigo-100 text-primary"><Bot size={16} /></span>
-              <div className="rounded-2xl border border-line bg-white px-4 py-3">
+              <div className="rounded-2xl border border-line bg-surface px-4 py-3">
                 <span className="flex gap-1">
                   <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-.3s]" />
                   <span className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-.15s]" />
@@ -224,7 +224,7 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
         </div>
 
         {/* Kiritish */}
-        <div className="border-t border-line bg-white p-3">
+        <div className="border-t border-line bg-surface p-3">
           <div className="flex items-end gap-2">
             <textarea
               value={input}
@@ -237,7 +237,7 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
             <button
               onClick={() => send()}
               disabled={loading || !input.trim()}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-white transition-colors hover:bg-primary-dark disabled:opacity-50"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-on-primary transition-colors hover:bg-primary-dark disabled:opacity-50"
             >
               <Send size={17} />
             </button>

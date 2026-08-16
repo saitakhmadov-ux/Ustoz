@@ -140,12 +140,12 @@ export default function CommandPalette() {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-[10vh]">
-      <div className="absolute inset-0 bg-ink/40" onClick={() => setOpen(false)} aria-hidden="true" />
+      <div className="absolute inset-0 bg-scrim" onClick={() => setOpen(false)} aria-hidden="true" />
 
       <div
         role="dialog"
         aria-label="Tezkor qidiruv"
-        className="relative flex max-h-[70vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="relative flex max-h-[70vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-surface shadow-2xl"
       >
         <div className="flex items-center gap-3 border-b border-line px-4 py-3">
           {loading
@@ -183,7 +183,7 @@ export default function CommandPalette() {
                     onMouseEnter={() => setCursor(idx)}
                     onClick={() => go(item)}
                     className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm transition-colors
-                      ${active ? 'bg-primary text-white' : 'hover:bg-slate-50'}`}
+                      ${active ? 'bg-primary text-on-primary' : 'hover:bg-slate-50'}`}
                   >
                     {Icon && <Icon size={16} className={active ? 'text-white' : 'text-muted'} />}
                     <span className="min-w-0 flex-1">

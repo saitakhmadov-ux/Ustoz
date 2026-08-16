@@ -60,7 +60,7 @@ function BarChart({ data, color = 'var(--color-primary)', formatValue = (v) => v
               style={{ height: `${Math.max(2, (d.value / max) * 100)}%`, background: color }}
             />
             {/* Sichqoncha ustida qiymat */}
-            <span className="pointer-events-none absolute -top-7 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-ink px-2 py-1 text-xs text-white group-hover:block">
+            <span className="pointer-events-none absolute -top-7 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-inverse px-2 py-1 text-xs text-on-inverse group-hover:block">
               {d.date}: {formatValue(d.value)}
             </span>
           </div>

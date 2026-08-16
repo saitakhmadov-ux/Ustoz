@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { AuthProvider } from '@/lib/auth';
 import { SITE_NAME } from '@/lib/constants';
+import { THEME_INIT_SCRIPT } from '@/lib/theme';
 
 // Indigo Modern dunyosi — Outfit (display) + Work Sans (body)
 const workSans = Work_Sans({
@@ -34,7 +35,12 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="uz" className={`${workSans.variable} ${outfit.variable}`}>
+    <html lang="uz" className={`${workSans.variable} ${outfit.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Temani sahifa chizilishidan oldin qo'llaydi — kecha rejimida oq
+            chaqnash (FOUC) bo'lmasligi uchun. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="flex min-h-screen flex-col">
         <AuthProvider>
           <Navbar />

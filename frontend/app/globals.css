@@ -30,9 +30,243 @@
 
   /* Yuzalar va chiziqlar */
   --color-surface: #ffffff; /* kartochka foni */
+  --color-surface-2: #faf9ff; /* kartochka ichidagi ikkilamchi yuza */
   --color-line: #e5e3f0; /* dekorativ ajratgich — bir xil yuzalarni bo'ladi */
   --color-field: #918ea8; /* 3.16:1 · maydon va boshqaruv chegarasi (ko'rinishi shart) */
   --color-bg: #f5f3ff; /* sahifa foni — violet-50 tint */
+
+  /* Brend fon ustidagi matn — yorug' temada oq yetarli */
+  --color-on-primary: #ffffff;
+  --color-on-accent: #ffffff;
+
+  /* Teskari yuza — och sahifada TO'Q blok (tooltip, ikkilamchi tugma).
+     Kecha rejimida ham to'q qoladi, aks holda ustidagi oq matn yo'qoladi. */
+  --color-inverse: #1e1b4b;
+  --color-on-inverse: #ffffff;
+
+  /* Modal pardasi — ikkala temada ham to'q, shaffofligi ichida */
+  --color-scrim: rgba(15, 17, 23, 0.6);
+
+  /* Yarim shaffof yuza (yopishqoq sarlavha, suzuvchi karta, backdrop-blur).
+     `bg-white/90` ga o'xshaydi, lekin temaga ergashadi. */
+  --surface-glass: rgba(255, 255, 255, 0.9);
+
+  /* Rasm ustidagi belgi — HAR IKKALA temada oq fon va to'q matn,
+     chunki orqasida foto turadi, tema emas. */
+  --chip-bg: rgba(255, 255, 255, 0.92);
+  --chip-fg: #1e1b4b;
+
+  /* Brend bandi (hero, CTA, panel sarlavhalari) — gradient juftligi.
+     Har doim TO'Q ko'k qoladi, shuning uchun ustidagi matn har doim oq. */
+  --band-from: #6366f1;
+  --band-to: #4f46e5;
+  --band-accent-from: #059669;
+  --band-accent-to: #047857;
+  --color-on-band: #ffffff;
+
+  --shadow-card: 0 2px 4px rgba(30, 27, 75, 0.04), 0 12px 32px rgba(99, 102, 241, 0.08);
+  --shadow-card-hover: 0 6px 16px rgba(30, 27, 75, 0.08), 0 22px 48px rgba(99, 102, 241, 0.16);
+
+  /* ---- Tailwind rang shkalalari ----
+     tailwind.config.js bularni `bg-slate-50`, `text-red-700` kabi klasslarga
+     bog'laydi. Kecha rejimi shu qiymatlarni almashtiradi, shuning uchun
+     mavjud yuzlab klass hech qanday tahrirsiz to'g'ri ishlaydi. */
+  /* slate */
+  --c-slate-50: #f8fafc;
+  --c-slate-100: #f1f5f9;
+  --c-slate-200: #e2e8f0;
+  --c-slate-300: #cbd5e1;
+  --c-slate-400: #94a3b8;
+  --c-slate-500: #64748b;
+  --c-slate-600: #475569;
+  --c-slate-700: #334155;
+  --c-slate-900: #0f172a;
+  /* indigo */
+  --c-indigo-50: #eef2ff;
+  --c-indigo-100: #e0e7ff;
+  --c-indigo-200: #c7d2fe;
+  --c-indigo-300: #a5b4fc;
+  --c-indigo-400: #818cf8;
+  --c-indigo-500: #6366f1;
+  --c-indigo-600: #4f46e5;
+  --c-indigo-700: #4338ca;
+  --c-indigo-800: #3730a3;
+  /* emerald */
+  --c-emerald-50: #ecfdf5;
+  --c-emerald-100: #d1fae5;
+  --c-emerald-200: #a7f3d0;
+  --c-emerald-300: #6ee7b7;
+  --c-emerald-500: #10b981;
+  --c-emerald-600: #059669;
+  --c-emerald-700: #047857;
+  --c-emerald-800: #065f46;
+  /* red */
+  --c-red-50: #fef2f2;
+  --c-red-100: #fee2e2;
+  --c-red-200: #fecaca;
+  --c-red-300: #fca5a5;
+  --c-red-400: #f87171;
+  --c-red-500: #ef4444;
+  --c-red-600: #dc2626;
+  --c-red-700: #b91c1c;
+  /* amber */
+  --c-amber-50: #fffbeb;
+  --c-amber-100: #fef3c7;
+  --c-amber-200: #fde68a;
+  --c-amber-300: #fcd34d;
+  --c-amber-400: #fbbf24;
+  --c-amber-500: #f59e0b;
+  --c-amber-600: #d97706;
+  --c-amber-700: #b45309;
+  --c-amber-800: #92400e;
+  /* rose */
+  --c-rose-50: #fff1f2;
+  --c-rose-100: #ffe4e6;
+  --c-rose-500: #f43f5e;
+  --c-rose-600: #e11d48;
+  --c-rose-700: #be123c;
+  /* violet */
+  --c-violet-50: #f5f3ff;
+  --c-violet-100: #ede9fe;
+  --c-violet-600: #7c3aed;
+  /* blue */
+  --c-blue-50: #eff6ff;
+  --c-blue-500: #3b82f6;
+  --c-blue-600: #2563eb;
+  /* purple */
+  --c-purple-50: #faf5ff;
+  --c-purple-600: #9333ea;
+  /* pink */
+  --c-pink-50: #fdf2f8;
+  --c-pink-600: #db2777;
+  /* orange */
+  --c-orange-50: #fff7ed;
+  --c-orange-100: #ffedd5;
+  --c-orange-200: #fed7aa;
+  --c-orange-600: #ea580c;
+  --c-orange-700: #c2410c;
+  /* sky */
+  --c-sky-50: #f0f9ff;
+  --c-sky-100: #e0f2fe;
+  --c-sky-600: #0284c7;
+  --c-sky-700: #0369a1;
+}
+
+/* ===== Kecha rejimi =====
+   Sahifa foni to'q, ammo sof qora emas — indigo tomon ozgina egilgan, shunda
+   brend rangi begona ko'rinmaydi. Qoida oddiy:
+     50/100/200 — och yuza va chegara edi  -> to'q tus bo'ladi
+     600/700/800 — to'q matn edi           -> och, o'qiladigan tus bo'ladi
+     300/400/500 — jonli urg'u (yulduz, ikonka) -> o'zgarmaydi, ikkalasida ham ishlaydi
+
+   Kontrast nisbatlari kartochka foni (#161926) ustida o'lchangan. */
+:root[data-theme='dark'] {
+  --color-primary: #a5b4fc; /* indigo-300 · 9.8:1 · matn va havola */
+  --color-primary-dark: #c7d2fe; /* hover — kecha rejimida OCHROQ bo'ladi */
+  --color-primary-light: #4338ca; /* FAQAT dekorativ fon */
+
+  --color-accent: #34d399; /* emerald-400 · 9.6:1 */
+  --color-accent-dark: #6ee7b7;
+
+  --color-heading: #f8fafc; /* 17.4:1 */
+  --color-ink: #e2e6f0; /* 13.6:1 · asosiy matn */
+  --color-muted: #a6aec2; /* 7.3:1 · ikkilamchi matn */
+  --color-subtle: #8b93a9; /* 5.2:1 · uchlamchi matn, placeholder */
+
+  --color-surface: #161926; /* kartochka foni */
+  --color-surface-2: #1e2231;
+  --color-line: #272c3d;
+  --color-field: #626b87; /* 3.1:1 · maydon chegarasi ko'rinishi shart */
+  --color-bg: #0d0f17; /* sahifa foni */
+
+  /* primary/accent endi OCH — ular ustidagi matn to'q bo'lishi kerak */
+  --color-on-primary: #14162b;
+  --color-on-accent: #04261d;
+
+  /* Teskari yuza kecha rejimida ham to'q, lekin fondan ajralib tursin */
+  --color-inverse: #2c3245;
+  --color-on-inverse: #f8fafc;
+
+  --color-scrim: rgba(0, 0, 0, 0.72);
+  --surface-glass: rgba(22, 25, 38, 0.88);
+  /* --chip-bg / --chip-fg ATAYLAB o'zgarmaydi — ular foto ustida turadi */
+
+  /* Brend bandi chuqurroq ko'kka tushadi — to'q sahifada porlab ketmasin */
+  --band-from: #3730a3;
+  --band-to: #312e81;
+  --band-accent-from: #065f46;
+  --band-accent-to: #064e3b;
+
+  /* To'q fonda soya ko'rinmaydi — chuqurlikni quyuqroq soya beradi */
+  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 6px 16px rgba(0, 0, 0, 0.5), 0 22px 48px rgba(0, 0, 0, 0.45);
+
+  /* slate */
+  --c-slate-50: #1a1e2c;
+  --c-slate-100: #222739;
+  --c-slate-200: #2c3245;
+  --c-slate-300: #4d556b;
+  --c-slate-400: #6e7790;
+  --c-slate-500: #8b94ac;
+  --c-slate-600: #b4bccd;
+  --c-slate-700: #cdd4e2;
+  --c-slate-900: #f1f4fa;
+  /* indigo */
+  --c-indigo-50: #1b1d3a;
+  --c-indigo-100: #232654;
+  --c-indigo-200: #2f3470;
+  --c-indigo-600: #a5b4fc;
+  --c-indigo-700: #c7d2fe;
+  --c-indigo-800: #dde3ff;
+  /* emerald */
+  --c-emerald-50: #0c2a22;
+  --c-emerald-100: #12382c;
+  --c-emerald-200: #1a4a3a;
+  --c-emerald-600: #34d399;
+  --c-emerald-700: #6ee7b7;
+  --c-emerald-800: #a7f3d0;
+  /* red */
+  --c-red-50: #2e1418;
+  --c-red-100: #3d1a1f;
+  --c-red-200: #522229;
+  --c-red-600: #fca5a5;
+  --c-red-700: #fecaca;
+  /* amber */
+  --c-amber-50: #2c2110;
+  --c-amber-100: #3a2b13;
+  --c-amber-200: #4d3918;
+  --c-amber-600: #fcd34d;
+  --c-amber-700: #fde68a;
+  --c-amber-800: #fef3c7;
+  /* rose */
+  --c-rose-50: #2e131b;
+  --c-rose-100: #3d1924;
+  --c-rose-600: #fda4af;
+  --c-rose-700: #fecdd3;
+  /* violet */
+  --c-violet-50: #221a3d;
+  --c-violet-100: #2c2150;
+  --c-violet-600: #c4b5fd;
+  /* blue */
+  --c-blue-50: #10203c;
+  --c-blue-600: #93c5fd;
+  /* purple */
+  --c-purple-50: #241738;
+  --c-purple-600: #d8b4fe;
+  /* pink */
+  --c-pink-50: #2f1327;
+  --c-pink-600: #f9a8d4;
+  /* orange */
+  --c-orange-50: #2e1a0e;
+  --c-orange-100: #3d2212;
+  --c-orange-200: #522e18;
+  --c-orange-600: #fdba74;
+  --c-orange-700: #fed7aa;
+  /* sky */
+  --c-sky-50: #0c2436;
+  --c-sky-100: #123049;
+  --c-sky-600: #7dd3fc;
+  --c-sky-700: #bae6fd;
 }
 
 @layer base {
@@ -67,13 +301,13 @@
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed;
   }
   .btn-primary {
-    @apply btn bg-primary text-white hover:bg-primary-dark shadow-sm;
+    @apply btn bg-primary text-on-primary hover:bg-primary-dark shadow-sm;
   }
   .btn-accent {
-    @apply btn bg-accent text-white hover:bg-accent-dark shadow-sm;
+    @apply btn bg-accent text-on-accent hover:bg-accent-dark shadow-sm;
   }
   .btn-outline {
-    @apply btn border border-line bg-white text-ink hover:border-primary hover:text-primary;
+    @apply btn border border-line bg-surface text-ink hover:border-primary hover:text-primary;
   }
   .btn-ghost {
     @apply btn text-ink hover:bg-slate-100;
@@ -99,7 +333,7 @@
      yagona belgi shu, shuning uchun u ko'rinishi shart (3:1). Fokus halqasi ham
      shaffof emas: 30% shaffoflik fon rangiga qarab yo'qolib ketardi. */
   .input {
-    @apply w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-ink focus:outline-none;
+    @apply w-full rounded-xl border bg-surface px-4 py-2.5 text-sm text-ink focus:outline-none;
     border-color: var(--color-field);
   }
   .input::placeholder {

@@ -78,7 +78,7 @@ export default function CourseReviews({ slug }) {
             {reviews.map((r) => (
               <div key={r.id} className="card p-5">
                 <div className="flex items-center gap-3">
-                  <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-xs font-bold text-white">
+                  <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-xs font-bold text-on-primary">
                     {r.user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
                   </span>
                   <div className="flex-1">

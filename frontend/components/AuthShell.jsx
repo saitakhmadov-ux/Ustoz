@@ -13,7 +13,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
   return (
     <div className="grid min-h-[calc(100vh-4rem)] lg:grid-cols-2">
       {/* Brend paneli (faqat desktop) */}
-      <div className="relative hidden overflow-hidden bg-gradient-to-br from-primary via-primary to-primary-dark p-12 text-white lg:flex lg:flex-col lg:justify-between">
+      <div className="relative hidden overflow-hidden bg-gradient-to-br from-band-from via-band-from to-band-to p-12 text-white lg:flex lg:flex-col lg:justify-between">
         {/* dekor */}
         <div className="pointer-events-none absolute inset-0 opacity-30" aria-hidden="true">
           <div className="blob absolute -left-16 -top-16 h-64 w-64 rounded-full bg-white/20 blur-3xl" />
@@ -31,12 +31,12 @@ export default function AuthShell({ title, subtitle, children, footer }) {
           <h2 className="font-display text-3xl font-bold leading-tight text-white">
             Kelajak kasbini bugun o'rganing
           </h2>
-          <p className="mt-3 max-w-sm text-indigo-50">
+          <p className="mt-3 max-w-sm text-white/85">
             Ustoz jamoasiga qo'shiling — bilim olish hech qachon bunchalik qulay bo'lmagan.
           </p>
           <ul className="mt-6 space-y-3">
             {perks.map((p) => (
-              <li key={p} className="flex items-center gap-3 text-sm text-indigo-50">
+              <li key={p} className="flex items-center gap-3 text-sm text-white/85">
                 <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-white/15">
                   <CheckCircle2 size={14} />
                 </span>
@@ -53,7 +53,7 @@ export default function AuthShell({ title, subtitle, children, footer }) {
       <div className="flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="mb-6 text-center lg:text-left">
-            <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-primary text-white lg:mx-0">
+            <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-primary text-on-primary lg:mx-0">
               <GraduationCap size={26} />
             </span>
             <h1 className="mt-4 text-2xl">{title}</h1>

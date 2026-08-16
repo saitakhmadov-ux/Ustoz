@@ -56,7 +56,7 @@ export default function InstructorEarningsDetail() {
 
       <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-center gap-4">
-          <span className="grid h-14 w-14 place-items-center rounded-full bg-primary text-lg font-bold text-white">
+          <span className="grid h-14 w-14 place-items-center rounded-full bg-primary text-lg font-bold text-on-primary">
             {instructor.fullName?.charAt(0)?.toUpperCase()}
           </span>
           <div>

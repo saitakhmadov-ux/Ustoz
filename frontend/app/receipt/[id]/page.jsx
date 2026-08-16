@@ -33,12 +33,12 @@ function ReceiptInner() {
     <div className="container-page max-w-lg py-10">
       <div className="card overflow-hidden">
         {/* Sarlavha */}
-        <div className={`px-6 py-8 text-center text-white ${paid ? 'bg-gradient-to-r from-indigo-500 to-indigo-600' : 'bg-slate-500'}`}>
+        <div className={`px-6 py-8 text-center text-white ${paid ? 'bg-gradient-to-r from-band-from to-band-to' : 'bg-inverse'}`}>
           {paid && <CheckCircle2 size={48} className="mx-auto" />}
           <h1 className="mt-3 text-2xl text-white">
             {paid ? 'To\'lov muvaffaqiyatli!' : 'To\'lov holati'}
           </h1>
-          <p className="mt-1 text-indigo-50">{PAYMENT_STATUS[payment.status]}</p>
+          <p className="mt-1 text-white/85">{PAYMENT_STATUS[payment.status]}</p>
         </div>
 
         {/* Chek tafsilotlari */}

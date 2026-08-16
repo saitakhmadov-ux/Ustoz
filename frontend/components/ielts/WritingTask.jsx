@@ -118,7 +118,7 @@ export default function WritingTask({
       {task.visual && task.visual !== 'NONE' && <ChartView task={task} />}
 
       {/* Hisoblagichlar */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-line bg-white px-4 py-3">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-line bg-surface px-4 py-3">
         <span className={`flex items-center gap-2 font-display text-2xl font-bold tabular-nums
           ${low ? 'text-red-600' : locked ? 'text-muted' : 'text-ink'}`}
         >

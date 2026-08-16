@@ -182,7 +182,7 @@ export default function QuizModal({ lesson, onResult }) {
   if (phase === 'result' && result) {
     return (
       <QuizOverlay onExit={null}>
-        <div className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl">
+        <div className="w-full max-w-md rounded-3xl bg-surface p-8 text-center shadow-2xl">
           <span className={`mx-auto grid h-16 w-16 place-items-center rounded-full ${result.passed ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
             {result.passed ? <CheckCircle2 size={34} /> : <XCircle size={34} />}
           </span>
@@ -211,7 +211,7 @@ export default function QuizModal({ lesson, onResult }) {
     const danger = timeLeft <= 5;
     return (
       <QuizOverlay onExit={exitActive}>
-        <div className="w-full max-w-2xl select-none rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+        <div className="w-full max-w-2xl select-none rounded-3xl bg-surface p-6 shadow-2xl sm:p-8">
           {/* Yuqori: progress + taymer */}
           <div className="mb-5 flex items-center justify-between gap-4">
             <span className="text-sm font-medium text-muted">Savol {qIndex + 1} / {questions.length}</span>
@@ -240,7 +240,7 @@ export default function QuizModal({ lesson, onResult }) {
                 className={`flex items-center gap-3 rounded-2xl border px-4 py-3.5 text-left text-[15px] transition-colors
                   ${selected === oi ? 'border-primary bg-indigo-50 ring-2 ring-indigo-500/30' : 'border-line hover:border-indigo-300 hover:bg-indigo-50/40'}`}
               >
-                <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg text-sm font-semibold ${selected === oi ? 'bg-primary text-white' : 'bg-slate-100 text-muted'}`}>
+                <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg text-sm font-semibold ${selected === oi ? 'bg-primary text-on-primary' : 'bg-slate-100 text-muted'}`}>
                   {String.fromCharCode(65 + oi)}
                 </span>
                 <span className="flex-1">{opt}</span>
@@ -262,7 +262,7 @@ function QuizOverlay({ children, onExit }) {
   const block = (e) => e.preventDefault();
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-scrim p-4 backdrop-blur-sm"
       style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
       onCopy={block}
       onCut={block}
@@ -272,7 +272,7 @@ function QuizOverlay({ children, onExit }) {
       {onExit && (
         <button
           onClick={onExit}
-          className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-ink shadow-card hover:bg-white"
+          className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-surface-glass text-ink shadow-card hover:bg-surface"
           title="Testdan chiqish"
         >
           <X size={18} />

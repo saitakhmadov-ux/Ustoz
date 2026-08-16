@@ -109,7 +109,7 @@ export default function HeroVisual() {
 
         {/* Surat(lar) — oq ramkada, crossfade almashinuvi; oldinga chiqadi */}
         <div className="relative z-10 px-4 pt-2" style={depth(28)}>
-          <div className="mx-auto max-w-md rounded-[2rem] bg-white p-2.5 shadow-card-hover ring-1 ring-line md:max-w-none">
+          <div className="mx-auto max-w-md rounded-[2rem] bg-surface p-2.5 shadow-card-hover ring-1 ring-line md:max-w-none">
             <div className="relative aspect-[7/6] w-full overflow-hidden rounded-[1.5rem] bg-slate-100">
               {images.map((src, i) => (
                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -131,7 +131,7 @@ export default function HeroVisual() {
                     <span
                       key={i}
                       className={`h-1.5 rounded-full transition-all duration-300 ${
-                        i === idx ? 'w-5 bg-white' : 'w-1.5 bg-white/70'
+                        i === idx ? 'w-5 bg-surface' : 'w-1.5 bg-surface-glass'
                       }`}
                       aria-hidden="true"
                     />
@@ -144,7 +144,7 @@ export default function HeroVisual() {
 
         {/* Suzuvchi karta: kurslar (yuqori o'ng) — eng oldinda suzadi */}
         <div className="absolute right-0 top-14 z-20 hidden sm:block" style={depth(70)}>
-          <div className="float-slow flex items-center gap-3 rounded-2xl border border-line bg-white/95 px-4 py-3 shadow-card-hover backdrop-blur">
+          <div className="float-slow flex items-center gap-3 rounded-2xl border border-line bg-surface-glass px-4 py-3 shadow-card-hover backdrop-blur">
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-50 text-primary">
               <PlayCircle size={20} />
             </span>
@@ -157,7 +157,7 @@ export default function HeroVisual() {
 
         {/* Suzuvchi karta: o'quvchilar (past chap) — eng oldinda suzadi */}
         <div className="absolute -left-2 bottom-12 z-20 hidden sm:block" style={depth(70)}>
-          <div className="float-slow flex items-center gap-3 rounded-2xl border border-line bg-white/95 px-4 py-3 shadow-card-hover backdrop-blur" style={{ animationDelay: '-3s' }}>
+          <div className="float-slow flex items-center gap-3 rounded-2xl border border-line bg-surface-glass px-4 py-3 shadow-card-hover backdrop-blur" style={{ animationDelay: '-3s' }}>
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-accent">
               <GraduationCap size={20} />
             </span>

@@ -98,7 +98,7 @@ export default function Leaderboard() {
                     <td className="px-4 py-3"><Rank n={r.rank} /></td>
                     <td className="px-4 py-3">
                       <span className="font-medium text-ink">{r.fullName}</span>
-                      {r.isMe && <span className="ml-2 badge bg-primary text-white">Siz</span>}
+                      {r.isMe && <span className="ml-2 badge bg-primary text-on-primary">Siz</span>}
                     </td>
                     <td className="px-4 py-3">
                       <b className="font-display text-lg text-ink">{r.wpm}</b>

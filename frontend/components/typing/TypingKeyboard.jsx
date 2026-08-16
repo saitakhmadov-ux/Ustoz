@@ -22,8 +22,8 @@ function Key({ label, width = SQUARE, active, finger }) {
     <span
       className={`grid place-items-center rounded-lg border font-medium transition-colors ${width}
         ${active
-          ? 'border-primary bg-primary text-white shadow-sm'
-          : `border-line ${FINGER_COLOR[finger] || 'bg-white text-muted'}`}`}
+          ? 'border-primary bg-primary text-on-primary shadow-sm'
+          : `border-line ${FINGER_COLOR[finger] || 'bg-surface text-muted'}`}`}
     >
       {label}
     </span>

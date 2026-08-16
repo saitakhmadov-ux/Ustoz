@@ -14,7 +14,7 @@ import { formatTime } from '@/lib/ielts';
 
 function Stat({ value, label, tone = null }) {
   return (
-    <div className="rounded-xl border border-line bg-white p-4 text-center">
+    <div className="rounded-xl border border-line bg-surface p-4 text-center">
       <p className={`font-display text-3xl font-bold ${tone === 'good' ? 'text-accent-dark' : tone === 'warn' ? 'text-amber-600' : 'text-ink'}`}>
         {value}
       </p>
@@ -29,7 +29,7 @@ function Criteria({ items }) {
   return (
     <div className="mt-4 space-y-2">
       {items.map((c) => (
-        <div key={c.name} className="rounded-xl border border-line bg-white p-4">
+        <div key={c.name} className="rounded-xl border border-line bg-surface p-4">
           <div className="flex items-center justify-between gap-3">
             <b className="text-sm text-ink">{c.name}</b>
             {typeof c.band === 'number' && (
@@ -153,7 +153,7 @@ export default function IeltsResults({
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Tuzatish namunalari</p>
                   <div className="space-y-2">
                     {ai.fixes.map((f, i) => (
-                      <div key={i} className="rounded-xl border border-line bg-white p-3 text-sm">
+                      <div key={i} className="rounded-xl border border-line bg-surface p-3 text-sm">
                         <p className="text-red-600 line-through decoration-red-300">{f.before}</p>
                         <p className="mt-1 text-emerald-700">{f.after}</p>
                         {f.why && <p className="mt-1 text-xs text-muted">{f.why}</p>}

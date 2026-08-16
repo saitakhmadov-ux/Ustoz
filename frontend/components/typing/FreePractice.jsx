@@ -62,14 +62,14 @@ export default function FreePractice() {
               <button
                 type="button"
                 onClick={() => { setMode('time'); setValue(30); }}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${mode === 'time' ? 'bg-primary text-white' : 'text-muted hover:text-ink'}`}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${mode === 'time' ? 'bg-primary text-on-primary' : 'text-muted hover:text-ink'}`}
               >
                 <Timer size={15} /> Vaqt
               </button>
               <button
                 type="button"
                 onClick={() => { setMode('words'); setValue(40); }}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${mode === 'words' ? 'bg-primary text-white' : 'text-muted hover:text-ink'}`}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${mode === 'words' ? 'bg-primary text-on-primary' : 'text-muted hover:text-ink'}`}
               >
                 <Type size={15} /> So'zlar
               </button>

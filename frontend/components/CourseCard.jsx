@@ -37,7 +37,7 @@ export default function CourseCard({ course }) {
           <BarChart size={12} /> {LEVELS[course.level] || course.level}
         </span>
         {course.kind === 'TYPING' && (
-          <span className="badge absolute right-3 top-3 bg-white/90 text-indigo-700">
+          <span className="badge absolute right-3 top-3 bg-chip text-on-chip">
             <Keyboard size={12} /> Klaviatura mashqi
           </span>
         )}

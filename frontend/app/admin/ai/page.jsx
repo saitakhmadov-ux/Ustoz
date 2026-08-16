@@ -143,7 +143,7 @@ function SettingsTab() {
           className={`relative h-7 w-12 rounded-full transition-colors ${enabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
           aria-label="AI yoqish/o'chirish"
         >
-          <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${enabled ? 'left-[22px]' : 'left-0.5'}`} />
+          <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-surface shadow transition-all ${enabled ? 'left-[22px]' : 'left-0.5'}`} />
         </button>
       </div>
 
@@ -309,7 +309,7 @@ function AnalyticsTab() {
             <div key={c.courseId || 'none'} className="flex items-center gap-3">
               <span className="w-48 shrink-0 truncate text-sm text-ink" title={c.title}>{c.title}</span>
               <div className="h-6 flex-1 overflow-hidden rounded-lg bg-slate-100">
-                <div className="flex h-full items-center rounded-lg bg-primary px-2 text-xs font-medium text-white" style={{ width: `${Math.max(8, (c.count / maxCourse) * 100)}%` }}>
+                <div className="flex h-full items-center rounded-lg bg-primary px-2 text-xs font-medium text-on-primary" style={{ width: `${Math.max(8, (c.count / maxCourse) * 100)}%` }}>
                   {c.count}
                 </div>
               </div>

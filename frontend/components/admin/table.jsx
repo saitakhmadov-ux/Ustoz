@@ -86,7 +86,7 @@ export function SegmentedTabs({ value, onChange, items, size = 'md' }) {
           type="button"
           onClick={() => onChange(item.key)}
           className={`rounded-lg font-medium transition-colors ${pad}
-            ${value === item.key ? 'bg-white text-primary shadow-sm' : 'text-muted hover:text-ink'}`}
+            ${value === item.key ? 'bg-surface text-primary shadow-sm' : 'text-muted hover:text-ink'}`}
         >
           {item.label}
           {item.count != null && (
@@ -112,7 +112,7 @@ export function CountTabs({ value, onChange, items }) {
             type="button"
             onClick={() => onChange(item.key)}
             className={`rounded-xl px-3.5 py-2 text-sm font-medium transition-colors
-              ${active ? 'bg-primary text-white' : 'bg-slate-100 text-muted hover:bg-slate-200'}`}
+              ${active ? 'bg-primary text-on-primary' : 'bg-slate-100 text-muted hover:bg-slate-200'}`}
           >
             {item.label}
             <span className={`ml-2 text-xs ${active ? 'text-white/70' : 'text-subtle'}`}>
@@ -142,7 +142,7 @@ export function InfoTip({ text }) {
         <Info size={14} />
       </button>
       {open && (
-        <span className="absolute bottom-full left-1/2 z-20 mb-1.5 w-56 -translate-x-1/2 rounded-lg bg-ink px-3 py-2 text-xs font-normal leading-snug text-white shadow-lg">
+        <span className="absolute bottom-full left-1/2 z-20 mb-1.5 w-56 -translate-x-1/2 rounded-lg bg-inverse px-3 py-2 text-xs font-normal leading-snug text-on-inverse shadow-lg">
           {text}
         </span>
       )}
@@ -212,7 +212,7 @@ export function DataTable({ columns, children, footer }) {
 export function Avatar({ name, size = 8 }) {
   const cls = size === 9 ? 'h-9 w-9' : size === 11 ? 'h-11 w-11' : 'h-8 w-8';
   return (
-    <span className={`grid ${cls} shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-white`}>
+    <span className={`grid ${cls} shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-on-primary`}>
       {name?.charAt(0)?.toUpperCase() || 'U'}
     </span>
   );

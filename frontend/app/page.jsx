@@ -56,7 +56,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ===== Hero ===== */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-indigo-50 via-white to-white">
+      <section className="relative overflow-hidden bg-gradient-to-b from-indigo-50 via-surface to-surface">
         {/* Nozik indigo + emerald nurlar — zamonaviy SaaS chuqurligi */}
         <div className="pointer-events-none absolute -right-28 -top-28 h-96 w-96 rounded-full bg-indigo-300/25 blur-3xl" aria-hidden="true" />
         <div className="pointer-events-none absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-emerald-200/20 blur-3xl" aria-hidden="true" />
@@ -95,7 +95,7 @@ export default async function HomePage() {
               <Link href="/register" className="btn-accent">
                 Bepul boshlash <ArrowRight size={16} />
               </Link>
-              <Link href="/courses" className="btn bg-ink text-white hover:opacity-90">
+              <Link href="/courses" className="btn bg-inverse text-on-inverse hover:opacity-90">
                 Kurslar
               </Link>
             </div>
@@ -144,7 +144,7 @@ export default async function HomePage() {
       <Testimonials limit={6} />
 
       {/* ===== Nega Ustoz ===== */}
-      <section className="bg-white py-16 sm:py-20">
+      <section className="bg-surface py-16 sm:py-20">
         <div className="container-page">
           <Reveal className="mb-12 text-center">
             <h2 className="text-3xl">Nega aynan Ustoz?</h2>
@@ -171,10 +171,10 @@ export default async function HomePage() {
 
       {/* ===== CTA ===== */}
       <section className="container-page py-16 sm:py-20">
-        <Reveal className="overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-primary-dark px-8 py-14 text-center text-white md:py-20">
+        <Reveal className="overflow-hidden rounded-3xl bg-gradient-to-br from-band-from to-band-to px-8 py-14 text-center text-white md:py-20">
           <div>
             <h2 className="text-3xl text-white md:text-4xl">{c.ctaTitle}</h2>
-            <p className="mx-auto mt-4 max-w-xl text-indigo-50">
+            <p className="mx-auto mt-4 max-w-xl text-white/85">
               {c.ctaSubtitle}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -185,7 +185,7 @@ export default async function HomePage() {
                 Kurslarni ko'rish
               </Link>
             </div>
-            <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-indigo-50">
+            <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/85">
               <span className="flex items-center gap-1.5"><CheckCircle2 size={16} /> Bepul kurslar mavjud</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 size={16} /> Sertifikat bilan</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 size={16} /> O'zbek tilida</span>

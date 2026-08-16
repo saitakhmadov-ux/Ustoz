@@ -47,12 +47,12 @@ export default async function Footer() {
   ];
 
   return (
-    <footer className="mt-20 border-t border-line bg-white">
+    <footer className="mt-20 border-t border-line bg-surface">
       <div className="container-page py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div>
             <Link href="/" className="flex items-center gap-2">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-white">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-on-primary">
                 <GraduationCap size={20} />
               </span>
               <span className="font-display text-xl font-bold">{SITE_NAME}</span>

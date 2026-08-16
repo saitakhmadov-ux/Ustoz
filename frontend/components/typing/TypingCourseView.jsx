@@ -137,7 +137,7 @@ export default function TypingCourseView({
       {/* Sarlavha */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-white">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-on-primary">
             <Keyboard size={22} />
           </span>
           <div>
@@ -281,7 +281,7 @@ export default function TypingCourseView({
               <button
                 type="button"
                 onClick={() => setCurrentId(next.id)}
-                className="mt-4 flex w-full items-center justify-between rounded-xl border border-line bg-white px-4 py-3 text-sm hover:border-primary"
+                className="mt-4 flex w-full items-center justify-between rounded-xl border border-line bg-surface px-4 py-3 text-sm hover:border-primary"
               >
                 <span className="text-muted">Keyingi dars: <b className="text-ink">{next.title}</b></span>
                 <ChevronRight size={16} />
@@ -300,7 +300,7 @@ export default function TypingCourseView({
             onClick={() => setSidebarOpen(false)}
             className="absolute inset-0 bg-black/40"
           />
-          <div className="absolute right-0 top-0 h-full w-80 max-w-[85%] overflow-y-auto bg-white p-5">
+          <div className="absolute right-0 top-0 h-full w-80 max-w-[85%] overflow-y-auto bg-surface p-5">
             <div className="mb-4 flex items-center justify-between">
               <b className="font-display">Darslar</b>
               <button type="button" onClick={() => setSidebarOpen(false)} className="grid h-8 w-8 place-items-center rounded-lg hover:bg-slate-100">

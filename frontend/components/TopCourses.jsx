@@ -23,7 +23,7 @@ export default function TopCourses({ limit = 4 }) {
   if (!loading && (!courses || courses.length === 0)) return null;
 
   return (
-    <section className="bg-white py-16">
+    <section className="bg-surface py-16">
       <div className="container-page">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>

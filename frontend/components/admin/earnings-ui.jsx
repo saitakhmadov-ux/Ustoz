@@ -109,7 +109,7 @@ export function TimeBars({
               className="rounded-t transition-opacity hover:opacity-80"
               style={{ height: `${Math.max(2, (d.value / max) * 100)}%`, background: color }}
             />
-            <span className="pointer-events-none absolute -top-8 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-ink px-2 py-1 text-xs text-white group-hover:block">
+            <span className="pointer-events-none absolute -top-8 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-inverse px-2 py-1 text-xs text-on-inverse group-hover:block">
               {tipLabel(d.key)}: {formatMoney(d.value)}
             </span>
           </div>
@@ -211,7 +211,7 @@ export function PeriodTabs({ value, onChange }) {
           type="button"
           onClick={() => onChange(p.key)}
           className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors
-            ${value === p.key ? 'bg-primary text-white' : 'bg-slate-100 text-muted hover:bg-slate-200'}`}
+            ${value === p.key ? 'bg-primary text-on-primary' : 'bg-slate-100 text-muted hover:bg-slate-200'}`}
         >
           {p.label}
         </button>

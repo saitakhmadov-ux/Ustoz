@@ -92,7 +92,7 @@ export function AttentionPanel() {
             </div>
             <Link
               href={it.href}
-              className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-white/70 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-white"
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-surface-glass px-3 py-1.5 text-xs font-medium transition-colors hover:bg-surface"
             >
               {it.action} <ArrowRight size={13} />
             </Link>

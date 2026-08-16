@@ -141,7 +141,7 @@ function ImagesTab() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={fileUrl(src)} alt={`Hero rasm ${i + 1}`} className="h-full w-full object-cover" />
                 <span className="absolute left-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-black/55 text-xs font-semibold text-white">{i + 1}</span>
-                <button type="button" onClick={() => removeAt(i)} className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-white/90 text-red-500 opacity-0 shadow transition-opacity hover:bg-white group-hover:opacity-100" title="O'chirish">
+                <button type="button" onClick={() => removeAt(i)} className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-surface-glass text-red-500 opacity-0 shadow transition-opacity hover:bg-surface group-hover:opacity-100" title="O'chirish">
                   <Trash2 size={15} />
                 </button>
               </div>

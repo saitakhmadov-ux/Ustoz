@@ -8,6 +8,7 @@ import { SITE_NAME } from '@/lib/constants';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import SearchBox from '@/components/SearchBox';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -43,11 +44,11 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-line bg-surface-glass backdrop-blur">
       <div className="container-page flex h-16 items-center gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-white">
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-on-primary">
             <GraduationCap size={20} />
           </span>
           <span className="font-display text-xl font-bold text-ink">{SITE_NAME}</span>
@@ -71,6 +72,7 @@ export default function Navbar() {
 
         {/* O'ng tomon (desktop) */}
         <div className="hidden items-center gap-2 md:flex">
+          <ThemeToggle />
           {loading ? (
             <div className="h-9 w-24 animate-pulse rounded-xl bg-slate-100" />
           ) : isAuthenticated ? (
@@ -94,14 +96,14 @@ export default function Navbar() {
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="flex items-center gap-2 rounded-xl border border-line px-2.5 py-1.5 hover:border-primary"
               >
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-xs font-bold text-white">
+                <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-xs font-bold text-on-primary">
                   {user.fullName?.charAt(0)?.toUpperCase() || 'U'}
                 </span>
                 <span className="max-w-[120px] truncate text-sm font-medium">{user.fullName}</span>
               </button>
               {menuOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-52 rounded-xl border border-line bg-white p-1.5 shadow-card"
+                  className="absolute right-0 mt-2 w-52 rounded-xl border border-line bg-surface p-1.5 shadow-card"
                   onMouseLeave={() => setMenuOpen(false)}
                 >
                   <Link href="/dashboard" className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-slate-100" onClick={() => setMenuOpen(false)}>
@@ -146,7 +148,7 @@ export default function Navbar() {
 
       {/* Mobil menyu */}
       {open && (
-        <div className="border-t border-line bg-white md:hidden">
+        <div className="border-t border-line bg-surface md:hidden">
           <div className="container-page flex flex-col gap-1 py-4">
             <SearchBox className="mb-2" onDone={() => setOpen(false)} />
             {nav.map((item) => (
@@ -155,6 +157,7 @@ export default function Navbar() {
               </Link>
             ))}
             <div className="mt-2 flex flex-col gap-2">
+              <ThemeToggle compact />
               {isAuthenticated ? (
                 <>
                   <Link href="/dashboard" className="btn-outline" onClick={() => setOpen(false)}>Shaxsiy kabinet</Link>

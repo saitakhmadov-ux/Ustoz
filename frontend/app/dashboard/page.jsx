@@ -31,9 +31,9 @@ function DashboardInner() {
   return (
     <div className="container-page py-10">
       {/* Salomlashuv */}
-      <Reveal className="overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary to-primary-dark px-7 py-8 text-white sm:px-9">
+      <Reveal className="overflow-hidden rounded-3xl bg-gradient-to-br from-band-from via-band-from to-band-to px-7 py-8 text-white sm:px-9">
         <h1 className="text-3xl text-white">Salom, {user?.fullName?.split(' ')[0]} 👋</h1>
-        <p className="mt-1.5 text-indigo-50">O'quv jarayoningizni davom ettiring va yangi cho'qqilarni zabt eting.</p>
+        <p className="mt-1.5 text-white/85">O'quv jarayoningizni davom ettiring va yangi cho'qqilarni zabt eting.</p>
       </Reveal>
 
       {/* Statistika */}
@@ -95,7 +95,7 @@ function DashboardInner() {
                     <div className="flex h-full items-center justify-center text-slate-300"><PlayCircle size={36} /></div>
                   )}
                   {expired && (
-                    <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-600 px-2.5 py-1 text-xs font-medium text-white">
+                    <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-500 px-2.5 py-1 text-xs font-medium text-white">
                       <Lock size={12} /> Muddat tugagan
                     </span>
                   )}

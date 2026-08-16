@@ -48,7 +48,7 @@ export default function LockedVideo({ videoUrl, onComplete }) {
 function Controls({ playing, onToggle, muted, onMute, volume, onVolume, current, duration }) {
   const pct = duration > 0 ? Math.min(100, (current / duration) * 100) : 0;
   return (
-    <div className="flex items-center gap-3 bg-ink/90 px-3 py-2.5 text-white">
+    <div className="flex items-center gap-3 bg-scrim px-3 py-2.5 text-white">
       <button onClick={onToggle} className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15 hover:bg-white/25">
         {playing ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
       </button>

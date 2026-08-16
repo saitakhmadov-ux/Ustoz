@@ -26,7 +26,7 @@ export default function IeltsTyping({
                 type="button"
                 onClick={() => onLevel(l.id)}
                 className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors
-                  ${level === l.id ? 'bg-accent text-white' : 'text-muted hover:bg-slate-100'}`}
+                  ${level === l.id ? 'bg-accent text-on-accent' : 'text-muted hover:bg-slate-100'}`}
               >
                 {l.label}
               </button>

@@ -197,7 +197,7 @@ export default function AboutEditor() {
         )}
       </div>
 
-      <div className="sticky bottom-4 flex items-center gap-3 rounded-xl border border-line bg-white/95 p-3 shadow-sm backdrop-blur">
+      <div className="sticky bottom-4 flex items-center gap-3 rounded-xl border border-line bg-surface-glass p-3 shadow-sm backdrop-blur">
         <button onClick={save} disabled={saving} className="btn-primary disabled:opacity-50">
           {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Saqlash
         </button>

@@ -28,7 +28,7 @@ export default function HomeStats() {
         const Icon = s.icon;
         return (
           <div key={s.key} className="rounded-xl border border-indigo-100/70 bg-indigo-50/40 p-4">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-white text-primary">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-surface text-primary">
               <Icon size={17} />
             </span>
             <div className="mt-2.5 font-display text-2xl font-bold text-ink">{s.value}</div>

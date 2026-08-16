@@ -53,7 +53,7 @@ function LessonBreakdown({ lessons }) {
                 <li key={l.id} className="flex items-start gap-2.5 text-sm">
                   <span
                     className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full
-                      ${l.done ? 'bg-emerald-500 text-white' : 'border border-line bg-white'}`}
+                      ${l.done ? 'bg-emerald-500 text-white' : 'border border-line bg-surface'}`}
                   >
                     {l.done && <Check size={11} strokeWidth={3} />}
                   </span>
@@ -133,7 +133,7 @@ export default function StudentDetailPage() {
 
       {/* Profil */}
       <div className="mt-4 flex flex-wrap items-center gap-4">
-        <span className="grid h-14 w-14 place-items-center rounded-full bg-primary text-lg font-bold text-white">
+        <span className="grid h-14 w-14 place-items-center rounded-full bg-primary text-lg font-bold text-on-primary">
           {student.fullName?.charAt(0)?.toUpperCase()}
         </span>
         <div className="min-w-0 flex-1">

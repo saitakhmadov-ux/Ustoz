@@ -201,7 +201,7 @@ export default function TypingPlayer({
         onKeyDown={onKeyDown}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        className={`relative cursor-text rounded-2xl border-2 bg-white p-6 font-mono outline-none transition-colors
+        className={`relative cursor-text rounded-2xl border-2 bg-surface p-6 font-mono outline-none transition-colors
           text-xl leading-[2] md:p-8 xl:text-2xl 2xl:text-3xl
           ${focused ? 'border-primary' : 'border-line'}`}
         /* Uch qator joy doim band: matn qisqa bo'lsa ham maydon "sakramaydi" */
@@ -247,16 +247,16 @@ export default function TypingPlayer({
           <button
             type="button"
             onClick={() => boxRef.current?.focus()}
-            className="absolute inset-0 grid place-items-center rounded-2xl bg-white/80 backdrop-blur-[2px]"
+            className="absolute inset-0 grid place-items-center rounded-2xl bg-surface-glass backdrop-blur-[2px]"
           >
-            <span className="flex items-center gap-2 rounded-xl bg-ink px-4 py-2 font-sans text-sm font-medium text-white">
+            <span className="flex items-center gap-2 rounded-xl bg-inverse px-4 py-2 font-sans text-sm font-medium text-on-inverse">
               <KeyboardIcon size={16} /> Boshlash uchun shu yerni bosing
             </span>
           </button>
         )}
 
         {busy && (
-          <div className="absolute inset-0 grid place-items-center rounded-2xl bg-white/70">
+          <div className="absolute inset-0 grid place-items-center rounded-2xl bg-surface-glass">
             <Loader2 size={22} className="animate-spin text-primary" />
           </div>
         )}

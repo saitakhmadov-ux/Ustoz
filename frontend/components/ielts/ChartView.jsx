@@ -230,7 +230,7 @@ export default function ChartView({ task }) {
   if (visual === 'PROCESS' || visual === 'MAP') {
     if (imageUrl) {
       return (
-        <figure className="rounded-xl border border-line bg-white p-3">
+        <figure className="rounded-xl border border-line bg-surface p-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={fileUrl(imageUrl)} alt={dataSummary || 'IELTS diagramma'} className="mx-auto max-h-[420px] w-auto" />
         </figure>
@@ -255,7 +255,7 @@ export default function ChartView({ task }) {
         : <TableChart data={chartData} />;
 
   return (
-    <figure className="rounded-xl border border-line bg-white p-4">
+    <figure className="rounded-xl border border-line bg-surface p-4">
       {body}
       {visual !== 'PIE' && visual !== 'TABLE' && <Legend series={chartData.series} />}
       {chartData.caption && (

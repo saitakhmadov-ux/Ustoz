@@ -125,7 +125,7 @@ export default function AdminUserDetailPage() {
 
       {/* Profil */}
       <div className="mt-4 flex flex-wrap items-center gap-4">
-        <span className="grid h-14 w-14 place-items-center rounded-full bg-primary text-lg font-bold text-white">
+        <span className="grid h-14 w-14 place-items-center rounded-full bg-primary text-lg font-bold text-on-primary">
           {user.fullName?.charAt(0)?.toUpperCase()}
         </span>
         <div className="min-w-0 flex-1">

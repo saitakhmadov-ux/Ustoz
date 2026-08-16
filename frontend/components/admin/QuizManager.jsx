@@ -140,14 +140,14 @@ export default function QuizManager({ lesson, onChange }) {
             </p>
           )}
         </div>
-        <button onClick={() => setCfgOpen(!cfgOpen)} className="flex items-center gap-1 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-medium hover:bg-slate-100">
+        <button onClick={() => setCfgOpen(!cfgOpen)} className="flex items-center gap-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs font-medium hover:bg-slate-100">
           <Settings2 size={13} /> Sozlamalar
         </button>
       </div>
 
       {/* Sozlamalar paneli */}
       {cfgOpen && (
-        <div className="mb-3 grid grid-cols-2 gap-2 rounded-lg border border-line bg-white p-3 sm:grid-cols-4">
+        <div className="mb-3 grid grid-cols-2 gap-2 rounded-lg border border-line bg-surface p-3 sm:grid-cols-4">
           <label className="text-xs">
             <span className="text-muted">Beriladigan savol</span>
             <input type="number" min="1" className="input mt-1 text-sm" value={cfg.quizDraw} onChange={(e) => setCfg({ ...cfg, quizDraw: e.target.value })} />
@@ -176,7 +176,7 @@ export default function QuizManager({ lesson, onChange }) {
       {/* Mavjud savollar */}
       <div className="space-y-2">
         {(lesson.questions || []).map((q, qi) => (
-          <div key={q.id} className="rounded-lg border border-line bg-white p-3 text-sm">
+          <div key={q.id} className="rounded-lg border border-line bg-surface p-3 text-sm">
             <div className="flex items-start justify-between gap-2">
               <p className="font-medium">{qi + 1}. {q.question}</p>
               <button onClick={() => removeQuestion(q.id)} className="text-red-500 hover:text-red-700"><Trash2 size={15} /></button>
@@ -198,7 +198,7 @@ export default function QuizManager({ lesson, onChange }) {
 
       {/* Yangi savol qo'shish */}
       {adding ? (
-        <div className="mt-3 rounded-lg border border-line bg-white p-3">
+        <div className="mt-3 rounded-lg border border-line bg-surface p-3">
           {error && <div className="mb-2 rounded bg-red-50 px-3 py-1.5 text-xs text-red-700">{error}</div>}
           <textarea className="input mb-2 min-h-[54px] text-sm" placeholder="Savol matni" value={question} onChange={(e) => setQuestion(e.target.value)} />
 
@@ -208,7 +208,7 @@ export default function QuizManager({ lesson, onChange }) {
               <div className="relative inline-block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={fileUrl(imageUrl)} alt="Savol rasmi" className="max-h-32 rounded-lg border border-line" />
-                <button onClick={() => setImageUrl('')} className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-white text-red-500 shadow-card"><X size={13} /></button>
+                <button onClick={() => setImageUrl('')} className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-surface text-red-500 shadow-card"><X size={13} /></button>
               </div>
             ) : (
               <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-primary hover:text-primary">

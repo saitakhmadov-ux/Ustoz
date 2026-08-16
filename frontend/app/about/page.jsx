@@ -47,7 +47,7 @@ export default async function AboutPage() {
   return (
     <div className="container-page max-w-4xl py-14">
       <div className="text-center">
-        <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary text-white">
+        <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary text-on-primary">
           <GraduationCap size={28} />
         </span>
         <h1 className="mt-5 text-4xl">{about.title}</h1>

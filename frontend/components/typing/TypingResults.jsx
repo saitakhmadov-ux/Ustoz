@@ -37,7 +37,7 @@ function Confetti() {
 
 function Stat({ value, label, good = null }) {
   return (
-    <div className="rounded-xl border border-line bg-white p-4 text-center">
+    <div className="rounded-xl border border-line bg-surface p-4 text-center">
       <p className={`font-display text-3xl font-bold ${good === null ? 'text-ink' : good ? 'text-emerald-600' : 'text-amber-600'}`}>
         {value}
       </p>
@@ -62,7 +62,7 @@ export default function TypingResults({
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${passed ? 'bg-emerald-600' : 'bg-amber-500'} text-white`}>
+          <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${passed ? 'bg-accent text-on-accent' : 'bg-amber-500 text-inverse'}`}>
             {passed ? <Trophy size={22} /> : <Target size={22} />}
           </span>
           <div>
@@ -78,7 +78,7 @@ export default function TypingResults({
         </div>
 
         {/* Baho — sarlavha yonidagi bo'sh joyda */}
-        <div className="tp-star-in flex items-center gap-3 rounded-xl bg-white/80 px-4 py-2.5">
+        <div className="tp-star-in flex items-center gap-3 rounded-xl bg-surface-glass px-4 py-2.5">
           <StarRating value={stars} size={22} />
           <span className="leading-tight">
             <b className="block font-display text-lg text-ink">{score}%</b>
@@ -97,7 +97,7 @@ export default function TypingResults({
       {certificate && (
         <Link
           href={`/certificates/${certificate.id}`}
-          className="mt-5 flex items-center gap-3 rounded-xl border border-indigo-200 bg-white p-4 hover:border-primary"
+          className="mt-5 flex items-center gap-3 rounded-xl border border-indigo-200 bg-surface p-4 hover:border-primary"
         >
           <Award size={22} className="shrink-0 text-primary" />
           <span className="text-sm">

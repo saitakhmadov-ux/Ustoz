@@ -169,7 +169,7 @@ function EmailTab() {
           className={`relative h-7 w-12 rounded-full transition-colors ${live ? 'bg-emerald-500' : 'bg-slate-300'}`}
           aria-label="Haqiqiy xat yuborishni yoqish/o'chirish"
         >
-          <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${live ? 'left-[22px]' : 'left-0.5'}`} />
+          <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-surface shadow transition-all ${live ? 'left-[22px]' : 'left-0.5'}`} />
         </button>
       </div>
 
@@ -422,7 +422,7 @@ function TelegramTab() {
           className={`relative h-7 w-12 rounded-full transition-colors ${enabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
           aria-label="Botni yoqish/o'chirish"
         >
-          <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${enabled ? 'left-[22px]' : 'left-0.5'}`} />
+          <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-surface shadow transition-all ${enabled ? 'left-[22px]' : 'left-0.5'}`} />
         </button>
       </div>
 
