@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -18,6 +18,9 @@ import AIChat from '@/components/AIChat';
 import CodePlayground from '@/components/CodePlayground';
 import CourseRatingForm from '@/components/CourseRatingForm';
 import TypingCourseView from '@/components/typing/TypingCourseView';
+import LessonPath from '@/components/learn/LessonPath';
+import ProgressRing from '@/components/learn/ProgressRing';
+import Celebration from '@/components/learn/Celebration';
 import { Spinner, ErrorState } from '@/components/ui';
 
 function LearnInner() {
@@ -35,6 +38,10 @@ function LearnInner() {
   const [aiOpen, setAiOpen] = useState(false);
   const [aiSeed, setAiSeed] = useState(null);
   const [codeOpen, setCodeOpen] = useState(false);
+  // Dars/kurs yakunlanganda chiqadigan tantana ({ kind, left })
+  const [celebration, setCelebration] = useState(null);
+  // Oxirgi muvaffaqiyatli yuklash vaqti — fon yangilanishini cheklash uchun
+  const lastLoadAt = useRef(0);
 
   // AI Ustozni ochish. seed={code, errorText} bo'lsa playground kontekstini uzatadi.
   const askAI = (seed) => { setAiSeed(seed || null); setAiOpen(true); };
@@ -42,7 +49,8 @@ function LearnInner() {
   const askAIFromCode = (seed) => { setCodeOpen(false); askAI(seed); };
 
   // Kursni yuklash. keepCurrent=true bo'lsa tanlangan darsni saqlaydi (vazifa bajarilgandan keyin).
-  const load = async (keepCurrent = false) => {
+  // silent=true — fonda jimgina yangilash: xatolik bo'lsa ekranni buzmaydi.
+  const load = async (keepCurrent = false, { silent = false } = {}) => {
     if (!keepCurrent) setLoading(true);
     try {
       const res = await api.get(`/learn/${slug}`);
@@ -58,7 +66,10 @@ function LearnInner() {
         const target = all.find((l) => !l.locked && !l.completed) || all.find((l) => !l.locked) || all[0];
         setCurrentId(target?.id || null);
       }
+      lastLoadAt.current = Date.now();
     } catch (err) {
+      // Fon yangilanishi yiqilsa — o'quvchi ko'rib turgan sahifani buzmaymiz
+      if (silent) return;
       setError(err.message);
       setErrorCode(err.code || '');
     } finally {
@@ -67,6 +78,34 @@ function LearnInner() {
   };
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [slug]);
+
+  // Kurs kontenti ochiq sessiyada eskirib qolmasligi uchun.
+  //
+  // Sahifa ma'lumotni faqat ochilganda oladi, admin esa shu payt darsni
+  // tahrirlashi mumkin (masalan video havolasini almashtirishi). O'quvchi
+  // sahifaga QAYTGANDA — boshqa ilovadan, boshqa varaqdan yoki "Orqaga"
+  // tugmasi bilan (bfcache) — kontentni jimgina yangilaymiz.
+  //
+  // Uchta hodisa kerak: visibilitychange (varaq almashtirish), focus (oyna
+  // almashtirish — bunda varaq yashirilmaydi), pageshow (bfcache dan tiklash).
+  // MIN_GAP — hodisalar ketma-ket kelganda so'rov yog'dirmaslik uchun.
+  useEffect(() => {
+    const MIN_GAP = 30000;
+    const refresh = () => {
+      if (document.visibilityState !== 'visible') return;
+      if (Date.now() - lastLoadAt.current < MIN_GAP) return;
+      load(true, { silent: true });
+    };
+    document.addEventListener('visibilitychange', refresh);
+    window.addEventListener('focus', refresh);
+    window.addEventListener('pageshow', refresh);
+    return () => {
+      document.removeEventListener('visibilitychange', refresh);
+      window.removeEventListener('focus', refresh);
+      window.removeEventListener('pageshow', refresh);
+    };
+    /* eslint-disable-next-line */
+  }, [slug]);
 
   const flatLessons = useMemo(
     () => (course ? course.sections.flatMap((s) => s.lessons) : []),
@@ -78,8 +117,23 @@ function LearnInner() {
 
   // Vazifa bajarilgandan keyin server javobini qo'llash (progress/sertifikat + qulflarni yangilash)
   const applyResult = async (res) => {
+    // Dars soni oshgan bo'lsa — tantana ko'rsatamiz (foiz emas, DARS soni,
+    // chunki bitta darsda bir nechta vazifa bo'lishi mumkin)
+    const before = progress.completedLessons ?? progress.completed ?? 0;
+    const after = res?.progress?.completedLessons ?? res?.progress?.completed ?? before;
+    const total = res?.progress?.totalLessons ?? res?.progress?.total ?? 0;
+
     if (res?.progress) setProgress(res.progress);
     if (res?.certificate) setCertificate(res.certificate);
+
+    if (after > before) {
+      setCelebration(
+        res.progress?.percent >= 100
+          ? { kind: 'course' }
+          : { kind: 'lesson', left: Math.max(0, total - after) }
+      );
+    }
+
     await load(true); // qulflar kaskadini yangilash uchun qayta yuklaymiz
   };
 
@@ -154,9 +208,14 @@ function LearnInner() {
 
   return (
     <>
+    <Celebration
+      celebration={celebration}
+      certificate={certificate}
+      onDone={() => setCelebration(null)}
+    />
     <div className="grid min-h-[calc(100vh-4rem)] lg:grid-cols-[340px_1fr]">
       {/* Yon panel (curriculum) */}
-      <aside className={`border-r border-line bg-white lg:block ${sidebarOpen ? 'fixed inset-0 z-50 overflow-y-auto' : 'hidden'}`}>
+      <aside className={`border-r border-line bg-surface lg:block ${sidebarOpen ? 'fixed inset-0 z-50 overflow-y-auto' : 'hidden'}`}>
         <div className="border-b border-line p-5">
           <div className="flex items-center justify-between">
             <Link href={`/courses/${slug}`} className="text-sm text-primary hover:underline">← Kurs sahifasi</Link>
@@ -164,67 +223,29 @@ function LearnInner() {
           </div>
           <h2 className="mt-3 font-display text-lg font-bold leading-snug">{course.title}</h2>
 
-          {/* Progress + muddat */}
-          <div className="mt-3">
-            <div className="flex items-end justify-between">
-              <span className="text-sm text-muted">{progress.completedTasks ?? 0}/{progress.totalTasks ?? 0} vazifa</span>
-              <span className="font-display text-3xl font-bold leading-none text-primary">{progress.percent}%</span>
-            </div>
-            <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-slate-100">
-              <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${progress.percent}%` }} />
-            </div>
+          {/* Progress halqasi + muddat */}
+          <div className="mt-4">
+            <ProgressRing
+              percent={progress.percent}
+              done={progress.completedLessons ?? progress.completed}
+              total={progress.totalLessons ?? progress.total}
+            />
             <div className="mt-3 flex items-center justify-between">
-              <span className="text-sm text-muted">{progress.completedLessons ?? progress.completed}/{progress.totalLessons ?? progress.total} dars</span>
+              <span className="text-xs text-subtle">
+                {progress.completedTasks ?? 0}/{progress.totalTasks ?? 0} vazifa
+              </span>
               <AccessChip access={access} />
             </div>
           </div>
         </div>
 
-        <nav className="p-3">
-          {course.sections.map((section, si) => (
-            <div key={section.id} className="mb-4">
-              <p className="px-2 py-1 text-xs font-semibold uppercase tracking-wide text-muted">
-                {si + 1}. {section.title}
-              </p>
-              <ul className="mt-1 space-y-0.5">
-                {section.lessons.map((lesson) => {
-                  const active = lesson.id === currentId;
-                  const locked = lesson.locked;
-                  return (
-                    <li key={lesson.id}>
-                      <button
-                        onClick={() => goTo(lesson)}
-                        disabled={locked}
-                        title={locked ? 'Avval oldingi darsni yakunlang' : undefined}
-                        className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors
-                          ${active ? 'bg-indigo-50 font-medium text-primary' : locked ? 'cursor-not-allowed opacity-60' : 'hover:bg-slate-50'}`}
-                      >
-                        {locked
-                          ? <Lock size={16} className="shrink-0 text-subtle" />
-                          : lesson.completed
-                            ? <CheckCircle2 size={17} className="shrink-0 text-emerald-500" />
-                            : <Circle size={17} className="shrink-0 text-slate-300" />}
-                        <span className="flex-1 leading-snug">{lesson.title}</span>
-                        {!locked && !lesson.completed && lesson.tasksTotal > 1 && (
-                          <span className="shrink-0 text-[11px] text-muted">{lesson.tasksDone}/{lesson.tasksTotal}</span>
-                        )}
-                        {lesson.videoUrl
-                          ? <PlayCircle size={14} className="shrink-0 text-subtle" />
-                          : <FileText size={14} className="shrink-0 text-subtle" />}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </nav>
+        <LessonPath sections={course.sections} activeId={currentId} onSelect={goTo} />
       </aside>
 
       {/* Asosiy kontent */}
       <div className="bg-slate-50">
         {/* Mobil sarlavha */}
-        <div className="flex items-center gap-3 border-b border-line bg-white px-4 py-3 lg:hidden">
+        <div className="flex items-center gap-3 border-b border-line bg-surface px-4 py-3 lg:hidden">
           <button onClick={() => setSidebarOpen(true)}><Menu size={22} /></button>
           <span className="truncate text-sm font-medium">{course.title}</span>
           <span className="ml-auto text-lg font-bold text-primary">{progress.percent}%</span>
@@ -233,11 +254,11 @@ function LearnInner() {
         <div className="mx-auto max-w-3xl px-4 py-8">
           {/* Sertifikat bildirishnomasi — faqat oxirgi materialda */}
           {certificate && !nextLesson && (
-            <div className="mb-6 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-indigo-600 px-5 py-4 text-white">
+            <div className="mb-6 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-band-from to-band-to px-5 py-4 text-white">
               <Award size={28} />
               <div className="flex-1">
                 <p className="font-semibold">Tabriklaymiz! Kursni tugatdingiz 🎉</p>
-                <p className="text-sm text-indigo-50">Sertifikatingiz tayyor.</p>
+                <p className="text-sm text-white/85">Sertifikatingiz tayyor.</p>
               </div>
               <Link href={`/certificates/${certificate.id}`} className="btn-accent">Sertifikatni ko'rish</Link>
             </div>
@@ -266,7 +287,7 @@ function LearnInner() {
 
               {/* Video ko'rilmaguncha qolgan materiallar bloklanadi */}
               {videoGate ? (
-                <div className="mt-6 rounded-2xl border border-line bg-white p-6 text-center shadow-card">
+                <div className="mt-6 rounded-2xl border border-line bg-surface p-6 text-center shadow-card">
                   <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-subtle">
                     <Lock size={22} />
                   </span>
@@ -277,14 +298,14 @@ function LearnInner() {
                 <>
               {/* Matnli material */}
               {current.content && (
-                <div className="prose mt-6 max-w-none rounded-2xl bg-white p-6 text-[15px] leading-relaxed text-ink shadow-card">
+                <div className="prose mt-6 max-w-none rounded-2xl bg-surface p-6 text-[15px] leading-relaxed text-ink shadow-card">
                   <div className="whitespace-pre-wrap">{current.content}</div>
                 </div>
               )}
 
               {/* Qo'shimcha materiallar (video / PDF) */}
               {current.materials?.length > 0 && (
-                <div className="mt-6 rounded-2xl bg-white p-6 shadow-card">
+                <div className="mt-6 rounded-2xl bg-surface p-6 shadow-card">
                   <h3 className="flex items-center gap-2 text-lg font-semibold">
                     <Paperclip size={18} className="text-primary" /> Qo'shimcha materiallar
                   </h3>
@@ -407,13 +428,13 @@ function LearnInner() {
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-stretch gap-3">
         <button
           onClick={() => setCodeOpen(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-5 py-3.5 font-semibold text-white shadow-xl shadow-emerald-500/30 transition-transform hover:scale-105 hover:bg-emerald-700"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-3.5 font-semibold text-on-accent shadow-xl shadow-emerald-500/30 transition-transform hover:scale-105 hover:bg-accent-dark"
         >
           <Code2 size={18} /> Kod maydoni
         </button>
         <button
           onClick={() => askAI(null)}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 font-semibold text-white shadow-xl shadow-indigo-500/30 transition-transform hover:scale-105 hover:bg-primary-dark"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3.5 font-semibold text-on-primary shadow-xl shadow-indigo-500/30 transition-transform hover:scale-105 hover:bg-primary-dark"
         >
           <Sparkles size={18} /> AI Ustoz
         </button>
@@ -437,7 +458,7 @@ function TaskChecklist({ lesson, busyKey, onComplete, videoGate }) {
   const allDone = lesson.completed;
 
   return (
-    <div className={`mt-6 rounded-2xl border p-5 shadow-card ${allDone ? 'border-emerald-200 bg-emerald-50/40' : 'border-line bg-white'}`}>
+    <div className={`mt-6 rounded-2xl border p-5 shadow-card ${allDone ? 'border-emerald-200 bg-emerald-50/40' : 'border-line bg-surface'}`}>
       <h3 className="flex items-center gap-2 text-base font-semibold">
         <ListChecks size={18} className="text-primary" />
         Darsni yakunlash
@@ -454,7 +475,7 @@ function TaskChecklist({ lesson, busyKey, onComplete, videoGate }) {
             <li
               key={t.key}
               className={`flex items-center gap-3 rounded-xl border px-3.5 py-2.5 text-sm
-                ${t.done ? 'border-emerald-200 bg-emerald-50/50' : 'border-line bg-white'}`}
+                ${t.done ? 'border-emerald-200 bg-emerald-50/50' : 'border-line bg-surface'}`}
             >
               {t.done
                 ? <CheckCircle2 size={18} className="shrink-0 text-emerald-500" />
@@ -474,7 +495,7 @@ function TaskChecklist({ lesson, busyKey, onComplete, videoGate }) {
                 <button
                   onClick={() => onComplete(t.key)}
                   disabled={busy}
-                  className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-primary-dark disabled:opacity-60"
+                  className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-on-primary transition-colors hover:bg-primary-dark disabled:opacity-60"
                 >
                   {busy ? '...' : 'Belgilash'}
                 </button>
