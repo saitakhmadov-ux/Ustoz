@@ -15,6 +15,35 @@ export function fileUrl(path) {
   return `${FILE_BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
+// Oylarning o'zbekcha nomlari.
+// Brauzerlarning `uz-UZ` lokali to'liq emas: `toLocaleDateString('uz-UZ',
+// { month: 'long' })` Chrome'da "M07" kabi chiqadi. Sertifikat va shunga
+// o'xshash ko'zga ko'rinadigan joylarda oy nomi qo'lda yoziladi.
+const MONTHS_UZ = [
+  'yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun',
+  'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr',
+];
+
+// "31-iyul, 2026" ko'rinishidagi to'liq sana
+export function formatDateUz(value) {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return `${d.getDate()}-${MONTHS_UZ[d.getMonth()]}, ${d.getFullYear()}`;
+}
+
+// Yuklanadigan fayl hajmi chegaralari (MB).
+// Backend bilan mos bo'lishi shart — backend/src/middleware/upload.js -> SIZE_LIMITS.
+// PDF materiallar hosting joyini tez to'ldirmasligi uchun 2MB bilan cheklangan.
+export const MAX_PDF_MB = 2;
+export const MAX_VIDEO_MB = 500;
+
+// Fayl hajmini o'qishga qulay ko'rinishga o'tkazadi: 1.4 MB, 820 KB
+export function formatFileSize(bytes) {
+  const n = Number(bytes) || 0;
+  if (n >= 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${Math.max(1, Math.round(n / 1024))} KB`;
+}
+
 // Kurs darajalari
 export const LEVELS = {
   BEGINNER: 'Boshlang\'ich',

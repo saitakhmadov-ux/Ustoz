@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Loader2, Upload, Link2, Trash2, PlayCircle, FileText, X } from 'lucide-react';
 import { api } from '@/lib/api';
-import { fileUrl } from '@/lib/constants';
+import { fileUrl, MAX_PDF_MB, formatFileSize } from '@/lib/constants';
 
 // Dars qo'shish/tahrirlash formasi
 // mode: 'create' (sectionId kerak) yoki 'edit' (lesson kerak)
@@ -50,7 +50,7 @@ export default function LessonEditor({
   };
 
   return (
-    <div className="rounded-lg border border-line bg-white p-3">
+    <div className="rounded-lg border border-line bg-surface p-3">
       {error && <div className="mb-2 rounded bg-red-50 px-3 py-1.5 text-xs text-red-700">{error}</div>}
       <input className="input mb-2 text-sm" placeholder="Dars nomi" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
 
@@ -108,6 +108,14 @@ function MaterialsManager({ lessonId, materials, setMaterials }) {
     e.target.value = ''; // bir xil faylni qayta tanlash imkoni
     if (!file) return;
     setErr('');
+
+    // PDF hajmi cheklangan (backend ham shu chegarani majburlaydi) —
+    // katta faylni umuman yubormaymiz.
+    if (/\.pdf$/i.test(file.name) && file.size > MAX_PDF_MB * 1024 * 1024) {
+      setErr(`PDF hajmi ${MAX_PDF_MB} MB dan oshmasligi kerak. Tanlangan fayl: ${formatFileSize(file.size)}.`);
+      return;
+    }
+
     setUploading(true);
     setProgress(0);
     try {
@@ -220,6 +228,9 @@ function MaterialsManager({ lessonId, materials, setMaterials }) {
           <button type="button" onClick={() => setUrlMode(true)} className="btn-ghost py-1.5 text-sm">
             <Link2 size={14} /> URL orqali qo'shish
           </button>
+          <p className="w-full text-xs text-muted">
+            PDF material hajmi eng ko'pi bilan {MAX_PDF_MB} MB bo'lishi mumkin.
+          </p>
         </div>
       )}
     </div>

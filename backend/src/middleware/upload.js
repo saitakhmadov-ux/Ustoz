@@ -20,15 +20,82 @@ const ALLOWED = {
   '.pdf': 'PDF',
 };
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    // Xavfsiz, noyob nom: <random>-<vaqt><kengaytma>
-    const safe = `${crypto.randomBytes(8).toString('hex')}-${Date.now()}${ext}`;
-    cb(null, safe);
-  },
-});
+// Fayl turi bo'yicha maksimal hajm (bayt).
+// PDF materiallar hosting joyini tez to'ldirmasligi uchun atigi 2MB —
+// bundan kattasini tizim qabul qilmaydi (yuklash yarim yo'lda to'xtatiladi).
+const SIZE_LIMITS = {
+  VIDEO: 500 * 1024 * 1024,
+  PDF: 2 * 1024 * 1024,
+  IMAGE: 10 * 1024 * 1024,
+};
+
+// Eng katta chegara — multer uchun umumiy "shift" (tur bo'yicha aniq
+// chegarani quyidagi storage o'zi tekshiradi).
+const MAX_LIMIT = Math.max(...Object.values(SIZE_LIMITS));
+
+function mb(bytes) {
+  const v = bytes / (1024 * 1024);
+  return Number.isInteger(v) ? `${v} MB` : `${v.toFixed(1)} MB`;
+}
+
+/**
+ * Multer storage: faylni diskka yozadi va bir vaqtning o'zida baytlarni
+ * sanaydi. Chegaradan oshsa — yozishni to'xtatib, yarim faylni o'chiradi va
+ * xatolik qaytaradi. Shu tufayli katta PDF butunlay yuklanib bo'lguncha
+ * kutilmaydi, diskda ham iz qolmaydi.
+ *
+ * kindFor(ext) — fayl turini ('VIDEO' | 'PDF' | 'IMAGE') qaytaradi.
+ */
+function limitedDiskStorage(kindFor) {
+  return {
+    _handleFile(req, file, cb) {
+      const ext = path.extname(file.originalname).toLowerCase();
+      const kind = kindFor(ext);
+      const limit = SIZE_LIMITS[kind] || SIZE_LIMITS.PDF;
+
+      // Xavfsiz, noyob nom: <random>-<vaqt><kengaytma>
+      const filename = `${crypto.randomBytes(8).toString('hex')}-${Date.now()}${ext}`;
+      const filePath = path.join(UPLOAD_DIR, filename);
+      const out = fs.createWriteStream(filePath);
+
+      let bytes = 0;
+      let finished = false;
+
+      const fail = (err) => {
+        if (finished) return;
+        finished = true;
+        file.stream.unpipe(out);
+        out.destroy();
+        // Yarim yozilgan faylni o'chiramiz — hosting joyi band bo'lib qolmasin
+        fs.unlink(filePath, () => cb(err));
+      };
+
+      file.stream.on('data', (chunk) => {
+        bytes += chunk.length;
+        if (bytes > limit) {
+          fail(ApiError.payloadTooLarge(
+            `${kind === 'PDF' ? 'PDF' : 'Fayl'} hajmi ${mb(limit)} dan oshmasligi kerak.`,
+          ));
+        }
+      });
+      file.stream.on('error', fail);
+      out.on('error', fail);
+      out.on('finish', () => {
+        if (finished) return;
+        finished = true;
+        cb(null, {
+          destination: UPLOAD_DIR, filename, path: filePath, size: bytes,
+        });
+      });
+
+      file.stream.pipe(out);
+    },
+
+    _removeFile(req, file, cb) {
+      fs.unlink(file.path, cb);
+    },
+  };
+}
 
 function fileFilter(req, file, cb) {
   const ext = path.extname(file.originalname).toLowerCase();
@@ -38,11 +105,11 @@ function fileFilter(req, file, cb) {
   cb(null, true);
 }
 
-// Bitta fayl, "file" maydoni. Maksimal 500MB (video uchun).
+// Bitta fayl, "file" maydoni. Video 500MB gacha, PDF esa 2MB gacha.
 const upload = multer({
-  storage,
+  storage: limitedDiskStorage((ext) => ALLOWED[ext]),
   fileFilter,
-  limits: { fileSize: 500 * 1024 * 1024 },
+  limits: { fileSize: MAX_LIMIT },
 });
 
 // ---- Rasm yuklash (bosh sahifa hero va shu kabi) ----
@@ -58,9 +125,11 @@ function imageFilter(req, file, cb) {
 
 // Bitta rasm, "file" maydoni. Maksimal 10MB.
 const uploadImage = multer({
-  storage,
+  storage: limitedDiskStorage(() => 'IMAGE'),
   fileFilter: imageFilter,
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: SIZE_LIMITS.IMAGE },
 });
 
-module.exports = { upload, uploadImage, UPLOAD_DIR, ALLOWED, IMAGE_ALLOWED };
+module.exports = {
+  upload, uploadImage, UPLOAD_DIR, ALLOWED, IMAGE_ALLOWED, SIZE_LIMITS,
+};

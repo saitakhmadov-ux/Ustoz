@@ -13,6 +13,18 @@ function errorHandler(err, req, res, next) {
     message = err.errors?.map((e) => e.message).join('; ') || 'Ma\'lumot noto\'g\'ri';
   }
 
+  // Multer (fayl yuklash) xatoliklari — o'zining statusCode si yo'q,
+  // shuning uchun 500 emas, tushunarli 400/413 qilib qaytaramiz.
+  if (err.name === 'MulterError') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      statusCode = 413;
+      message = 'Fayl hajmi ruxsat etilgan chegaradan katta';
+    } else {
+      statusCode = 400;
+      message = `Fayl yuklashda xatolik: ${err.message}`;
+    }
+  }
+
   // Prisma xatoliklari
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     if (err.code === 'P2002') {
