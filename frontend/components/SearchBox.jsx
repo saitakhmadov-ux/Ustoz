@@ -28,7 +28,7 @@ export default function SearchBox({
         {/* Ikona ham submit tugmasi — bosib yoki Enter bilan qidirish mumkin */}
         <button
           type="submit"
-          className="absolute left-0 top-0 grid h-full w-10 place-items-center text-slate-400 transition-colors hover:text-primary"
+          className="absolute left-0 top-0 grid h-full w-10 place-items-center text-subtle transition-colors hover:text-primary"
           aria-label="Qidirish"
         >
           <Search size={18} />

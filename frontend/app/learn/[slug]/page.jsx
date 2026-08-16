@@ -200,7 +200,7 @@ function LearnInner() {
                           ${active ? 'bg-indigo-50 font-medium text-primary' : locked ? 'cursor-not-allowed opacity-60' : 'hover:bg-slate-50'}`}
                       >
                         {locked
-                          ? <Lock size={16} className="shrink-0 text-slate-400" />
+                          ? <Lock size={16} className="shrink-0 text-subtle" />
                           : lesson.completed
                             ? <CheckCircle2 size={17} className="shrink-0 text-emerald-500" />
                             : <Circle size={17} className="shrink-0 text-slate-300" />}
@@ -209,8 +209,8 @@ function LearnInner() {
                           <span className="shrink-0 text-[11px] text-muted">{lesson.tasksDone}/{lesson.tasksTotal}</span>
                         )}
                         {lesson.videoUrl
-                          ? <PlayCircle size={14} className="shrink-0 text-slate-400" />
-                          : <FileText size={14} className="shrink-0 text-slate-400" />}
+                          ? <PlayCircle size={14} className="shrink-0 text-subtle" />
+                          : <FileText size={14} className="shrink-0 text-subtle" />}
                       </button>
                     </li>
                   );
@@ -246,7 +246,7 @@ function LearnInner() {
           {currentLocked ? (
             /* Qulflangan dars ochilsa (kam holat) */
             <div className="card p-8 text-center">
-              <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-slate-400"><Lock size={26} /></span>
+              <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-subtle"><Lock size={26} /></span>
               <h1 className="mt-4 text-2xl">Bu dars hali ochilmagan</h1>
               <p className="mt-2 text-muted">Ketma-ket o'qish tartibi: avvalgi darsni to'liq yakunlang, keyin bu dars ochiladi.</p>
             </div>
@@ -267,7 +267,7 @@ function LearnInner() {
               {/* Video ko'rilmaguncha qolgan materiallar bloklanadi */}
               {videoGate ? (
                 <div className="mt-6 rounded-2xl border border-line bg-white p-6 text-center shadow-card">
-                  <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-slate-400">
+                  <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-subtle">
                     <Lock size={22} />
                   </span>
                   <p className="mt-3 font-semibold text-ink">Materiallar bloklangan</p>
@@ -391,7 +391,7 @@ function LearnInner() {
               {!nextLesson && progress.percent === 100 && (
                 <div className="mt-8 border-t border-line pt-8">
                   <div className="mb-3">
-                    <h2 className="text-lg font-semibold text-ink">Kursni baholang</h2>
+                    <h2 className="text-lg font-semibold text-heading">Kursni baholang</h2>
                     <p className="text-sm text-muted">Fikringiz boshqa o'quvchilarga yordam beradi.</p>
                   </div>
                   <CourseRatingForm slug={slug} />
@@ -461,7 +461,7 @@ function TaskChecklist({ lesson, busyKey, onComplete, videoGate }) {
                 : gated
                   ? <Lock size={16} className="shrink-0 text-slate-300" />
                   : <Circle size={18} className="shrink-0 text-slate-300" />}
-              <span className={`flex-1 ${t.done ? 'text-muted line-through' : gated ? 'text-slate-400' : 'text-ink'}`}>{t.label}</span>
+              <span className={`flex-1 ${t.done ? 'text-muted line-through' : gated ? 'text-subtle' : 'text-ink'}`}>{t.label}</span>
               {t.done ? (
                 <span className="text-xs font-medium text-emerald-600">Bajarildi</span>
               ) : isVideo ? (

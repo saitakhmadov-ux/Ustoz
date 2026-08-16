@@ -242,7 +242,7 @@ export default function AdminPeoplePage() {
                         <MailWarning size={12} /> tasdiqlanmagan
                       </span>
                     )}
-                    {u.phone && <p className="text-xs text-slate-400">{u.phone}</p>}
+                    {u.phone && <p className="text-xs text-subtle">{u.phone}</p>}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`badge ${cls}`}><Icon size={12} /> {label}</span>
@@ -250,7 +250,7 @@ export default function AdminPeoplePage() {
                   <td className="px-4 py-3">
                     {u.role === 'INSTRUCTOR' ? (
                       taught.length === 0 ? (
-                        <span className="text-xs text-slate-400">biriktirilmagan</span>
+                        <span className="text-xs text-subtle">biriktirilmagan</span>
                       ) : (
                         <span title={taught.map((c) => c.title).join(', ')}>
                           {taught.length}

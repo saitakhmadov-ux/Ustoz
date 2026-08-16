@@ -39,7 +39,7 @@ function CodeBlock({ code }) {
   return (
     <div className="my-2 overflow-hidden rounded-xl border border-slate-700 bg-slate-900">
       <div className="flex items-center justify-between border-b border-slate-700 px-3 py-1.5">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">Kod</span>
+        <span className="text-[11px] font-medium uppercase tracking-wide text-subtle">Kod</span>
         <button onClick={copy} className="flex items-center gap-1 text-[11px] text-slate-300 hover:text-white">
           {copied ? <><Check size={12} /> Nusxalandi</> : <><Copy size={12} /> Nusxalash</>}
         </button>
@@ -185,10 +185,10 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
                     {mm.feedback === null ? (
                       <>
                         <span className="text-[11px] text-muted">Foydali bo'ldimi?</span>
-                        <button onClick={() => sendFeedback(i, true)} className="rounded-md p-1 text-slate-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600" title="Ha, foydali">
+                        <button onClick={() => sendFeedback(i, true)} className="rounded-md p-1 text-subtle transition-colors hover:bg-emerald-50 hover:text-emerald-600" title="Ha, foydali">
                           <ThumbsUp size={14} />
                         </button>
-                        <button onClick={() => sendFeedback(i, false)} className="rounded-md p-1 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500" title="Yo'q">
+                        <button onClick={() => sendFeedback(i, false)} className="rounded-md p-1 text-subtle transition-colors hover:bg-red-50 hover:text-red-500" title="Yo'q">
                           <ThumbsDown size={14} />
                         </button>
                       </>

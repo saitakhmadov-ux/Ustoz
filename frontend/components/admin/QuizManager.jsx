@@ -224,7 +224,7 @@ export default function QuizManager({ lesson, onChange }) {
               <div key={i} className="flex items-center gap-2">
                 <input type="radio" name="correct" checked={correctIndex === i} onChange={() => setCorrectIndex(i)} title="To'g'ri javob" className="text-primary" />
                 <input className="input text-sm" placeholder={`Variant ${i + 1}`} value={opt} onChange={(e) => setOption(i, e.target.value)} />
-                {options.length > 2 && <button onClick={() => removeOption(i)} className="text-slate-400 hover:text-red-500"><X size={15} /></button>}
+                {options.length > 2 && <button onClick={() => removeOption(i)} className="text-subtle hover:text-red-500"><X size={15} /></button>}
               </div>
             ))}
           </div>

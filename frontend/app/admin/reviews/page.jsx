@@ -101,7 +101,7 @@ export default function AdminReviewsPage() {
                     {r.comment ? (
                       <p className="mt-2 whitespace-pre-wrap text-sm text-ink/90">{r.comment}</p>
                     ) : (
-                      <p className="mt-2 text-sm italic text-slate-400">Izohsiz — faqat baho</p>
+                      <p className="mt-2 text-sm italic text-subtle">Izohsiz — faqat baho</p>
                     )}
                   </div>
 

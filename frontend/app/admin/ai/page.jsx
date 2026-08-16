@@ -126,7 +126,7 @@ function SettingsTab() {
     <div className="space-y-4">
       {/* Holat */}
       <div className="card flex flex-wrap items-center gap-4 p-5">
-        <span className={`grid h-11 w-11 place-items-center rounded-xl ${enabled ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+        <span className={`grid h-11 w-11 place-items-center rounded-xl ${enabled ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-subtle'}`}>
           <Power size={20} />
         </span>
         <div className="flex-1">
@@ -149,7 +149,7 @@ function SettingsTab() {
 
       {/* API kalit */}
       <div className="card p-5">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink"><KeyRound size={18} className="text-primary" /> API kalit</h2>
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading"><KeyRound size={18} className="text-primary" /> API kalit</h2>
         <p className="mt-1 text-sm text-muted">Google AI Studio (aistudio.google.com/apikey) dan olinadi. Bo'sh qoldirsangiz mavjud kalit o'zgarmaydi.</p>
         <input
           type="password"
@@ -164,7 +164,7 @@ function SettingsTab() {
       {/* Model */}
       <div className="card p-5">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink"><Cpu size={18} className="text-primary" /> Gemini modeli</h2>
+          <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading"><Cpu size={18} className="text-primary" /> Gemini modeli</h2>
           <button onClick={loadModels} disabled={loadingModels} className="btn-outline text-sm">
             {loadingModels ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />} Modellarni yuklash
           </button>
@@ -185,7 +185,7 @@ function SettingsTab() {
 
       {/* Yo'naltiruvchi ko'rsatmalar */}
       <div className="card p-5">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink"><Sparkles size={18} className="text-primary" /> Yo'naltiruvchi ko'rsatmalar</h2>
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading"><Sparkles size={18} className="text-primary" /> Yo'naltiruvchi ko'rsatmalar</h2>
         <p className="mt-1 text-sm text-muted">
           AI xatti-harakatiga qo'shimcha yo'nalish bering — ohang, uslub, ustuvorliklar. Bu matn har bir javob uchun tizim ko'rsatmasiga qo'shiladi.
         </p>
@@ -270,7 +270,7 @@ function AnalyticsTab() {
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Foydalilik */}
         <div className="card p-5">
-          <h3 className="flex items-center gap-2 font-semibold text-ink"><ThumbsUp size={17} className="text-primary" /> Foydalilik bahosi</h3>
+          <h3 className="flex items-center gap-2 font-semibold text-heading"><ThumbsUp size={17} className="text-primary" /> Foydalilik bahosi</h3>
           {a.helpfulRate === null ? (
             <p className="mt-4 text-sm text-muted">Hali baho berilmagan. Talabalar javoblarni 👍/👎 baholasa, foydalilik shu yerda ko'rinadi.</p>
           ) : (
@@ -292,7 +292,7 @@ function AnalyticsTab() {
 
         {/* Savol turi */}
         <div className="card p-5">
-          <h3 className="flex items-center gap-2 font-semibold text-ink"><Code2 size={17} className="text-primary" /> Savol turi</h3>
+          <h3 className="flex items-center gap-2 font-semibold text-heading"><Code2 size={17} className="text-primary" /> Savol turi</h3>
           <div className="mt-4 space-y-3">
             <Bar label="Kod biriktirilgan" value={a.withCode} total={a.total} color="bg-indigo-500" />
             <Bar label="Xato tuzatish (konsol xatosi bilan)" value={a.withError} total={a.total} color="bg-amber-500" />
@@ -303,7 +303,7 @@ function AnalyticsTab() {
 
       {/* Kurslar bo'yicha */}
       <div className="card p-5">
-        <h3 className="flex items-center gap-2 font-semibold text-ink"><BarChart3 size={17} className="text-primary" /> Kurslar bo'yicha foydalanish</h3>
+        <h3 className="flex items-center gap-2 font-semibold text-heading"><BarChart3 size={17} className="text-primary" /> Kurslar bo'yicha foydalanish</h3>
         <div className="mt-4 space-y-2.5">
           {a.byCourse.map((c) => (
             <div key={c.courseId || 'none'} className="flex items-center gap-3">
@@ -320,7 +320,7 @@ function AnalyticsTab() {
 
       {/* Kunlik trend */}
       <div className="card p-5">
-        <h3 className="flex items-center gap-2 font-semibold text-ink"><TrendingUp size={17} className="text-primary" /> So'nggi 14 kun</h3>
+        <h3 className="flex items-center gap-2 font-semibold text-heading"><TrendingUp size={17} className="text-primary" /> So'nggi 14 kun</h3>
         <div className="mt-4 flex items-end gap-1.5" style={{ height: 120 }}>
           {a.byDay.map((d) => (
             <div key={d.date} className="group flex flex-1 flex-col items-center justify-end gap-1">
@@ -339,7 +339,7 @@ function AnalyticsTab() {
       {/* Ko'p so'raladigan mavzular */}
       {a.keywords.length > 0 && (
         <div className="card p-5">
-          <h3 className="flex items-center gap-2 font-semibold text-ink"><Sparkles size={17} className="text-primary" /> Ko'p so'raladigan mavzular</h3>
+          <h3 className="flex items-center gap-2 font-semibold text-heading"><Sparkles size={17} className="text-primary" /> Ko'p so'raladigan mavzular</h3>
           <p className="mt-1 text-sm text-muted">Savollardagi eng ko'p uchraydigan so'zlar (umumiy tasavvur uchun).</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {a.keywords.map((k) => (
@@ -354,13 +354,13 @@ function AnalyticsTab() {
       {/* So'nggi savollar namunasi */}
       {a.recentSample.length > 0 && (
         <div className="card p-5">
-          <h3 className="flex items-center gap-2 font-semibold text-ink"><MessageSquare size={17} className="text-primary" /> So'nggi savollar (namuna)</h3>
+          <h3 className="flex items-center gap-2 font-semibold text-heading"><MessageSquare size={17} className="text-primary" /> So'nggi savollar (namuna)</h3>
           <ul className="mt-3 space-y-2">
             {a.recentSample.map((r, i) => (
               <li key={i} className="flex items-start gap-2 border-b border-line/60 pb-2 text-sm last:border-0">
                 {r.hasError ? <span title="Xato tuzatish" className="mt-0.5 text-amber-500">⚠️</span>
                   : r.hasCode ? <Code2 size={15} className="mt-0.5 shrink-0 text-indigo-500" />
-                  : <MessageSquare size={14} className="mt-0.5 shrink-0 text-slate-400" />}
+                  : <MessageSquare size={14} className="mt-0.5 shrink-0 text-subtle" />}
                 <span className="flex-1 text-ink">{r.question}</span>
                 <span className="shrink-0 text-xs text-muted">{new Date(r.createdAt).toLocaleDateString('uz')}</span>
               </li>

@@ -66,7 +66,7 @@ export default function TypingResults({
             {passed ? <Trophy size={22} /> : <Target size={22} />}
           </span>
           <div>
-            <h3 className="font-display text-lg font-semibold text-ink">
+            <h3 className="font-display text-lg font-semibold text-heading">
               {passed ? 'Dars yakunlandi!' : 'Maqsadga yetmadi'}
             </h3>
             <p className="text-sm text-muted">

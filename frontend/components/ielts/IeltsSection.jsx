@@ -100,7 +100,7 @@ export default function IeltsSection({ slug }) {
     return (
       <div className="space-y-5">
         <div className="rounded-2xl border border-accent/30 bg-accent/5 p-5">
-          <h2 className="font-display text-lg font-semibold text-ink">IELTS Computer Writing</h2>
+          <h2 className="font-display text-lg font-semibold text-heading">IELTS Computer Writing</h2>
           <p className="mt-1 text-sm text-muted">
             Kompyuterda IELTS yozish formatiga mashq: taymer, so'z chegarasi va real
             vaqtdagi hisob. Bu rasmiy imtihon emas — mashq bo'limi.
@@ -194,7 +194,7 @@ export default function IeltsSection({ slug }) {
           <ArrowLeft size={15} /> Orqaga
         </button>
         <div className="card p-5">
-          <h3 className="font-display text-lg font-semibold text-ink">Writing Task 1 — formatni tanlang</h3>
+          <h3 className="font-display text-lg font-semibold text-heading">Writing Task 1 — formatni tanlang</h3>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {['ACADEMIC_T1', 'GENERAL_T1'].map((id) => {
               const m = MODES.find((x) => x.id === id);

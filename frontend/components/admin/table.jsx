@@ -90,7 +90,7 @@ export function SegmentedTabs({ value, onChange, items, size = 'md' }) {
         >
           {item.label}
           {item.count != null && (
-            <span className={`ml-1.5 text-xs ${value === item.key ? 'text-primary/60' : 'text-slate-400'}`}>
+            <span className={`ml-1.5 text-xs ${value === item.key ? 'text-primary/60' : 'text-subtle'}`}>
               {item.count}
             </span>
           )}
@@ -115,7 +115,7 @@ export function CountTabs({ value, onChange, items }) {
               ${active ? 'bg-primary text-white' : 'bg-slate-100 text-muted hover:bg-slate-200'}`}
           >
             {item.label}
-            <span className={`ml-2 text-xs ${active ? 'text-white/70' : 'text-slate-400'}`}>
+            <span className={`ml-2 text-xs ${active ? 'text-white/70' : 'text-subtle'}`}>
               {item.count ?? 0}
             </span>
           </button>
@@ -137,7 +137,7 @@ export function InfoTip({ text }) {
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         onBlur={() => setOpen(false)}
-        className="text-slate-300 transition-colors hover:text-slate-500"
+        className="text-subtle transition-colors hover:text-ink"
       >
         <Info size={14} />
       </button>

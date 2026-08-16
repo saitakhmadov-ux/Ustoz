@@ -231,7 +231,7 @@ export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
           /* Dasturlashga aloqasi yo'q kurs */
           <div className="flex flex-1 items-center justify-center p-8">
             <div className="max-w-sm text-center">
-              <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-slate-100 text-slate-400"><Lock size={30} /></span>
+              <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-slate-100 text-subtle"><Lock size={30} /></span>
               <p className="mt-4 font-display text-lg font-semibold text-ink">Bu kursda mavjud emas</p>
               <p className="mt-2 text-muted">
                 Sizning kursingizda ushbu imkoniyatdan foydalana olmaysiz, bu oyna dasturlash kurslarida ishlaydi.
@@ -287,16 +287,18 @@ export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
 
             {/* Konsol */}
             <div className="max-h-[38%] shrink-0 overflow-y-auto border-t border-line bg-slate-900 px-4 py-3">
-              <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-500">
+              {/* Konsol qorong'i fonda — bu yerda `muted`/`subtle` tokenlari ishlamaydi
+                  (ular oq fon uchun hisoblangan). Och slate qiymatlari ishlatiladi. */}
+              <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">
                 <Terminal size={12} /> Konsol {!isLocal && running && <span className="text-slate-400">— serverda bajarilmoqda...</span>}
               </div>
               <div className="space-y-1 font-mono text-[13px] leading-relaxed">
                 {logs.length === 0 ? (
-                  <p className="text-slate-600">// Natija shu yerda ko'rinadi</p>
+                  <p className="text-slate-400">// Natija shu yerda ko'rinadi</p>
                 ) : (
                   logs.map((l, i) => (
                     <div key={i} className={`whitespace-pre-wrap break-words ${
-                      l.level === 'error' ? 'text-red-400' : l.level === 'warn' ? 'text-amber-300' : l.level === 'muted' ? 'text-slate-500' : 'text-slate-100'
+                      l.level === 'error' ? 'text-red-400' : l.level === 'warn' ? 'text-amber-300' : l.level === 'muted' ? 'text-slate-400' : 'text-slate-100'
                     }`}>
                       {l.level === 'error' ? '⛔ ' : l.level === 'warn' ? '⚠️ ' : ''}{l.text}
                     </div>

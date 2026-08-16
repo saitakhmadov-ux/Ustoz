@@ -160,7 +160,7 @@ export default function AdminMessagesPage() {
           <div className="mt-4">
             <label className="label">Foydalanuvchilar ({selectedUsers.length} tanlangan)</label>
             <div className="relative mb-2">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-subtle" />
               <input className="input pl-9" placeholder="Ism yoki email bo'yicha qidirish..." value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <div className="max-h-56 overflow-y-auto rounded-xl border border-line">
@@ -232,8 +232,8 @@ export default function AdminMessagesPage() {
                     <tr key={n.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3 font-medium">{n.title}</td>
                       <td className="px-4 py-3 text-muted">{n.user?.fullName}</td>
-                      <td className="px-4 py-3">{n.emailSent ? <span className="badge bg-blue-50 text-blue-600"><Mail size={11} /> Ha</span> : <span className="text-slate-400">—</span>}</td>
-                      <td className="px-4 py-3">{n.telegramSent ? <span className="badge bg-sky-50 text-sky-700"><Bot size={11} /> Ha</span> : <span className="text-slate-400">—</span>}</td>
+                      <td className="px-4 py-3">{n.emailSent ? <span className="badge bg-blue-50 text-blue-600"><Mail size={11} /> Ha</span> : <span className="text-subtle">—</span>}</td>
+                      <td className="px-4 py-3">{n.telegramSent ? <span className="badge bg-sky-50 text-sky-700"><Bot size={11} /> Ha</span> : <span className="text-subtle">—</span>}</td>
                       <td className="px-4 py-3">
                         <span className={`badge ${n.read ? 'bg-indigo-50 text-indigo-700' : 'bg-amber-50 text-amber-700'}`}>
                           {n.read ? 'O\'qilgan' : 'O\'qilmagan'}

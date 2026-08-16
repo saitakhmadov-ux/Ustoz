@@ -124,7 +124,7 @@ export default function InstructorEarningsDetail() {
                     {p.discountPct > 0 && (
                       <span className="badge bg-emerald-50 text-emerald-700"><BadgePercent size={11} /> −{p.discountPct}%</span>
                     )}
-                    {!p.active && <span className="badge bg-slate-100 text-slate-500">O'chirilgan</span>}
+                    {!p.active && <span className="badge bg-slate-100 text-muted">O'chirilgan</span>}
                     <span className="text-xs text-muted">
                       {p.course ? p.course.title : 'Barcha kurslari'} · {p._count.earnings} sotuv
                       {' · '}

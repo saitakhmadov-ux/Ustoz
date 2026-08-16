@@ -68,7 +68,7 @@ export default function IeltsResults({
   return (
     <div className="space-y-4">
       <div className="card p-6">
-        <h3 className="font-display text-lg font-semibold text-ink">Your Result</h3>
+        <h3 className="font-display text-lg font-semibold text-heading">Your Result</h3>
 
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat value={attempt.wpm} label={isCopy ? 'WPM' : "so'z/daqiqa"} />

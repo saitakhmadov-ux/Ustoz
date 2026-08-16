@@ -234,7 +234,7 @@ export default function TypingPlayer({
                   className={`inline-block ${animClass || ''}
                     ${isCurrent ? 'rounded-sm bg-primary/15 text-ink underline decoration-primary decoration-2 underline-offset-4' : ''}
                     ${isTyped ? (correct ? 'text-ink' : 'rounded-sm bg-red-100 text-red-600') : ''}
-                    ${!isTyped && !isCurrent ? 'text-slate-400' : ''}`}
+                    ${!isTyped && !isCurrent ? 'text-subtle' : ''}`}
                 >
                   {ch}
                 </span>

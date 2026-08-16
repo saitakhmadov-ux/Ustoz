@@ -74,7 +74,7 @@ export default async function HomePage() {
 
         <div className="container-page relative grid items-start gap-12 py-12 md:grid-cols-[2fr_3fr] md:pb-24 md:pt-14">
           <div>
-            <h1 className="text-5xl font-bold leading-[1.05] tracking-tight md:text-6xl">
+            <h1 className="text-4xl font-bold leading-[1.08] tracking-tight md:text-5xl">
               {c.heroTitle}
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600">

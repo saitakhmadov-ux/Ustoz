@@ -777,7 +777,7 @@ function PromoCodes({ courses }) {
                     )}
                     {/* Holat: nofaol / muddati tugagan / limit tugagan / ishlayapti */}
                     {!p.active ? (
-                      <span className="badge bg-slate-100 text-slate-500">O'chirilgan</span>
+                      <span className="badge bg-slate-100 text-muted">O'chirilgan</span>
                     ) : p.expired ? (
                       <span className="badge bg-red-50 text-red-700">
                         <CalendarX size={12} /> Muddati tugagan

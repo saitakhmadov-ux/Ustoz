@@ -83,7 +83,7 @@ function CourseDetailInner() {
                 <span className="flex items-center gap-1.5">
                   <StarRating value={course.rating.average} size={16} />
                   <span className="font-semibold text-amber-300">{course.rating.average.toFixed(1)}</span>
-                  <span className="text-slate-400">({course.rating.count})</span>
+                  <span className="text-subtle">({course.rating.count})</span>
                 </span>
               )}
               <span className="flex items-center gap-1.5"><BarChart size={16} /> {LEVELS[course.level]}</span>
@@ -91,7 +91,7 @@ function CourseDetailInner() {
               <span className="flex items-center gap-1.5"><Users size={16} /> {course._count?.enrollments ?? 0} o'quvchi</span>
               <span className="flex items-center gap-1.5"><Award size={16} /> Sertifikat</span>
             </div>
-            <p className="mt-4 text-sm text-slate-400">Muallif: <span className="text-white">{course.authorName}</span></p>
+            <p className="mt-4 text-sm text-subtle">Muallif: <span className="text-white">{course.authorName}</span></p>
           </div>
 
           {/* Yon panel — narx va yozilish */}
@@ -176,7 +176,7 @@ function CourseDetailInner() {
                             {lesson.isFreePreview && !course.isEnrolled && (
                               <span className="badge bg-indigo-50 text-indigo-700">Bepul</span>
                             )}
-                            {!canView && <Lock size={14} className="text-slate-400" />}
+                            {!canView && <Lock size={14} className="text-subtle" />}
                           </li>
                         );
                       })}

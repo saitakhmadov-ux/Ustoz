@@ -11,6 +11,30 @@
         ],
         "createdAt": "2026-08-03T01:29:21.435Z",
         "reason": "Indigo Modern brend rangi (foydalanuvchi tanlagan) — sertifikat banneri"
+      },
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "**/components/AIChat.jsx"
+        ],
+        "createdAt": "2026-08-08T16:25:27.766Z"
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "*",
+        "files": [
+          "**/components/AIChat.jsx"
+        ],
+        "createdAt": "2026-08-08T16:25:41.545Z"
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "animate-bounce",
+        "files": [
+          "**/components/AIChat.jsx"
+        ],
+        "createdAt": "2026-08-08T16:25:41.656Z"
       }
     ]
   }

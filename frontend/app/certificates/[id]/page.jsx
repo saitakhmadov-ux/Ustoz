@@ -45,7 +45,7 @@ export default function CertificatePage() {
           <div className="mx-auto mt-2 h-1 w-16 rounded bg-accent" />
 
           <p className="mt-8 text-muted">Ushbu sertifikat</p>
-          <h1 className="mt-2 font-display text-3xl font-bold text-ink md:text-4xl">{cert.user.fullName}</h1>
+          <h1 className="mt-2 font-display text-3xl font-bold text-heading md:text-4xl">{cert.user.fullName}</h1>
           <p className="mt-4 text-muted">quyidagi kursni muvaffaqiyatli tamomlaganini tasdiqlaydi:</p>
           <h2 className="mt-2 font-display text-xl font-semibold text-primary md:text-2xl">
             «{cert.course.title}»
@@ -75,7 +75,7 @@ export default function CertificatePage() {
       {cert.course?.slug && (
         <div className="no-print mx-auto mt-8 max-w-xl">
           <div className="mb-3 text-center">
-            <h2 className="text-lg font-semibold text-ink">Kursni baholang</h2>
+            <h2 className="text-lg font-semibold text-heading">Kursni baholang</h2>
             <p className="text-sm text-muted">Tajribangiz haqida fikringizni qoldiring.</p>
           </div>
           <CourseRatingForm slug={cert.course.slug} />

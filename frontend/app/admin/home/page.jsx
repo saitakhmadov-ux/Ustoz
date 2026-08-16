@@ -118,7 +118,7 @@ function ImagesTab() {
     <div className="space-y-4">
       <div className="card p-5">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold text-ink">
+          <h2 className="font-display text-lg font-semibold text-heading">
             Rasmlar <span className="text-sm font-normal text-muted">({images.length}/{MAX_IMAGES})</span>
           </h2>
           <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden onChange={onPick} />
@@ -151,7 +151,7 @@ function ImagesTab() {
       </div>
 
       <div className="card p-5">
-        <h2 className="font-display text-lg font-semibold text-ink">Almashish oralig'i</h2>
+        <h2 className="font-display text-lg font-semibold text-heading">Almashish oralig'i</h2>
         <p className="mt-1 text-sm text-muted">Har bir rasm necha soniyada bir marta almashsin (2–30 soniya).</p>
         <div className="mt-3 flex items-center gap-3">
           <input type="range" min="2" max="30" step="1" value={intervalSec} onChange={(e) => { setIntervalSec(Number(e.target.value)); setSavedMsg(''); }} className="w-64 max-w-full accent-indigo-600" />

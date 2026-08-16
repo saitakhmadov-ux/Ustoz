@@ -77,7 +77,7 @@ export default function AboutEditor() {
     <div className="space-y-4">
       {/* Sarlavha */}
       <div className="card space-y-4 p-6">
-        <h2 className="font-display text-lg font-semibold text-ink">Sahifa sarlavhasi</h2>
+        <h2 className="font-display text-lg font-semibold text-heading">Sahifa sarlavhasi</h2>
         <div>
           <label className="label">Sarlavha</label>
           <input className="input" value={form.title} onChange={(e) => patch({ title: e.target.value })} />
@@ -98,7 +98,7 @@ export default function AboutEditor() {
       <div className="card p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-display text-lg font-semibold text-ink">
+            <h2 className="font-display text-lg font-semibold text-heading">
               Kartochkalar <span className="text-sm font-normal text-muted">({form.values.length}/{MAX_VALUES})</span>
             </h2>
             <p className="mt-1 text-sm text-muted">Sahifadagi uch ustunli ikonkali bloklar.</p>
@@ -151,7 +151,7 @@ export default function AboutEditor() {
       {/* Missiya */}
       <div className="card space-y-4 p-6">
         <div>
-          <h2 className="font-display text-lg font-semibold text-ink">Missiya bloki</h2>
+          <h2 className="font-display text-lg font-semibold text-heading">Missiya bloki</h2>
           <p className="mt-1 text-sm text-muted">Sahifa pastidagi ajratilgan blok. Ikkalasi ham bo'sh bo'lsa ko'rinmaydi.</p>
         </div>
         <div>
@@ -168,7 +168,7 @@ export default function AboutEditor() {
       <div className="card p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-display text-lg font-semibold text-ink">
+            <h2 className="font-display text-lg font-semibold text-heading">
               Qo'shimcha bo'limlar <span className="text-sm font-normal text-muted">({form.sections.length}/{MAX_SECTIONS})</span>
             </h2>
             <p className="mt-1 text-sm text-muted">Ixtiyoriy sondagi matnli bloklar — tarix, jamoa, hamkorlar va h.k.</p>
@@ -259,7 +259,7 @@ function VideoBlock({ video, onChange }) {
   return (
     <div className="card space-y-4 p-6">
       <div>
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading">
           <Video size={18} className="text-primary" /> Video
         </h2>
         <p className="mt-1 text-sm text-muted">

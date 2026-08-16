@@ -2,21 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Ustoz dizayn tokenlari — Indigo Modern ===== */
-:root {
-  /* Brend ranglari — indigo primary + emerald CTA (zamonaviy, texnologik) */
-  --color-primary: #6366f1; /* indigo-500 */
-  --color-primary-light: #818cf8; /* indigo-400 */
-  --color-primary-dark: #4f46e5; /* indigo-600 */
-  /* Accent/CTA — emerald (WCAG uchun 600) */
-  --color-accent: #059669; /* emerald-600 */
-  --color-accent-dark: #047857; /* emerald-700 */
+/* ===== Ustoz dizayn tokenlari — Indigo Modern =====
+   Har rang o'z ROLIGA ega va WCAG AA bo'yicha tekshirilgan. Qavsdagi son —
+   oq (#fff) fon ustidagi kontrast nisbati. Matn uchun 4.5:1, ikonka va
+   boshqaruv chegaralari uchun 3:1 talab qilinadi.
 
-  /* Neytral (indigo-tint) */
-  --color-ink: #1e1b4b; /* asosiy matn — indigo-950 */
-  --color-muted: #6b7280; /* ikkilamchi matn */
+   Yangi rang qo'shsangiz nisbatini tekshiring: sayt bo'ylab bir xil qiymat
+   yuzlab joyda ishlatiladi, shuning uchun bitta xato butun saytga tarqaladi. */
+:root {
+  /* Brend — indigo. Primary ham fon (tugma), ham matn (havola) sifatida
+     ishlatilgani uchun ikkala yo'nalishda ham 4.5:1 dan o'tishi shart. */
+  --color-primary: #4f46e5; /* indigo-600 · 6.29:1 · tugma foni va havola matni */
+  --color-primary-dark: #4338ca; /* indigo-700 · 7.90:1 · hover */
+  --color-primary-light: #818cf8; /* indigo-400 · 2.98:1 · FAQAT dekorativ fon — matn yoki ikonka uchun ishlatmang */
+
+  /* Accent/CTA — emerald. 600 (#059669) atigi 3.77:1 berardi, ya'ni asosiy
+     harakat tugmasi AA dan o'tmasdi; 700 ga surildi. */
+  --color-accent: #047857; /* emerald-700 · 5.48:1 */
+  --color-accent-dark: #065f46; /* emerald-800 · 7.68:1 · hover */
+
+  /* Matn ierarxiyasi — uchta aniq qadam */
+  --color-heading: #000000; /* 21:1 · sarlavhalar — sof qora, tanadan ajralib tursin */
+  --color-ink: #1e1b4b; /* indigo-950 · 15.99:1 · asosiy matn */
+  --color-muted: #5b6270; /* 6.13:1 · ikkilamchi matn (violet fon ustida ham 5.59:1) */
+  --color-subtle: #666d7b; /* 5.20:1 · uchlamchi matn, kichik ikonka, placeholder
+                              (violet fon ustida ham 4.74:1 — yon menyu yorliqlari shu fonda turadi) */
+
+  /* Yuzalar va chiziqlar */
   --color-surface: #ffffff; /* kartochka foni */
-  --color-line: #e5e3f0; /* chegara chiziq — indigo-tint */
+  --color-line: #e5e3f0; /* dekorativ ajratgich — bir xil yuzalarni bo'ladi */
+  --color-field: #918ea8; /* 3.16:1 · maydon va boshqaruv chegarasi (ko'rinishi shart) */
   --color-bg: #f5f3ff; /* sahifa foni — violet-50 tint */
 }
 
@@ -34,7 +49,7 @@
     font-family: var(--font-display), var(--font-body), sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: var(--color-ink);
+    color: var(--color-heading);
   }
   a {
     color: inherit;
@@ -79,9 +94,21 @@
     @apply container mx-auto px-4;
   }
 
-  /* Input maydoni */
+  /* Input maydoni.
+     Chegara `line` emas, `field` — maydonning qayerda boshlanishini ko'rsatadigan
+     yagona belgi shu, shuning uchun u ko'rinishi shart (3:1). Fokus halqasi ham
+     shaffof emas: 30% shaffoflik fon rangiga qarab yo'qolib ketardi. */
   .input {
-    @apply w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm text-ink placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-indigo-500/30;
+    @apply w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-ink focus:outline-none;
+    border-color: var(--color-field);
+  }
+  .input::placeholder {
+    color: var(--color-subtle);
+  }
+  .input:focus {
+    border-color: var(--color-primary);
+    /* Shaffof emas: 30% shaffoflikdagi halqa och fonda ko'rinmay qolardi */
+    box-shadow: 0 0 0 2px var(--color-primary);
   }
   .label {
     @apply mb-1.5 block text-sm font-medium text-ink;

@@ -17,10 +17,13 @@ module.exports = {
           DEFAULT: 'var(--color-accent)',
           dark: 'var(--color-accent-dark)',
         },
+        heading: 'var(--color-heading)',
         ink: 'var(--color-ink)',
         muted: 'var(--color-muted)',
+        subtle: 'var(--color-subtle)',
         surface: 'var(--color-surface)',
         line: 'var(--color-line)',
+        field: 'var(--color-field)',
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],

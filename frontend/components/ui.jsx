@@ -13,7 +13,7 @@ export function Spinner({ label = 'Yuklanmoqda...' }) {
 export function EmptyState({ title = 'Hozircha bo\'sh', text, icon: Icon = Inbox }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-line py-16 text-center">
-      <span className="grid h-14 w-14 place-items-center rounded-2xl bg-slate-50 text-slate-400">
+      <span className="grid h-14 w-14 place-items-center rounded-2xl bg-slate-50 text-subtle">
         <Icon size={26} />
       </span>
       <div>

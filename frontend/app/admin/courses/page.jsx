@@ -90,12 +90,12 @@ export default function AdminCoursesPage() {
                         <td className="px-4 py-3 text-muted">
                           {c.instructor
                             ? <span className="badge bg-indigo-50 text-indigo-700">{c.instructor.fullName}</span>
-                            : <span className="text-xs text-slate-400">— biriktirilmagan</span>}
+                            : <span className="text-xs text-subtle">— biriktirilmagan</span>}
                         </td>
                       )}
                       <td className="px-4 py-3">{formatPrice(c.price, c.isFree)}</td>
                       <td className="px-4 py-3">
-                        <span className={`badge ${c.published ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-100 text-slate-500'}`}>
+                        <span className={`badge ${c.published ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-100 text-muted'}`}>
                           {c.published ? 'Nashr etilgan' : 'Qoralama'}
                         </span>
                       </td>

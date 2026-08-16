@@ -72,7 +72,7 @@ export default function ContactEditor() {
     <div className="space-y-4">
       {/* Sarlavha */}
       <div className="card space-y-4 p-6">
-        <h2 className="font-display text-lg font-semibold text-ink">Sahifa sarlavhasi</h2>
+        <h2 className="font-display text-lg font-semibold text-heading">Sahifa sarlavhasi</h2>
         <div>
           <label className="label">Sarlavha</label>
           <input className="input" value={form.title} onChange={(e) => patch({ title: e.target.value })} />
@@ -90,7 +90,7 @@ export default function ContactEditor() {
       <div className="card p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-display text-lg font-semibold text-ink">
+            <h2 className="font-display text-lg font-semibold text-heading">
               Aloqa kartochkalari <span className="text-sm font-normal text-muted">({form.items.length}/{MAX_ITEMS})</span>
             </h2>
             <p className="mt-1 text-sm text-muted">Email, telefon, manzil, Telegram, ijtimoiy tarmoqlar.</p>
@@ -157,7 +157,7 @@ export default function ContactEditor() {
       {/* Ish vaqti */}
       <div className="card space-y-4 p-6">
         <div>
-          <h2 className="font-display text-lg font-semibold text-ink">Ish vaqti</h2>
+          <h2 className="font-display text-lg font-semibold text-heading">Ish vaqti</h2>
           <p className="mt-1 text-sm text-muted">Bo'sh qoldirsangiz bu blok ko'rinmaydi.</p>
         </div>
         <textarea
@@ -171,7 +171,7 @@ export default function ContactEditor() {
       {/* Xarita */}
       <div className="card space-y-4 p-6">
         <div>
-          <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+          <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading">
             <Map size={18} className="text-primary" /> Xarita
           </h2>
           <p className="mt-1 text-sm text-muted">
@@ -195,7 +195,7 @@ export default function ContactEditor() {
       {/* Forma */}
       <div className="card space-y-4 p-6">
         <div>
-          <h2 className="font-display text-lg font-semibold text-ink">Aloqa formasi</h2>
+          <h2 className="font-display text-lg font-semibold text-heading">Aloqa formasi</h2>
           <p className="mt-1 text-sm text-muted">
             Forma hozircha <b>namuna</b> — to'ldirilgan xabar hech qayerga yuborilmaydi.
             Shuning uchun ostidagi izohni o'zgartirish yoki formani butunlay yashirish mumkin.

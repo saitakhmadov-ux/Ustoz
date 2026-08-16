@@ -111,7 +111,7 @@ export default function TypingCourseView({
                     disabled={l.locked}
                     className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors
                       ${activeItem ? 'bg-primary/10 font-medium text-primary' : 'hover:bg-slate-100'}
-                      ${l.locked ? 'cursor-not-allowed text-slate-400' : ''}`}
+                      ${l.locked ? 'cursor-not-allowed text-subtle' : ''}`}
                   >
                     {l.locked ? <Lock size={15} className="shrink-0" />
                       : l.completed ? <CheckCircle2 size={15} className="shrink-0 text-emerald-600" />
@@ -141,7 +141,7 @@ export default function TypingCourseView({
             <Keyboard size={22} />
           </span>
           <div>
-            <h1 className="font-display text-xl font-bold text-ink">{course.title}</h1>
+            <h1 className="font-display text-xl font-bold text-heading">{course.title}</h1>
             <p className="text-sm text-muted">
               {progress.completedTasks} / {progress.totalTasks} dars · {progress.percent}%
             </p>
@@ -232,7 +232,7 @@ export default function TypingCourseView({
                     <p className="text-xs uppercase tracking-wide text-muted">
                       {currentIndex + 1}-dars · {MODE_LABEL[current.typing?.mode] || 'Mashq'}
                     </p>
-                    <h2 className="font-display text-lg font-semibold text-ink">{current.title}</h2>
+                    <h2 className="font-display text-lg font-semibold text-heading">{current.title}</h2>
                   </div>
                   {current.completed && (
                     <span className="badge bg-emerald-50 text-emerald-700">

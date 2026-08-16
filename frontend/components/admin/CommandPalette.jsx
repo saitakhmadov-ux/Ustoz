@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import {
   Search, CornerDownLeft, LayoutDashboard, BookOpen, FolderTree, UserCheck,
   MessageSquare, Award, Send, Coins, Users, Bot, LayoutTemplate, Loader2, Mail,
+  Database,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { formatPrice } from '@/lib/constants';
@@ -30,6 +31,7 @@ const SECTIONS = [
   { label: 'Ustoz AI', href: '/admin/ai', icon: Bot, keywords: 'gemini sun\'iy intellekt' },
   { label: 'Bosh sahifa', href: '/admin/home', icon: LayoutTemplate, keywords: 'hero banner matn' },
   { label: 'Aloqa va himoya', href: '/admin/email', icon: Mail, keywords: 'smtp pochta xat email telegram bot captcha turnstile' },
+  { label: 'Baza', href: '/admin/database', icon: Database, keywords: 'database zaxira backup tozalash hajm sql' },
 ];
 
 const ROLE_LABEL = { ADMIN: 'Bosh admin', INSTRUCTOR: 'Ustoz', USER: "O'quvchi" };
@@ -155,7 +157,7 @@ export default function CommandPalette() {
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="Bo'lim, odam, kurs yoki to'lov qidiring..."
-            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
+            className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-subtle"
           />
           <kbd className="rounded border border-line px-1.5 py-0.5 text-[10px] text-muted">Esc</kbd>
         </div>
@@ -167,7 +169,7 @@ export default function CommandPalette() {
             </p>
           ) : groups.map((g) => (
             <div key={g.title} className="mb-1">
-              <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+              <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-subtle">
                 {g.title}
               </p>
               {g.items.map((item) => {

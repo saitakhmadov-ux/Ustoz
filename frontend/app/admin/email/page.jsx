@@ -183,7 +183,7 @@ function EmailTab() {
 
       {/* Jo'natuvchi */}
       <div className="card p-5">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading">
           <AtSign size={18} className="text-primary" /> Jo'natuvchi
         </h2>
         <p className="mt-1 text-sm text-muted">
@@ -200,7 +200,7 @@ function EmailTab() {
       {/* SMTP server */}
       <div className="card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+          <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading">
             <Server size={18} className="text-primary" /> SMTP server
           </h2>
           <div className="flex flex-wrap gap-1.5">
@@ -286,7 +286,7 @@ function EmailTab() {
 
       {/* Sinov xati */}
       <div className="card p-5">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading">
           <Send size={18} className="text-primary" /> Sinov xati
         </h2>
         <p className="mt-1 text-sm text-muted">
@@ -400,7 +400,7 @@ function TelegramTab() {
     <div className="space-y-4">
       {/* Holat */}
       <div className="card flex flex-wrap items-center gap-4 p-5">
-        <span className={`grid h-11 w-11 place-items-center rounded-xl ${st.running ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+        <span className={`grid h-11 w-11 place-items-center rounded-xl ${st.running ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-subtle'}`}>
           <Bot size={20} />
         </span>
         <div className="flex-1">
@@ -444,7 +444,7 @@ function TelegramTab() {
 
       {/* Token */}
       <div className="card p-5">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading">
           <KeyRound size={18} className="text-primary" /> Bot tokeni
         </h2>
         <input
@@ -487,7 +487,7 @@ function TelegramTab() {
 
       {/* Foydalanuvchi nima qiladi */}
       <div className="card p-5">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading">
           <Users size={18} className="text-primary" /> Foydalanuvchilar qanday ulanadi
         </h2>
         <ol className="mt-3 space-y-1.5 text-sm text-muted">
@@ -546,7 +546,7 @@ function SecurityTab() {
     <div className="space-y-4">
       {/* Holat */}
       <div className="card flex flex-wrap items-center gap-4 p-5">
-        <span className={`grid h-11 w-11 place-items-center rounded-xl ${cfg.active ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+        <span className={`grid h-11 w-11 place-items-center rounded-xl ${cfg.active ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-subtle'}`}>
           <ShieldCheck size={20} />
         </span>
         <div className="flex-1">
@@ -572,7 +572,7 @@ function SecurityTab() {
 
       {/* Kalitlar */}
       <div className="card p-5">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading">
           <KeyRound size={18} className="text-primary" /> Turnstile kalitlari
         </h2>
         <div className="mt-4 space-y-3">

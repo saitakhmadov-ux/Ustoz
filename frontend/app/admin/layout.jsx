@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, BookOpen, FolderTree, Users, BarChart3, Send,
   LayoutTemplate, Bot, ArrowLeft, MessageSquare, Award, UserCheck, Coins,
-  Menu, X, Search as SearchIcon, Mail, PenLine,
+  Menu, X, Search as SearchIcon, Mail, PenLine, Database,
 } from 'lucide-react';
 import RequireAuth from '@/components/RequireAuth';
 import { useAuth } from '@/lib/auth';
@@ -74,6 +74,7 @@ const adminGroups = [
       { href: '/admin/ai', label: 'Ustoz AI', icon: Bot },
       { href: '/admin/home', label: 'Bosh sahifa', icon: LayoutTemplate },
       { href: '/admin/email', label: 'Aloqa va himoya', icon: Mail },
+      { href: '/admin/database', label: 'Baza', icon: Database },
     ],
   },
 ];
@@ -116,7 +117,7 @@ function NavGroups({ groups, pathname, onNavigate }) {
     <nav className="space-y-5">
       {groups.map((group) => (
         <div key={group.title}>
-          <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+          <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-subtle">
             {group.title}
           </p>
           <div className="space-y-1">

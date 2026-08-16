@@ -78,7 +78,7 @@ function NotificationsInner() {
                 className={`card cursor-pointer p-5 transition-colors ${n.read ? '' : 'border-l-4 border-l-primary bg-indigo-50/30'}`}
               >
                 <div className="flex items-start gap-3">
-                  <span className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full ${n.sender?.role === 'ADMIN' ? 'bg-indigo-50 text-indigo-600' : n.sender?.role === 'INSTRUCTOR' ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-slate-500'}`}>
+                  <span className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full ${n.sender?.role === 'ADMIN' ? 'bg-indigo-50 text-indigo-600' : n.sender?.role === 'INSTRUCTOR' ? 'bg-indigo-50 text-indigo-600' : 'bg-slate-100 text-muted'}`}>
                     {n.sender?.role === 'ADMIN' ? <Shield size={16} /> : n.sender?.role === 'INSTRUCTOR' ? <GraduationCap size={16} /> : <Bell size={16} />}
                   </span>
                   <div className="min-w-0 flex-1">

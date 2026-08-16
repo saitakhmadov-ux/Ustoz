@@ -59,7 +59,7 @@ export default function Leaderboard() {
             <Trophy size={20} />
           </span>
           <div>
-            <h2 className="font-display text-lg font-semibold text-ink">Eng kuchli natijalar</h2>
+            <h2 className="font-display text-lg font-semibold text-heading">Eng kuchli natijalar</h2>
             <p className="text-sm text-muted">
               Darslar va erkin mashq bo'yicha eng tez yozgan {rows.length} ta foydalanuvchi
             </p>
