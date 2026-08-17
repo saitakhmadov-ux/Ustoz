@@ -1,7 +1,7 @@
 'use client';
 
 // Parolni tiklashning ikkinchi qadami: kod + yangi parol.
-// Muvaffaqiyatli bo'lsa foydalanuvchi darhol tizimga kiradi.
+// Muvaffaqiyatli boʻlsa foydalanuvchi darhol tizimga kiradi.
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -30,7 +30,7 @@ export default function ResetPasswordPage() {
     e.preventDefault();
     setError(''); setInfo('');
     if (!passwordOk) {
-      setError('Parol kamida 8 belgi bo\'lsin va harf ham, raqam ham bo\'lsin');
+      setError('Parol kamida 8 belgi boʻlsin va harf ham, raqam ham boʻlsin');
       return;
     }
     setLoading(true);
@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
     }
   };
 
-  // Kod kelmasa yoki muddati o'tsa — qaytadan so'rash
+  // Kod kelmasa yoki muddati oʻtsa — qaytadan soʻrash
   const resend = async () => {
     setError(''); setInfo('');
     setResending(true);
@@ -61,7 +61,7 @@ export default function ResetPasswordPage() {
   return (
     <AuthShell
       title="Yangi parol"
-      subtitle="Emailingizga kelgan kodni kiriting va yangi parol o'rnating"
+      subtitle="Emailingizga kelgan kodni kiriting va yangi parol oʻrnating"
       footer={
         <p className="mt-4 text-center text-sm text-muted">
           <Link href="/login" className="font-semibold text-primary hover:underline">
@@ -108,7 +108,7 @@ export default function ResetPasswordPage() {
           />
           {password && !passwordOk && (
             <p className="mt-1 text-xs text-amber-700">
-              Parol kamida 8 belgi bo'lsin va harf ham, raqam ham bo'lsin.
+              Parol kamida 8 belgi boʻlsin va harf ham, raqam ham boʻlsin.
             </p>
           )}
         </div>

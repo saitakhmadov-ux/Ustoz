@@ -1,6 +1,6 @@
 'use client';
 
-// Maosh hisobotlari uchun umumiy UI bo'laklari — ustoz va bosh admin
+// Maosh hisobotlari uchun umumiy UI boʻlaklari — ustoz va bosh admin
 // panellari ikkalasi ham shu komponentlardan foydalanadi.
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { formatMoney } from '@/lib/constants';
@@ -14,7 +14,7 @@ export function monthLabel(key, withYear = true) {
   return withYear ? `${name} ${y}` : name;
 }
 
-// Katta summani qisqartirilgan ko'rinishda: 1 250 000 -> "1.25 mln"
+// Katta summani qisqartirilgan koʻrinishda: 1 250 000 -> "1.25 mln"
 export function shortMoney(value) {
   const n = Number(value) || 0;
   if (Math.abs(n) >= 1_000_000) return `${(n / 1_000_000).toFixed(n % 1_000_000 === 0 ? 0 : 1)} mln`;
@@ -22,7 +22,7 @@ export function shortMoney(value) {
   return String(n);
 }
 
-// O'sish ko'rsatkichi — musbat yashil, manfiy qizil, nol kulrang
+// Oʻsish koʻrsatkichi — musbat yashil, manfiy qizil, nol kulrang
 export function GrowthBadge({ value, suffix = 'oldingi davrga nisbatan' }) {
   if (value === null || value === undefined) return null;
   const up = value > 0;
@@ -38,7 +38,7 @@ export function GrowthBadge({ value, suffix = 'oldingi davrga nisbatan' }) {
   );
 }
 
-// Ko'rsatkich kartasi
+// Koʻrsatkich kartasi
 export function StatCard({ label, value, hint, icon: Icon, color = 'bg-indigo-50 text-indigo-600', growth, money = true }) {
   return (
     <div className="card p-5">
@@ -61,14 +61,14 @@ export function StatCard({ label, value, hint, icon: Icon, color = 'bg-indigo-50
   );
 }
 
-// "2026-08-10" -> "08-10" (o'q yorlig'i uchun qisqa ko'rinish)
+// "2026-08-10" -> "08-10" (oʻq yorligʻi uchun qisqa koʻrinish)
 function dayLabel(key) {
   return String(key).slice(5);
 }
 
-// Vaqt bo'yicha ustunli grafik (kutubxonasiz).
+// Vaqt boʻyicha ustunli grafik (kutubxonasiz).
 // data: [{ key, value }] — key kunlik ('2026-08-10') yoki oylik ('2026-08').
-// granularity backenddan keladi va tanlangan davrga bog'liq.
+// granularity backenddan keladi va tanlangan davrga bogʻliq.
 export function TimeBars({
   data,
   granularity = 'month',
@@ -77,18 +77,18 @@ export function TimeBars({
   caption,
 }) {
   if (!data || data.length === 0) {
-    return <p className="py-10 text-center text-sm text-muted">Ma'lumot yo'q</p>;
+    return <p className="py-10 text-center text-sm text-muted">Maʼlumot yoʻq</p>;
   }
   const daily = granularity === 'day';
   const max = Math.max(...data.map((d) => d.value), 1);
   const empty = data.every((d) => d.value === 0);
-  // Nuqta ko'p bo'lsa yorliqlar bir-birining ustiga chiqmasligi uchun siyraklashtiramiz
+  // Nuqta koʻp boʻlsa yorliqlar bir-birining ustiga chiqmasligi uchun siyraklashtiramiz
   const labelStep = Math.ceil(data.length / 12);
   const gap = daily && data.length > 40 ? 'gap-0.5' : 'gap-1.5';
   const minWidth = daily && data.length > 40 ? 3 : 6;
 
-  // Qator bir nechta yilni qamrasa oy nomi yolg'iz o'zi chalkash bo'ladi
-  // (Mar, Iyn, ... Mar) — shuning uchun yilning oxirgi ikki raqami qo'shiladi
+  // Qator bir nechta yilni qamrasa oy nomi yolgʻiz oʻzi chalkash boʻladi
+  // (Mar, Iyn, ... Mar) — shuning uchun yilning oxirgi ikki raqami qoʻshiladi
   const multiYear = !daily && new Set(data.map((d) => String(d.key).slice(0, 4))).size > 1;
   const axisLabel = (k) => (daily
     ? dayLabel(k)
@@ -103,7 +103,7 @@ export function TimeBars({
       <div className={`flex h-44 items-end ${gap}`}>
         {data.map((d) => (
           // h-full muhim: ustun balandligi foizda berilgan, shuning uchun ota
-          // element aniq balandlikka ega bo'lishi shart (items-end cho'zmaydi)
+          // element aniq balandlikka ega boʻlishi shart (items-end choʻzmaydi)
           <div key={d.key} className="group relative flex h-full flex-1 flex-col justify-end" style={{ minWidth }}>
             <div
               className="rounded-t transition-opacity hover:opacity-80"
@@ -116,7 +116,7 @@ export function TimeBars({
         ))}
       </div>
       <div className={`mt-2 flex text-[10px] text-muted ${gap}`}>
-        {/* Yorliqlar siyraklashtirilgani uchun matn qo'shni bo'sh katakka
+        {/* Yorliqlar siyraklashtirilgani uchun matn qoʻshni boʻsh katakka
             chiqib turishi mumkin — truncate emas, nowrap kerak */}
         {data.map((d, i) => (
           <span key={d.key} className="flex-1 whitespace-nowrap text-center" style={{ minWidth }}>
@@ -129,7 +129,7 @@ export function TimeBars({
   );
 }
 
-// Ikki qismli nisbat chizig'i (masalan organik / promo kod)
+// Ikki qismli nisbat chizigʻi (masalan organik / promo kod)
 export function SplitBar({ parts }) {
   const total = parts.reduce((s, p) => s + (p.value || 0), 0);
   return (
@@ -160,11 +160,11 @@ export function SplitBar({ parts }) {
   );
 }
 
-// To'lov taqsimotini ko'rsatuvchi "shaffof hisob" bloki —
-// o'quvchi to'lagan summa qanday bo'lingani bosqichma-bosqich.
+// Toʻlov taqsimotini koʻrsatuvchi "shaffof hisob" bloki —
+// oʻquvchi toʻlagan summa qanday boʻlingani bosqichma-bosqich.
 export function SplitBreakdown({ gross, tax, taxPct, instructor, platform, sharePct }) {
   const rows = [
-    { label: "O'quvchilar to'lagani", value: gross, cls: 'font-semibold' },
+    { label: "Oʻquvchilar toʻlagani", value: gross, cls: 'font-semibold' },
     { label: `Soliq (${taxPct}%)`, value: -tax, cls: 'text-red-600' },
     { label: 'Sof foyda', value: gross - tax, cls: 'border-t border-line pt-2 font-semibold' },
     { label: `Sizning ulushingiz${sharePct ? ` (${sharePct}%)` : ''}`, value: instructor, cls: 'text-emerald-700 font-semibold' },

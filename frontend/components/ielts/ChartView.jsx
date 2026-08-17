@@ -2,15 +2,15 @@
 
 // Academic Task 1 vizuali.
 //
-// LINE / BAR / PIE / TABLE — ma'lumot `chartData` da saqlanadi va shu yerda
-// SVG bilan chiziladi: yangi kutubxona kerak emas, ranglar saytning o'ziniki
-// va har qanday ekranda tiniq chiqadi. Eng muhimi — ma'lumot matn sifatida
+// LINE / BAR / PIE / TABLE — maʼlumot `chartData` da saqlanadi va shu yerda
+// SVG bilan chiziladi: yangi kutubxona kerak emas, ranglar saytning oʻziniki
+// va har qanday ekranda tiniq chiqadi. Eng muhimi — maʼlumot matn sifatida
 // ham mavjud, shuning uchun AI baholovchi talabaning sonlar haqidagi
-// da'volarini tekshira oladi.
+// daʼvolarini tekshira oladi.
 //
-// PROCESS / MAP — sxema va xarita: bularni sondan chizib bo'lmaydi, admin
-// panel orqali rasm yuklanadi. Rasm hali yuklanmagan bo'lsa, topshiriq
-// ishlashda davom etadi: tavsif matn ko'rinishida ko'rsatiladi.
+// PROCESS / MAP — sxema va xarita: bularni sondan chizib boʻlmaydi, admin
+// panel orqali rasm yuklanadi. Rasm hali yuklanmagan boʻlsa, topshiriq
+// ishlashda davom etadi: tavsif matn koʻrinishida koʻrsatiladi.
 
 import { fileUrl } from '@/lib/constants';
 import { CHART_COLORS, niceMax } from '@/lib/ielts';
@@ -34,7 +34,7 @@ function Legend({ series }) {
   );
 }
 
-// Y o'qi chiziqlari va belgilari (line va bar uchun umumiy)
+// Y oʻqi chiziqlari va belgilari (line va bar uchun umumiy)
 function Grid({ max, unit }) {
   const steps = [0, 0.25, 0.5, 0.75, 1];
   return (
@@ -61,7 +61,7 @@ function Grid({ max, unit }) {
 
 function XLabels({ labels }) {
   const step = PLOT.w / labels.length;
-  // Yorliq ko'p bo'lsa bittasini tashlab ketamiz — ustma-ust tushmasin
+  // Yorliq koʻp boʻlsa bittasini tashlab ketamiz — ustma-ust tushmasin
   const skip = labels.length > 8 ? Math.ceil(labels.length / 8) : 1;
   return (
     <g>

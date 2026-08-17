@@ -1,13 +1,13 @@
 'use client';
 
-// Admin panelidagi ro'yxat sahifalari uchun umumiy qismlar.
+// Admin panelidagi roʻyxat sahifalari uchun umumiy qismlar.
 // Avval har bir sahifa qidiruv maydonini, filtr tugmalarini, sarlavhani va
-// ko'rsatkich kartochkasini o'zi qaytadan yozardi — endi manba bitta.
+// koʻrsatkich kartochkasini oʻzi qaytadan yozardi — endi manba bitta.
 
 import { useState } from 'react';
 import { Search, X, Info } from 'lucide-react';
 
-// Sahifa sarlavhasi: nom, tavsif va o'ng tomonda amal tugmalari
+// Sahifa sarlavhasi: nom, tavsif va oʻng tomonda amal tugmalari
 export function PageHeader({ title, subtitle, children }) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
@@ -43,7 +43,7 @@ export function DataToolbar({ search, onSearch, placeholder = 'Qidirish...', has
   );
 }
 
-// Filtr uchun tanlov ro'yxati
+// Filtr uchun tanlov roʻyxati
 export function FilterSelect({ value, onChange, options, placeholder, width = '190px' }) {
   return (
     <select
@@ -75,7 +75,7 @@ export function FilterCheckbox({ checked, onChange, label }) {
   );
 }
 
-// Yorliqlar qatori — davr tanlash, holat filtri, sahifa ichidagi bo'limlar uchun
+// Yorliqlar qatori — davr tanlash, holat filtri, sahifa ichidagi boʻlimlar uchun
 export function SegmentedTabs({ value, onChange, items, size = 'md' }) {
   const pad = size === 'sm' ? 'px-3 py-1.5 text-xs' : 'px-3 py-1.5 text-sm';
   return (
@@ -100,7 +100,7 @@ export function SegmentedTabs({ value, onChange, items, size = 'md' }) {
   );
 }
 
-// Holat yorliqlari — hisoblagichli, kattaroq (o'quvchilar sahifasidagi kabi)
+// Holat yorliqlari — hisoblagichli, kattaroq (oʻquvchilar sahifasidagi kabi)
 export function CountTabs({ value, onChange, items }) {
   return (
     <div className="mt-6 flex flex-wrap gap-2">
@@ -125,7 +125,7 @@ export function CountTabs({ value, onChange, items }) {
   );
 }
 
-// Ko'rsatkich izohi — raqam nimani anglatishini tushuntiradi
+// Koʻrsatkich izohi — raqam nimani anglatishini tushuntiradi
 export function InfoTip({ text }) {
   const [open, setOpen] = useState(false);
   return (
@@ -159,7 +159,7 @@ const TONES = {
   slate: 'bg-slate-100 text-slate-600',
 };
 
-// Ko'rsatkich kartochkasi — dashboard, statistika va moliya sahifalarida bir xil
+// Koʻrsatkich kartochkasi — dashboard, statistika va moliya sahifalarida bir xil
 export function StatCard({ icon: Icon, tone = 'indigo', value, label, hint, tip, children }) {
   return (
     <div className="card p-5">
@@ -181,7 +181,7 @@ export function StatCard({ icon: Icon, tone = 'indigo', value, label, hint, tip,
   );
 }
 
-// Jadval qobig'i — kartochka, gorizontal scroll va bir xil sarlavha uslubi
+// Jadval qobigʻi — kartochka, gorizontal scroll va bir xil sarlavha uslubi
 export function DataTable({ columns, children, footer }) {
   return (
     <div className="card overflow-hidden">

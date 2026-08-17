@@ -1,11 +1,11 @@
 'use client';
 
-// "O'quvchilar tahlili" — yozilishdan sertifikatgacha bo'lgan yo'l va kurs kesimi.
-// Bosh admin uchun Boshqaruv panelining ikkinchi yorlig'i, ustoz uchun /admin/stats sahifasi.
+// "Oʻquvchilar tahlili" — yozilishdan sertifikatgacha boʻlgan yoʻl va kurs kesimi.
+// Bosh admin uchun Boshqaruv panelining ikkinchi yorligʻi, ustoz uchun /admin/stats sahifasi.
 //
-// Pul ko'rsatkichlari bu yerda takrorlanmaydi: aylanma "Umumiy ko'rsatkichlar"da,
-// taqsimoti esa "Moliya" bo'limida. Bu yerda faqat kurs kesimidagi daromad qoladi —
-// u boshqa hech qayerda yo'q.
+// Pul koʻrsatkichlari bu yerda takrorlanmaydi: aylanma "Umumiy koʻrsatkichlar"da,
+// taqsimoti esa "Moliya" boʻlimida. Bu yerda faqat kurs kesimidagi daromad qoladi —
+// u boshqa hech qayerda yoʻq.
 
 import { useEffect, useState } from 'react';
 import {
@@ -27,7 +27,7 @@ const COLUMNS = [
   { label: 'Daromad', align: 'right' },
 ];
 
-// Funnel qatori — nisbatga qarab to'ldirilgan gorizontal bar
+// Funnel qatori — nisbatga qarab toʻldirilgan gorizontal bar
 function FunnelBar({ label, value, total, color }) {
   const pct = total ? Math.round((value / total) * 100) : 0;
   return (
@@ -68,8 +68,8 @@ export default function StudentAnalytics({ showHeading = false }) {
         {showHeading && <h1 className="text-2xl">Statistika</h1>}
         <div className="mt-6">
           <EmptyState
-            title="Statistika uchun kurs yo'q"
-            text="Sizga kurs biriktirilgach, o'quvchilar bo'yicha ko'rsatkichlar shu yerda paydo bo'ladi"
+            title="Statistika uchun kurs yoʻq"
+            text="Sizga kurs biriktirilgach, oʻquvchilar boʻyicha koʻrsatkichlar shu yerda paydo boʻladi"
             icon={BookOpen}
           />
         </div>
@@ -79,7 +79,7 @@ export default function StudentAnalytics({ showHeading = false }) {
 
   const cards = [
     {
-      label: "Yozilgan o'quvchilar", value: t.enrolled, icon: Users, tone: 'blue',
+      label: "Yozilgan oʻquvchilar", value: t.enrolled, icon: Users, tone: 'blue',
       hint: 'Jami kursga yozilganlar',
       tip: 'Har bir yozilish alohida hisoblanadi: bitta odam ikki kursga yozilsa — ikkita.',
     },
@@ -89,14 +89,14 @@ export default function StudentAnalytics({ showHeading = false }) {
       tip: 'Barcha darslarni tugatib, sertifikat olganlar.',
     },
     {
-      label: "Faol o'quvchilar", value: t.active, icon: Activity, tone: 'indigo',
+      label: "Faol oʻquvchilar", value: t.active, icon: Activity, tone: 'indigo',
       hint: 'Kamida 1 dars tugatgan',
-      tip: 'Kursni ochib, hech bo\'lmasa bitta darsni tugatgan o\'quvchilar.',
+      tip: 'Kursni ochib, hech boʻlmasa bitta darsni tugatgan oʻquvchilar.',
     },
     {
       label: 'Tugata olmaganlar', value: t.notCompleted, icon: UserX, tone: 'amber',
       hint: 'Yozilgan, ammo sertifikatsiz',
-      tip: 'Boshlamaganlar ham, yarim yo\'lda to\'xtaganlar ham shu yerda.',
+      tip: 'Boshlamaganlar ham, yarim yoʻlda toʻxtaganlar ham shu yerda.',
     },
     {
       label: 'Shu yildagi yozilishlar', value: t.enrolledThisYear, icon: CalendarDays, tone: 'rose',
@@ -115,8 +115,8 @@ export default function StudentAnalytics({ showHeading = false }) {
             <h1 className="text-2xl">Statistika</h1>
             <p className="mt-1 text-sm text-muted">
               {isAdmin
-                ? "Barcha kurslar bo'yicha o'quvchilar ko'rsatkichlari"
-                : "Sizga biriktirilgan kurslar bo'yicha ko'rsatkichlar"}
+                ? "Barcha kurslar boʻyicha oʻquvchilar koʻrsatkichlari"
+                : "Sizga biriktirilgan kurslar boʻyicha koʻrsatkichlar"}
             </p>
           </div>
         ) : <span />}
@@ -139,10 +139,10 @@ export default function StudentAnalytics({ showHeading = false }) {
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        {/* O'quvchilar yo'nalishi (funnel) */}
+        {/* Oʻquvchilar yoʻnalishi (funnel) */}
         <div className="card p-5">
           <h2 className="flex items-center gap-2 text-lg">
-            <TrendingUp size={18} className="text-primary" /> O'quvchilar yo'nalishi
+            <TrendingUp size={18} className="text-primary" /> Oʻquvchilar yoʻnalishi
           </h2>
           <div className="mt-4 space-y-3">
             <FunnelBar label="Yozildi" value={t.enrolled} total={t.enrolled} color="bg-blue-500" />
@@ -150,24 +150,24 @@ export default function StudentAnalytics({ showHeading = false }) {
             <FunnelBar label="Tugatdi (sertifikat)" value={t.completed} total={t.enrolled} color="bg-indigo-500" />
           </div>
           <p className="mt-4 text-xs text-muted">
-            Yozilganlarning {t.completionRate}% i kursni to'liq tugatgan.
+            Yozilganlarning {t.completionRate}% i kursni toʻliq tugatgan.
           </p>
         </div>
 
-        {/* Yillar bo'yicha yozilishlar */}
+        {/* Yillar boʻyicha yozilishlar */}
         <div className="card p-5">
           <h2 className="flex items-center gap-2 text-lg">
-            <CalendarDays size={18} className="text-primary" /> Yillar bo'yicha yozilishlar
+            <CalendarDays size={18} className="text-primary" /> Yillar boʻyicha yozilishlar
           </h2>
           {stats.byYear.length === 0 ? (
-            <p className="mt-4 text-sm text-muted">Hali yozilishlar yo'q</p>
+            <p className="mt-4 text-sm text-muted">Hali yozilishlar yoʻq</p>
           ) : (
             <div className="mt-6 flex items-end justify-around gap-4" style={{ height: 180 }}>
               {stats.byYear.map((y) => (
                 <div key={y.year} className="flex flex-1 flex-col items-center justify-end gap-2">
                   <span className="text-sm font-bold text-ink">{y.count}</span>
                   {/* Brend tokeni, tekis rang — funnel barlari va "Dinamika"
-                      grafigi bilan bir xil ko'rinish uchun */}
+                      grafigi bilan bir xil koʻrinish uchun */}
                   <div
                     className="w-full max-w-[56px] rounded-t-lg bg-primary transition-all"
                     style={{ height: `${Math.round((y.count / maxYear) * 140)}px` }}
@@ -181,9 +181,9 @@ export default function StudentAnalytics({ showHeading = false }) {
         </div>
       </div>
 
-      {/* Kurslar bo'yicha taqsimot */}
+      {/* Kurslar boʻyicha taqsimot */}
       <div className="mt-8">
-        <h2 className="text-lg">Kurslar bo'yicha</h2>
+        <h2 className="text-lg">Kurslar boʻyicha</h2>
         <div className="mt-3">
           <DataTable columns={COLUMNS}>
             {stats.courses.map((c) => (

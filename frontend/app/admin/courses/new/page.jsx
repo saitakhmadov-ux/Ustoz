@@ -25,7 +25,7 @@ export default function NewCoursePage() {
         <ArrowLeft size={16} /> Kurslar
       </Link>
       <h1 className="text-2xl">Yangi kurs</h1>
-      <p className="mt-1 text-sm text-muted">Kurs yaratgach, unga bo'lim va darslar qo'shasiz</p>
+      <p className="mt-1 text-sm text-muted">Kurs yaratgach, unga boʻlim va darslar qoʻshasiz</p>
       <div className="mt-6 max-w-3xl">
         <CourseForm onSaved={(course) => router.push(`/admin/courses/${course.id}/curriculum`)} />
       </div>

@@ -18,16 +18,16 @@ const VERIFIED_OPTIONS = [
   { value: 'no', label: 'Tasdiqlanmagan' },
 ];
 
-// Rol bo'yicha ko'rinish
+// Rol boʻyicha koʻrinish
 const ROLES = {
   ADMIN: { label: 'Bosh admin', cls: 'bg-indigo-50 text-indigo-700', Icon: Shield },
   INSTRUCTOR: { label: 'Ustoz', cls: 'bg-indigo-50 text-indigo-700', Icon: GraduationCap },
-  USER: { label: "O'quvchi", cls: 'bg-slate-100 text-slate-600', Icon: User },
+  USER: { label: "Oʻquvchi", cls: 'bg-slate-100 text-slate-600', Icon: User },
 };
 
 const TABS = [
   { key: '', label: 'Barchasi', countKey: 'all' },
-  { key: 'USER', label: "O'quvchilar", countKey: 'USER' },
+  { key: 'USER', label: "Oʻquvchilar", countKey: 'USER' },
   { key: 'INSTRUCTOR', label: 'Ustozlar', countKey: 'INSTRUCTOR' },
   { key: 'ADMIN', label: 'Adminlar', countKey: 'ADMIN' },
 ];
@@ -38,7 +38,7 @@ const COLUMNS = [
   { label: 'Rol' },
   { label: 'Kurslar' },
   { label: 'Sertifikat' },
-  { label: "Ro'yxatdan o'tgan" },
+  { label: "Roʻyxatdan oʻtgan" },
   { label: 'Amal', align: 'right' },
 ];
 
@@ -75,7 +75,7 @@ export default function AdminPeoplePage() {
 
   useEffect(() => { load(); }, [load]);
 
-  // Rol yorlig'i almashganda forma ham o'sha rolga moslanadi
+  // Rol yorligʻi almashganda forma ham oʻsha rolga moslanadi
   const changeRoleTab = (role) => {
     t.set('role', role);
     if (role) setForm((f) => ({ ...f, role }));
@@ -85,7 +85,7 @@ export default function AdminPeoplePage() {
     e.preventDefault();
     setFormError('');
     if (form.fullName.trim().length < 2) return setFormError('Ism juda qisqa');
-    if (!form.email.includes('@')) return setFormError('Email noto\'g\'ri');
+    if (!form.email.includes('@')) return setFormError('Email notoʻgʻri');
     if (form.password.length < 6) return setFormError('Parol kamida 6 belgi');
     setSaving(true);
     try {
@@ -108,8 +108,8 @@ export default function AdminPeoplePage() {
   const remove = async (u) => {
     const warning = u.role === 'INSTRUCTOR'
       ? 'Uning kurslari saqlanadi, faqat biriktirish uziladi.'
-      : 'Uning yozilishlari, to\'lovlari va sertifikatlari ham o\'chadi.';
-    if (!confirm(`"${u.fullName}" ni o'chirasizmi? ${warning}`)) return;
+      : 'Uning yozilishlari, toʻlovlari va sertifikatlari ham oʻchadi.';
+    if (!confirm(`"${u.fullName}" ni oʻchirasizmi? ${warning}`)) return;
     try {
       await api.del(`/admin/users/${u.id}`);
       t.pageBackIfEmpty(users.length, load);
@@ -122,7 +122,7 @@ export default function AdminPeoplePage() {
     <div>
       <PageHeader
         title="Odamlar"
-        subtitle="Platformadagi barcha o'quvchilar, ustozlar va adminlar"
+        subtitle="Platformadagi barcha oʻquvchilar, ustozlar va adminlar"
       >
         <button onClick={() => setShowForm((v) => !v)} className="btn-primary">
           <Plus size={16} /> Yangi odam
@@ -135,7 +135,7 @@ export default function AdminPeoplePage() {
           {formError && <div className="mb-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700">{formError}</div>}
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="label">To'liq ism</label>
+              <label className="label">Toʻliq ism</label>
               <input className="input" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} placeholder="Ism Familiya" required />
             </div>
             <div>
@@ -149,7 +149,7 @@ export default function AdminPeoplePage() {
             <div>
               <label className="label">Rol</label>
               <select className="input" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
-                <option value="USER">O'quvchi</option>
+                <option value="USER">Oʻquvchi</option>
                 <option value="INSTRUCTOR">Ustoz (2-darajali admin)</option>
                 <option value="ADMIN">Bosh admin</option>
               </select>
@@ -157,8 +157,8 @@ export default function AdminPeoplePage() {
           </div>
           {form.role === 'INSTRUCTOR' && (
             <p className="mt-2 text-xs text-muted">
-              💡 Ustoz faqat o'ziga biriktirilgan kurs kontentini boshqaradi. Kursni biriktirish
-              uchun <b>Kurslar</b> bo'limida kursni tahrirlab, "Biriktirilgan ustoz" maydonini tanlang.
+              💡 Ustoz faqat oʻziga biriktirilgan kurs kontentini boshqaradi. Kursni biriktirish
+              uchun <b>Kurslar</b> boʻlimida kursni tahrirlab, "Biriktirilgan ustoz" maydonini tanlang.
             </p>
           )}
           <div className="mt-4 flex gap-2">
@@ -172,7 +172,7 @@ export default function AdminPeoplePage() {
         </form>
       )}
 
-      {/* Rol yorliqlari — alohida "Ustozlar" sahifasi o'rniga */}
+      {/* Rol yorliqlari — alohida "Ustozlar" sahifasi oʻrniga */}
       {roleCounts && (
         <CountTabs
           value={activeRole}
@@ -184,7 +184,7 @@ export default function AdminPeoplePage() {
       <DataToolbar
         search={t.search}
         onSearch={t.setSearch}
-        placeholder="Ism yoki email bo'yicha qidirish..."
+        placeholder="Ism yoki email boʻyicha qidirish..."
         hasFilters={t.hasFilters}
         onReset={t.reset}
       >
@@ -201,7 +201,7 @@ export default function AdminPeoplePage() {
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : users.length === 0 ? (
           <EmptyState
             title="Hech kim topilmadi"
-            text={t.hasFilters ? 'Qidiruv yoki filtrni o\'zgartirib ko\'ring.' : 'Hali hech kim yo\'q.'}
+            text={t.hasFilters ? 'Qidiruv yoki filtrni oʻzgartirib koʻring.' : 'Hali hech kim yoʻq.'}
             icon={UsersIcon}
           />
         ) : (
@@ -272,7 +272,7 @@ export default function AdminPeoplePage() {
                     {isSelf ? (
                       <span className="text-xs text-slate-300">—</span>
                     ) : (
-                      <button onClick={() => remove(u)} title="O'chirish" className="ml-auto grid h-8 w-8 place-items-center rounded-lg text-red-600 hover:bg-red-50">
+                      <button onClick={() => remove(u)} title="Oʻchirish" className="ml-auto grid h-8 w-8 place-items-center rounded-lg text-red-600 hover:bg-red-50">
                         <Trash2 size={16} />
                       </button>
                     )}
@@ -286,7 +286,7 @@ export default function AdminPeoplePage() {
 
       {activeRole === 'INSTRUCTOR' && (
         <p className="mt-6 rounded-xl bg-slate-50 px-4 py-3 text-xs text-muted">
-          💡 Kursni ustozga biriktirish uchun <b>Kurslar</b> bo'limida kursni tahrirlab,
+          💡 Kursni ustozga biriktirish uchun <b>Kurslar</b> boʻlimida kursni tahrirlab,
           "Biriktirilgan ustoz" maydonini tanlang.
         </p>
       )}

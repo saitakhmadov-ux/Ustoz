@@ -33,7 +33,7 @@ export default function CertificatePage() {
 
   return (
     <div className="container-page max-w-4xl py-8 sm:py-12">
-      {/* Ko'rinish tanlash — varaqa yoki ulashish kartasi */}
+      {/* Koʻrinish tanlash — varaqa yoki ulashish kartasi */}
       <div className="no-print mb-6 flex justify-center">
         <div className="inline-flex rounded-xl border border-line bg-surface p-1">
           <button
@@ -87,7 +87,7 @@ export default function CertificatePage() {
         </div>
       )}
 
-      {/* Kursga baho + izoh (bir marta qo'yilgan baho hamma sahifada ko'rinadi) */}
+      {/* Kursga baho + izoh (bir marta qoʻyilgan baho hamma sahifada koʻrinadi) */}
       {cert.course?.slug && (
         <div className="no-print mx-auto mt-12 max-w-xl border-t border-line pt-8">
           <div className="mb-3 text-center">

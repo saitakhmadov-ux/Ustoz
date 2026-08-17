@@ -20,7 +20,7 @@ const ROLES = {
 };
 
 const PAY_STATUS = {
-  PAID: { label: "To'langan", cls: 'bg-emerald-50 text-emerald-700' },
+  PAID: { label: "Toʻlangan", cls: 'bg-emerald-50 text-emerald-700' },
   PENDING: { label: 'Kutilmoqda', cls: 'bg-amber-50 text-amber-700' },
   FAILED: { label: 'Muvaffaqiyatsiz', cls: 'bg-red-50 text-red-700' },
 };
@@ -33,7 +33,7 @@ export default function AdminUserDetailPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
 
-  // Qo'lda kursga yozish formasi
+  // Qoʻlda kursga yozish formasi
   const [courses, setCourses] = useState([]);
   const [enrollCourseId, setEnrollCourseId] = useState('');
   const [enrollMonths, setEnrollMonths] = useState('');
@@ -48,7 +48,7 @@ export default function AdminUserDetailPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  // Qo'lda yozish uchun kurslar ro'yxati
+  // Qoʻlda yozish uchun kurslar roʻyxati
   useEffect(() => {
     api.get('/courses/admin/all')
       .then((res) => setCourses(res.courses || []))
@@ -56,7 +56,7 @@ export default function AdminUserDetailPage() {
   }, []);
 
   const changeRole = async (role) => {
-    if (!confirm(`Rolni "${ROLES[role]?.label || role}" ga o'zgartirasizmi?`)) return;
+    if (!confirm(`Rolni "${ROLES[role]?.label || role}" ga oʻzgartirasizmi?`)) return;
     setBusy('role');
     try {
       await api.patch(`/admin/users/${id}/role`, { role });
@@ -93,7 +93,7 @@ export default function AdminUserDetailPage() {
   };
 
   const unenroll = async (enrollmentId, title) => {
-    if (!confirm(`"${title}" kursidan chiqarasizmi? O'quvchining bu kursdagi progressi ham o'chadi.`)) return;
+    if (!confirm(`"${title}" kursidan chiqarasizmi? Oʻquvchining bu kursdagi progressi ham oʻchadi.`)) return;
     setBusy(enrollmentId);
     try {
       await api.del(`/admin/enrollments/${enrollmentId}`);
@@ -114,7 +114,7 @@ export default function AdminUserDetailPage() {
     { label: 'Kurslar', value: summary.enrollments, icon: BookOpen, color: 'bg-indigo-50 text-indigo-600' },
     { label: 'Sertifikatlar', value: summary.certificates, icon: Award, color: 'bg-amber-50 text-amber-600' },
     { label: 'Sharhlar', value: summary.reviews, icon: MessageSquare, color: 'bg-slate-100 text-slate-600' },
-    { label: "To'langan", value: formatPrice(summary.paidTotal), icon: Wallet, color: 'bg-emerald-50 text-emerald-600' },
+    { label: "Toʻlangan", value: formatPrice(summary.paidTotal), icon: Wallet, color: 'bg-emerald-50 text-emerald-600' },
   ];
 
   return (
@@ -137,18 +137,18 @@ export default function AdminUserDetailPage() {
         </div>
       </div>
       <p className="mt-2 text-xs text-muted">
-        Ro'yxatdan o'tgan: {new Date(user.createdAt).toLocaleDateString('uz-UZ')}
+        Roʻyxatdan oʻtgan: {new Date(user.createdAt).toLocaleDateString('uz-UZ')}
       </p>
 
-      {/* Rolni o'zgartirish */}
+      {/* Rolni oʻzgartirish */}
       <div className="card mt-6 p-5">
         <h2 className="text-lg">Rol</h2>
         <p className="mt-1 text-sm text-muted">
-          Rolni o'zgartirish foydalanuvchi ma'lumotlari va progressini saqlaydi.
+          Rolni oʻzgartirish foydalanuvchi maʼlumotlari va progressini saqlaydi.
         </p>
         {isSelf ? (
           <p className="mt-3 rounded-xl bg-slate-50 px-4 py-2.5 text-sm text-muted">
-            O'z rolingizni o'zgartira olmaysiz.
+            Oʻz rolingizni oʻzgartira olmaysiz.
           </p>
         ) : (
           <div className="mt-3 flex flex-wrap gap-2">
@@ -167,7 +167,7 @@ export default function AdminUserDetailPage() {
         )}
       </div>
 
-      {/* Umumiy ko'rsatkichlar */}
+      {/* Umumiy koʻrsatkichlar */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((c) => {
           const Icon = c.icon;
@@ -185,14 +185,14 @@ export default function AdminUserDetailPage() {
       <div className="card mt-6 p-5">
         <h2 className="text-lg">Kurslari va progressi</h2>
 
-        {/* Qo'lda kursga yozish */}
+        {/* Qoʻlda kursga yozish */}
         <form onSubmit={enroll} className="mt-3 flex flex-wrap items-center gap-2 rounded-xl bg-slate-50 p-3">
           <select
             className="input min-w-[220px] flex-1"
             value={enrollCourseId}
             onChange={(e) => setEnrollCourseId(e.target.value)}
           >
-            <option value="">Kursni tanlang — qo'lda yozish</option>
+            <option value="">Kursni tanlang — qoʻlda yozish</option>
             {courses.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.title}{enrolledIds.has(c.id) ? ' (yozilgan — muddat yangilanadi)' : ''}
@@ -266,11 +266,11 @@ export default function AdminUserDetailPage() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        {/* To'lovlari */}
+        {/* Toʻlovlari */}
         <div className="card p-5">
-          <h2 className="text-lg">To'lovlari</h2>
+          <h2 className="text-lg">Toʻlovlari</h2>
           {payments.length === 0 ? (
-            <p className="mt-3 text-sm text-muted">To'lov yo'q.</p>
+            <p className="mt-3 text-sm text-muted">Toʻlov yoʻq.</p>
           ) : (
             <div className="mt-3 divide-y divide-line">
               {payments.map((p) => {
@@ -308,7 +308,7 @@ export default function AdminUserDetailPage() {
                     <p className="font-mono text-xs text-muted">{c.serial}</p>
                   </div>
                   <Link href={`/certificates/${c.id}`} className="shrink-0 text-primary hover:underline">
-                    Ko'rish
+                    Koʻrish
                   </Link>
                 </div>
               ))}

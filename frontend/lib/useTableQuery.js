@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-// Admin ro'yxat sahifalari uchun umumiy so'rov holati.
+// Admin roʻyxat sahifalari uchun umumiy soʻrov holati.
 //
 // Bitta joyda: qidiruv (debounce bilan), filtrlar, sahifalash va
 // manzil qatori (URL) bilan sinxronlash. Shu tufayli sahifani yangilaganda
@@ -13,9 +13,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 //   api.get(`/admin/users?${t.params}`)
 //   <DataToolbar search={t.search} onSearch={t.setSearch} ... />
 //
-// Eslatma: useSearchParams o'rniga window.location ishlatilgan — bu sahifalar
+// Eslatma: useSearchParams oʻrniga window.location ishlatilgan — bu sahifalar
 // baribir faqat brauzerda ishlaydi (RequireAuth), shuning uchun Suspense
-// chegarasi talab qilinmaydi va ortiqcha qayta render bo'lmaydi.
+// chegarasi talab qilinmaydi va ortiqcha qayta render boʻlmaydi.
 export function useTableQuery({
   filters = {},
   perPage = 20,
@@ -23,7 +23,7 @@ export function useTableQuery({
   searchKey = 'q',
   syncUrl = true,
 } = {}) {
-  // Boshlang'ich qiymatlar birinchi renderdayoq qotib qoladi
+  // Boshlangʻich qiymatlar birinchi renderdayoq qotib qoladi
   const defaultsRef = useRef(filters);
   const defaults = defaultsRef.current;
 
@@ -44,7 +44,7 @@ export function useTableQuery({
   const [page, setPage] = useState(initial.page);
   const [search, setSearch] = useState(String(initial.values[searchKey] ?? ''));
 
-  // Yozishni to'xtatgandan keyin qidiramiz — har harfda so'rov ketmaydi
+  // Yozishni toʻxtatgandan keyin qidiramiz — har harfda soʻrov ketmaydi
   useEffect(() => {
     const next = search.trim();
     if (next === (values[searchKey] ?? '')) return;
@@ -56,8 +56,8 @@ export function useTableQuery({
   }, [search, values, searchKey, debounceMs]);
 
   // Manzil qatorini yangilaymiz — faqat sukut qiymatidan farq qilganlarini.
-  // Begona parametrlarga (masalan sahifa yorlig'i ?tab=) tegmaymiz: jadval
-  // o'zi egalik qiladigan kalitlarni va page'ni almashtiradi, xolos.
+  // Begona parametrlarga (masalan sahifa yorligʻi ?tab=) tegmaymiz: jadval
+  // oʻzi egalik qiladigan kalitlarni va pageʼni almashtiradi, xolos.
   useEffect(() => {
     if (!syncUrl || typeof window === 'undefined') return;
     const sp = new URLSearchParams(window.location.search);
@@ -74,7 +74,7 @@ export function useTableQuery({
     window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : ''));
   }, [values, page, syncUrl, defaults]);
 
-  // Filtrni o'zgartirish — har doim birinchi sahifaga qaytaramiz
+  // Filtrni oʻzgartirish — har doim birinchi sahifaga qaytaramiz
   const set = useCallback((key, value) => {
     setValues((v) => ({ ...v, [key]: value }));
     setPage(1);
@@ -86,13 +86,13 @@ export function useTableQuery({
     setPage(1);
   }, [defaults, searchKey]);
 
-  // Sahifadagi oxirgi yozuv o'chirilganda bo'sh sahifada qolmaslik uchun
+  // Sahifadagi oxirgi yozuv oʻchirilganda boʻsh sahifada qolmaslik uchun
   const pageBackIfEmpty = useCallback((remainingOnPage, reload) => {
     if (remainingOnPage <= 1 && page > 1) setPage((p) => p - 1);
     else reload();
   }, [page]);
 
-  // API uchun tayyor so'rov qatori
+  // API uchun tayyor soʻrov qatori
   const params = useMemo(() => {
     const sp = new URLSearchParams({ page: String(page), limit: String(perPage) });
     for (const [k, v] of Object.entries(values)) {

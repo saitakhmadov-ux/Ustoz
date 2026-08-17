@@ -3,9 +3,9 @@
 import { Clock, AlarmClock } from 'lucide-react';
 import { formatDaysLeft } from '@/lib/constants';
 
-// Kursdan foydalanish muddati ko'rsatkichi. Rang qolgan vaqtning umumiy muddatga
-// nisbatiga qarab o'zgaradi: boshida yashil → yarmida sabzi/orange → oxirida qizil.
-// Muddatsiz bo'lsa hech narsa chizmaydi.
+// Kursdan foydalanish muddati koʻrsatkichi. Rang qolgan vaqtning umumiy muddatga
+// nisbatiga qarab oʻzgaradi: boshida yashil → yarmida sabzi/orange → oxirida qizil.
+// Muddatsiz boʻlsa hech narsa chizmaydi.
 export default function AccessChip({ access, className = '' }) {
   const info = formatDaysLeft(access);
   if (!info) return null;

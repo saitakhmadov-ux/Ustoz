@@ -1,11 +1,11 @@
 // Klaviatura mashqi uchun umumiy yordamchilar (brauzer tomoni).
 //
 // MUHIM: solishtirish va hisoblash qoidalari backend/src/utils/typing.js bilan
-// AYNAN bir xil bo'lishi kerak — aks holda ekranda ko'ringan natija server
-// bergan natijadan farq qiladi. Biri o'zgarsa, ikkinchisi ham o'zgartiriladi.
+// AYNAN bir xil boʻlishi kerak — aks holda ekranda koʻringan natija server
+// bergan natijadan farq qiladi. Biri oʻzgarsa, ikkinchisi ham oʻzgartiriladi.
 
-// O'zbek lotinidagi apostrof variantlari (oʻ, gʻ, tutuq belgisi) — hammasi
-// bitta belgiga keltiriladi, shuning uchun odam oddiy ' bossa ham to'g'ri.
+// Oʻzbek lotinidagi apostrof variantlari (oʻ, gʻ, tutuq belgisi) — hammasi
+// bitta belgiga keltiriladi, shuning uchun odam oddiy ' bossa ham toʻgʻri.
 const APOSTROPHES = /[ʻʼ‘’‛`´']/g;
 export const APOSTROPHE = 'ʻ';
 
@@ -18,7 +18,7 @@ export function normalizeText(s) {
 
 export const normalizeChar = (ch) => normalizeText(ch);
 
-// Standart o'lchov: "so'z" = 5 belgi
+// Standart oʻlchov: "soʻz" = 5 belgi
 export function wpmOf(correctChars, durationMs) {
   const minutes = durationMs / 60000;
   if (!(minutes > 0)) return 0;
@@ -31,7 +31,7 @@ export function accuracyOf(correct, chars) {
 }
 
 // Yozilgan matnni mashq matni bilan solishtiradi (server bilan bir xil qoida:
-// hisob YAKUNIY matn bo'yicha — xatoni tuzatsangiz aniqlik tiklanadi).
+// hisob YAKUNIY matn boʻyicha — xatoni tuzatsangiz aniqlik tiklanadi).
 export function compare(expected, typed) {
   const exp = normalizeText(expected);
   const got = normalizeText(typed);
@@ -42,11 +42,11 @@ export function compare(expected, typed) {
   return { correct, wrong: got.length - correct, chars: got.length };
 }
 
-// ---------- Matnni qatorlarga bo'lish ----------
-// Uzun matnni (ayniqsa vaqtli mashqda) to'liq chizmaymiz: so'zlar bo'yicha
-// qatorlarga bo'lib, faqat joriy qator atrofini ko'rsatamiz.
+// ---------- Matnni qatorlarga boʻlish ----------
+// Uzun matnni (ayniqsa vaqtli mashqda) toʻliq chizmaymiz: soʻzlar boʻyicha
+// qatorlarga boʻlib, faqat joriy qator atrofini koʻrsatamiz.
 // MUHIM: qatorlar matnni QOLDIRMASDAN qoplaydi — qator oxiridagi probel ham
-// o'sha qatorga kiradi. Aks holda kursor qator chegarasida ko'rinmay qolardi
+// oʻsha qatorga kiradi. Aks holda kursor qator chegarasida koʻrinmay qolardi
 // (odam probel bosishi kerakligini bilmaydi).
 export function splitLines(text, perLine = 52) {
   const s = String(text || '');
@@ -56,7 +56,7 @@ export function splitLines(text, perLine = 52) {
   while (start < s.length) {
     let end = Math.min(s.length, start + perLine);
     if (end < s.length) {
-      // So'z o'rtasidan uzmaymiz: oxirgi probelgacha qaytamiz va probelni
+      // Soʻz oʻrtasidan uzmaymiz: oxirgi probelgacha qaytamiz va probelni
       // shu qatorda qoldiramiz
       const cut = s.lastIndexOf(' ', end);
       if (cut > start) end = cut + 1;
@@ -78,7 +78,7 @@ export function lineIndexAt(lines, index) {
 
 // ---------- Klaviatura tasviri ----------
 
-// Fizik tugmalar (AQSh/QWERTY — o'zbek lotin yozuvi shu joylashuvda yoziladi)
+// Fizik tugmalar (AQSh/QWERTY — oʻzbek lotin yozuvi shu joylashuvda yoziladi)
 export const KEY_ROWS = [
   ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']'],
@@ -97,7 +97,7 @@ const SHIFTED = {
 export function keyForChar(ch) {
   if (!ch) return null;
   if (ch === ' ') return { key: ' ', shift: false };
-  // Apostrofning barcha ko'rinishlari — bitta ' tugmasi
+  // Apostrofning barcha koʻrinishlari — bitta ' tugmasi
   if (APOSTROPHES.test(ch)) {
     APOSTROPHES.lastIndex = 0;
     return { key: "'", shift: false };
@@ -108,16 +108,16 @@ export function keyForChar(ch) {
   return { key: ch, shift: false };
 }
 
-// Barmoqlar taqsimoti (rang va ko'rsatma uchun)
+// Barmoqlar taqsimoti (rang va koʻrsatma uchun)
 const FINGER_KEYS = {
   'chap-jimjiloq': ['`', '1', 'q', 'a', 'z'],
   'chap-nomsiz': ['2', 'w', 's', 'x'],
-  "chap-o'rta": ['3', 'e', 'd', 'c'],
-  "chap-ko'rsatkich": ['4', '5', 'r', 't', 'f', 'g', 'v', 'b'],
-  "o'ng-ko'rsatkich": ['6', '7', 'y', 'u', 'h', 'j', 'n', 'm'],
-  "o'ng-o'rta": ['8', 'i', 'k', ','],
-  "o'ng-nomsiz": ['9', 'o', 'l', '.'],
-  "o'ng-jimjiloq": ['0', '-', '=', 'p', '[', ']', ';', "'", '/'],
+  "chap-oʻrta": ['3', 'e', 'd', 'c'],
+  "chap-koʻrsatkich": ['4', '5', 'r', 't', 'f', 'g', 'v', 'b'],
+  "oʻng-koʻrsatkich": ['6', '7', 'y', 'u', 'h', 'j', 'n', 'm'],
+  "oʻng-oʻrta": ['8', 'i', 'k', ','],
+  "oʻng-nomsiz": ['9', 'o', 'l', '.'],
+  "oʻng-jimjiloq": ['0', '-', '=', 'p', '[', ']', ';', "'", '/'],
   'bosh barmoq': [' '],
 };
 
@@ -130,19 +130,19 @@ export const FINGER_OF = Object.entries(FINGER_KEYS).reduce((acc, [finger, keys]
 export const FINGER_COLOR = {
   'chap-jimjiloq': 'bg-rose-100 text-rose-700',
   'chap-nomsiz': 'bg-amber-100 text-amber-700',
-  "chap-o'rta": 'bg-emerald-100 text-emerald-700',
-  "chap-ko'rsatkich": 'bg-sky-100 text-sky-700',
-  "o'ng-ko'rsatkich": 'bg-indigo-100 text-indigo-700',
-  "o'ng-o'rta": 'bg-emerald-100 text-emerald-700',
-  "o'ng-nomsiz": 'bg-amber-100 text-amber-700',
-  "o'ng-jimjiloq": 'bg-rose-100 text-rose-700',
+  "chap-oʻrta": 'bg-emerald-100 text-emerald-700',
+  "chap-koʻrsatkich": 'bg-sky-100 text-sky-700',
+  "oʻng-koʻrsatkich": 'bg-indigo-100 text-indigo-700',
+  "oʻng-oʻrta": 'bg-emerald-100 text-emerald-700',
+  "oʻng-nomsiz": 'bg-amber-100 text-amber-700',
+  "oʻng-jimjiloq": 'bg-rose-100 text-rose-700',
   'bosh barmoq': 'bg-slate-100 text-slate-600',
 };
 
 // Mashq turi -> odam tushunadigan nom
 export const MODE_LABEL = {
   KEYS: 'Harflar',
-  WORDS: "So'zlar",
+  WORDS: "Soʻzlar",
   TEXT: 'Matn',
   TIMED: 'Vaqtli test',
 };
@@ -150,8 +150,8 @@ export const MODE_LABEL = {
 // ---------- Baho (yulduzchalar) ----------
 
 // Mashq natijasining umumiy foizi: aniqlik va maqsadli tezlikka yetish
-// darajasidan iborat. Aniqlik og'irroq (60%), chunki xatosiz yozish tezlikdan
-// muhimroq — tezlik mashq bilan o'zi keladi.
+// darajasidan iborat. Aniqlik ogʻirroq (60%), chunki xatosiz yozish tezlikdan
+// muhimroq — tezlik mashq bilan oʻzi keladi.
 export function scoreOf(result, target) {
   const accuracy = Math.max(0, Math.min(100, result?.accuracy ?? 0));
   const targetWpm = target?.wpm > 0 ? target.wpm : null;
@@ -161,7 +161,7 @@ export function scoreOf(result, target) {
 }
 
 // Foizdan yulduzchalar soni (yarimta aniqligida).
-// 90% dan yuqori natija — to'liq 5 ta yulduz.
+// 90% dan yuqori natija — toʻliq 5 ta yulduz.
 export function starsOf(score) {
   if (score >= 90) return 5;
   return Math.max(0.5, Math.round((score / 20) * 2) / 2);
@@ -169,18 +169,18 @@ export function starsOf(score) {
 
 // Yulduzchalar soniga qarab qisqa izoh
 export function starLabel(stars) {
-  if (stars >= 5) return "A'lo!";
+  if (stars >= 5) return "Aʼlo!";
   if (stars >= 4) return 'Juda yaxshi';
   if (stars >= 3) return 'Yaxshi';
-  if (stars >= 2) return "O'rtacha";
+  if (stars >= 2) return "Oʻrtacha";
   return 'Mashq kerak';
 }
 
 // ---------- Dars uslublari (animatsiya) ----------
 //
-// Har bir darsga ro'yxatdagi uslublardan biri navbat bilan biriktiriladi
-// (dars tartib raqami bo'yicha) — shunda ketma-ket darslar bir xil ko'rinmaydi,
-// ammo bitta darsning uslubi har safar bir xil bo'ladi.
+// Har bir darsga roʻyxatdagi uslublardan biri navbat bilan biriktiriladi
+// (dars tartib raqami boʻyicha) — shunda ketma-ket darslar bir xil koʻrinmaydi,
+// ammo bitta darsning uslubi har safar bir xil boʻladi.
 export const TYPING_STYLES = [
   {
     id: 'pulse', cursor: 'tp-cursor-pulse', hit: 'tp-hit-pop', win: 'tp-win-rise', confetti: false,

@@ -1,10 +1,10 @@
 'use client';
 
-// Klaviatura mashqi kursining o'quv sahifasi (kind === 'TYPING').
+// Klaviatura mashqi kursining oʻquv sahifasi (kind === 'TYPING').
 //
-// Odatiy kursdagi video/material/test bloklari bu yerda yo'q: har bir dars —
+// Odatiy kursdagi video/material/test bloklari bu yerda yoʻq: har bir dars —
 // bitta yozish mashqi. Qulflar, progress va sertifikat esa odatdagi tizimdan
-// keladi, shuning uchun bu ko'rinish faqat mashqni chizadi.
+// keladi, shuning uchun bu koʻrinish faqat mashqni chizadi.
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
@@ -51,8 +51,8 @@ export default function TypingCourseView({
   const current = lessons.find((l) => l.id === currentId) || null;
   const currentIndex = lessons.findIndex((l) => l.id === currentId);
   const next = currentIndex >= 0 ? lessons[currentIndex + 1] : null;
-  // Animatsiya uslubi dars tartibiga bog'langan: ketma-ket darslar bir xil
-  // ko'rinmaydi, ammo bitta dars har safar o'zining uslubi bilan ochiladi.
+  // Animatsiya uslubi dars tartibiga bogʻlangan: ketma-ket darslar bir xil
+  // koʻrinmaydi, ammo bitta dars har safar oʻzining uslubi bilan ochiladi.
   const anim = styleFor(currentIndex);
 
   // Mashqni serverdan olish (matn shu yerdan keladi — vaqtli mashqda uzaytirilgan holda)
@@ -80,7 +80,7 @@ export default function TypingCourseView({
       const res = await api.post(`/lessons/${currentId}/typing`, { typed, durationMs });
       setResult(res.result);
       if (res.certificate) setCert(res.certificate);
-      // O'tgan bo'lsa qulflar va progress yangilanadi
+      // Oʻtgan boʻlsa qulflar va progress yangilanadi
       if (res.result.passed) await onReload?.();
     } catch (err) {
       setError(err.message);
@@ -132,7 +132,7 @@ export default function TypingCourseView({
 
   return (
     // Odatiy `container-page` dan kengroq: mashq maydoni va klaviatura
-    // katta ekranda ham to'liq joyni egallasin
+    // katta ekranda ham toʻliq joyni egallasin
     <div className="mx-auto w-full max-w-[1600px] px-4 py-6 md:px-6">
       {/* Sarlavha */}
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -169,7 +169,7 @@ export default function TypingCourseView({
         <div className="h-full bg-primary transition-all" style={{ width: `${progress.percent}%` }} />
       </div>
 
-      {/* Bo'limlar */}
+      {/* Boʻlimlar */}
       <div className="mt-6 flex gap-1 border-b border-line">
         <button
           type="button"
@@ -187,7 +187,7 @@ export default function TypingCourseView({
         >
           <Zap size={16} /> Erkin mashq
         </button>
-        {/* IELTS bo'limi — yashil urg'u bilan ajratilgan */}
+        {/* IELTS boʻlimi — yashil urgʻu bilan ajratilgan */}
         <button
           type="button"
           onClick={() => setTab('ielts')}
@@ -237,7 +237,7 @@ export default function TypingCourseView({
                   {current.completed && (
                     <span className="badge bg-emerald-50 text-emerald-700">
                       <CheckCircle2 size={14} /> Yakunlangan
-                      {current.typing?.best && ` · eng yaxshi ${current.typing.best.wpm} so'z/daq`}
+                      {current.typing?.best && ` · eng yaxshi ${current.typing.best.wpm} soʻz/daq`}
                     </span>
                   )}
                 </div>
@@ -291,7 +291,7 @@ export default function TypingCourseView({
         </div>
       )}
 
-      {/* Mobil darslar ro'yxati */}
+      {/* Mobil darslar roʻyxati */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button

@@ -2,8 +2,8 @@
 
 // Darsning klaviatura mashqini tahrirlash (faqat TYPING turidagi kurslarda).
 //
-// Mashq matni — o'quvchi yozib chiqadigan matn. O'tish sharti ikkita:
-// maqsadli tezlik (so'z/daqiqa) va aniqlik. Ikkalasiga yetmasa dars
+// Mashq matni — oʻquvchi yozib chiqadigan matn. Oʻtish sharti ikkita:
+// maqsadli tezlik (soʻz/daqiqa) va aniqlik. Ikkalasiga yetmasa dars
 // yakunlanmaydi, ammo qayta urinish soni cheklanmagan.
 
 import { useState } from 'react';
@@ -16,8 +16,8 @@ import { MODE_LABEL } from '@/lib/typing';
 const MODES = ['KEYS', 'WORDS', 'TEXT', 'TIMED'];
 
 const MODE_HINT = {
-  KEYS: 'Alohida harflar va bo\'g\'inlar: "asdf jkl; fj dk". Yangi tugmalarni o\'rgatish uchun.',
-  WORDS: 'Probel bilan ajratilgan so\'zlar ro\'yxati.',
+  KEYS: 'Alohida harflar va boʻgʻinlar: "asdf jkl; fj dk". Yangi tugmalarni oʻrgatish uchun.',
+  WORDS: 'Probel bilan ajratilgan soʻzlar roʻyxati.',
   TEXT: 'Yaxlit matn — jumlalar, tinish belgilari bilan.',
   TIMED: 'Vaqtga qarshi: matn tugamaydi (takrorlanadi), mashq belgilangan vaqtda yakunlanadi.',
 };
@@ -61,7 +61,7 @@ export default function TypingDrillEditor({ lesson, onChange }) {
   };
 
   const remove = async () => {
-    if (!confirm('Mashqni o\'chirasizmi? Dars mashqsiz qoladi va o\'quvchilarda "bajarilgan" belgisi ham olib tashlanadi.')) return;
+    if (!confirm('Mashqni oʻchirasizmi? Dars mashqsiz qoladi va oʻquvchilarda "bajarilgan" belgisi ham olib tashlanadi.')) return;
     setSaving(true); setError('');
     try {
       await api.del(`/admin/lessons/${lesson.id}/typing`);
@@ -146,7 +146,7 @@ export default function TypingDrillEditor({ lesson, onChange }) {
         />
         <p className="mt-1 text-xs text-muted">
           Qator va ortiqcha probellar saqlashda bitta probelga aylanadi.
-          oʻ va gʻ uchun apostrof yozing — o'quvchi oddiy <code>&apos;</code> bossa ham to'g'ri hisoblanadi.
+          oʻ va gʻ uchun apostrof yozing — oʻquvchi oddiy <code>&apos;</code> bossa ham toʻgʻri hisoblanadi.
         </p>
       </div>
 
@@ -154,7 +154,7 @@ export default function TypingDrillEditor({ lesson, onChange }) {
         <label className="label text-xs">Maslahat (ixtiyoriy)</label>
         <input
           className="input text-sm"
-          placeholder="Barmoqlaringizni asdf—jkl ustiga qo'ying"
+          placeholder="Barmoqlaringizni asdf—jkl ustiga qoʻying"
           value={form.hint}
           onChange={(e) => set({ hint: e.target.value })}
         />
@@ -167,7 +167,7 @@ export default function TypingDrillEditor({ lesson, onChange }) {
         {msg && <span className="text-sm font-medium text-accent">{msg}</span>}
         {d && (
           <button type="button" onClick={remove} disabled={saving} className="ml-auto btn-ghost text-sm text-red-600">
-            <Trash2 size={15} /> Mashqni o'chirish
+            <Trash2 size={15} /> Mashqni oʻchirish
           </button>
         )}
       </div>

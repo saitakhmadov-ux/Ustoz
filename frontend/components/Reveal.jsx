@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-// Ko'rinishga kirganda yumshoq fade-up (IntersectionObserver).
-// prefers-reduced-motion bo'lsa CSS orqali darhol ko'rinadi.
+// Koʻrinishga kirganda yumshoq fade-up (IntersectionObserver).
+// prefers-reduced-motion boʻlsa CSS orqali darhol koʻrinadi.
 export default function Reveal({ children, className = '', delay = 0, as: Tag = 'div' }) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);

@@ -1,6 +1,6 @@
 // "Kontaktlar" sahifasi kartochkalari uchun ikonkalar.
 // Backend faqat shu nomlarni qabul qiladi (settings.js -> CONTACT_ICONS),
-// bu yerda nom lucide komponentiga bog'lanadi.
+// bu yerda nom lucide komponentiga bogʻlanadi.
 import {
   Mail, Phone, MapPin, Send, MessageCircle, Clock,
   Globe, Instagram, Youtube, Facebook, Building2, Headset,

@@ -91,7 +91,7 @@ function ImagesTab() {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    if (images.length >= MAX_IMAGES) { alert(`Ko'pi bilan ${MAX_IMAGES} ta rasm.`); return; }
+    if (images.length >= MAX_IMAGES) { alert(`Koʻpi bilan ${MAX_IMAGES} ta rasm.`); return; }
     setUploading(true); setProgress(0); setSavedMsg('');
     try {
       const res = await api.upload('/admin/hero/upload', file, { onProgress: setProgress });
@@ -132,7 +132,7 @@ function ImagesTab() {
           <div className="mt-5 grid place-items-center rounded-xl border-2 border-dashed border-line py-12 text-center text-muted">
             <ImageIcon size={32} className="mb-2 opacity-60" />
             <p className="text-sm">Hali rasm yuklanmagan.</p>
-            <p className="text-xs">Rasm yuklanmasa bosh sahifada standart surat ko'rsatiladi.</p>
+            <p className="text-xs">Rasm yuklanmasa bosh sahifada standart surat koʻrsatiladi.</p>
           </div>
         ) : (
           <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
@@ -141,7 +141,7 @@ function ImagesTab() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={fileUrl(src)} alt={`Hero rasm ${i + 1}`} className="h-full w-full object-cover" />
                 <span className="absolute left-2 top-2 grid h-6 w-6 place-items-center rounded-full bg-black/55 text-xs font-semibold text-white">{i + 1}</span>
-                <button type="button" onClick={() => removeAt(i)} className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-surface-glass text-red-500 opacity-0 shadow transition-opacity hover:bg-surface group-hover:opacity-100" title="O'chirish">
+                <button type="button" onClick={() => removeAt(i)} className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-surface-glass text-red-500 opacity-0 shadow transition-opacity hover:bg-surface group-hover:opacity-100" title="Oʻchirish">
                   <Trash2 size={15} />
                 </button>
               </div>
@@ -151,7 +151,7 @@ function ImagesTab() {
       </div>
 
       <div className="card p-5">
-        <h2 className="font-display text-lg font-semibold text-heading">Almashish oralig'i</h2>
+        <h2 className="font-display text-lg font-semibold text-heading">Almashish oraligʻi</h2>
         <p className="mt-1 text-sm text-muted">Har bir rasm necha soniyada bir marta almashsin (2–30 soniya).</p>
         <div className="mt-3 flex items-center gap-3">
           <input type="range" min="2" max="30" step="1" value={intervalSec} onChange={(e) => { setIntervalSec(Number(e.target.value)); setSavedMsg(''); }} className="w-64 max-w-full accent-indigo-600" />
@@ -163,7 +163,7 @@ function ImagesTab() {
           </div>
         </div>
         {images.length < 2 && (
-          <p className="mt-3 flex items-start gap-1.5 text-xs text-muted"><Info size={14} className="mt-px shrink-0" /> Almashinish faqat 2 va undan ortiq rasm bo'lganda ishlaydi.</p>
+          <p className="mt-3 flex items-start gap-1.5 text-xs text-muted"><Info size={14} className="mt-px shrink-0" /> Almashinish faqat 2 va undan ortiq rasm boʻlganda ishlaydi.</p>
         )}
       </div>
 
@@ -230,7 +230,7 @@ function TextsTab() {
       </div>
 
       <p className="flex items-start gap-1.5 text-xs text-muted">
-        <Info size={14} className="mt-px shrink-0" /> Maydonni bo'sh qoldirsangiz, o'sha joyda standart matn ko'rsatiladi.
+        <Info size={14} className="mt-px shrink-0" /> Maydonni boʻsh qoldirsangiz, oʻsha joyda standart matn koʻrsatiladi.
       </p>
     </div>
   );

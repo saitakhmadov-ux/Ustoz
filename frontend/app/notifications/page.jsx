@@ -56,19 +56,19 @@ function NotificationsInner() {
             <Bell size={26} className="text-primary" /> Xabarlar
           </h1>
           <p className="mt-1 text-muted">
-            {unread > 0 ? `${unread} ta o'qilmagan xabar` : 'Barcha xabarlar o\'qilgan'}
+            {unread > 0 ? `${unread} ta oʻqilmagan xabar` : 'Barcha xabarlar oʻqilgan'}
           </p>
         </div>
         {unread > 0 && (
           <button onClick={markAll} className="btn-outline">
-            <CheckCheck size={16} /> Hammasini o'qildi
+            <CheckCheck size={16} /> Hammasini oʻqildi
           </button>
         )}
       </div>
 
       <div className="mt-6">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : items.length === 0 ? (
-          <EmptyState title="Xabarlar yo'q" text="Sizga yuborilgan xabarlar shu yerda ko'rinadi" icon={Bell} />
+          <EmptyState title="Xabarlar yoʻq" text="Sizga yuborilgan xabarlar shu yerda koʻrinadi" icon={Bell} />
         ) : (
           <div className="space-y-3">
             {items.map((n) => (

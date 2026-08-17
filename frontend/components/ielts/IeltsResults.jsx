@@ -3,7 +3,7 @@
 // IELTS mashqi natijasi + Gemini bahosi.
 //
 // Baho TAXMINIY: bu rasmiy IELTS bahosi emas va shu ekranda ochiq yozib
-// qo'yiladi — foydalanuvchi uni imtihon natijasi deb o'ylab qolmasligi kerak.
+// qoʻyiladi — foydalanuvchi uni imtihon natijasi deb oʻylab qolmasligi kerak.
 
 import { useState } from 'react';
 import {
@@ -23,7 +23,7 @@ function Stat({ value, label, tone = null }) {
   );
 }
 
-// 4 ta IELTS mezoni — nomlar inglizcha (rasmiy atamalar), izohlar o'zbekcha
+// 4 ta IELTS mezoni — nomlar inglizcha (rasmiy atamalar), izohlar oʻzbekcha
 function Criteria({ items }) {
   if (!Array.isArray(items) || items.length === 0) return null;
   return (
@@ -71,7 +71,7 @@ export default function IeltsResults({
         <h3 className="font-display text-lg font-semibold text-heading">Your Result</h3>
 
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat value={attempt.wpm} label={isCopy ? 'WPM' : "so'z/daqiqa"} />
+          <Stat value={attempt.wpm} label={isCopy ? 'WPM' : "soʻz/daqiqa"} />
           {isCopy ? (
             <Stat value={`${attempt.accuracy}%`} label="Accuracy" tone={attempt.accuracy >= 95 ? 'good' : null} />
           ) : (
@@ -83,12 +83,12 @@ export default function IeltsResults({
 
         {isCopy && attempt.correctWords != null && (
           <p className="mt-3 text-sm text-muted">
-            To'g'ri yozilgan so'zlar: <b className="text-ink">{attempt.correctWords}</b>
+            Toʻgʻri yozilgan soʻzlar: <b className="text-ink">{attempt.correctWords}</b>
             {attempt.totalWords ? ` / ${attempt.totalWords}` : ''}
           </p>
         )}
 
-        {/* Minimal so'z talabi — yozma topshiriqlarda */}
+        {/* Minimal soʻz talabi — yozma topshiriqlarda */}
         {!isCopy && attempt.minWords && (
           <div className={`mt-4 flex items-start gap-2.5 rounded-xl p-4 ${met ? 'bg-emerald-50' : 'bg-amber-50'}`}>
             {met ? <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-600" />
@@ -101,7 +101,7 @@ export default function IeltsResults({
               </p>
               {!met && (
                 <p className="mt-0.5 text-amber-700">
-                  Minimal so'z soniga yetmadingiz — haqiqiy imtihonda bu ball pasayishiga olib keladi.
+                  Minimal soʻz soniga yetmadingiz — haqiqiy imtihonda bu ball pasayishiga olib keladi.
                 </p>
               )}
             </div>
@@ -119,7 +119,7 @@ export default function IeltsResults({
               </span>
               <div>
                 <b className="text-ink">AI baholash</b>
-                <p className="text-xs text-muted">IELTS mezonlari bo'yicha tahlil va tuzatishlar</p>
+                <p className="text-xs text-muted">IELTS mezonlari boʻyicha tahlil va tuzatishlar</p>
               </div>
             </div>
             {!ai && (

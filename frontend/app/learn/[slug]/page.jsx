@@ -43,13 +43,13 @@ function LearnInner() {
   // Oxirgi muvaffaqiyatli yuklash vaqti — fon yangilanishini cheklash uchun
   const lastLoadAt = useRef(0);
 
-  // AI Ustozni ochish. seed={code, errorText} bo'lsa playground kontekstini uzatadi.
+  // AI Ustozni ochish. seed={code, errorText} boʻlsa playground kontekstini uzatadi.
   const askAI = (seed) => { setAiSeed(seed || null); setAiOpen(true); };
-  // Kod maydonidan "AI Ustozdan so'rash" — kod panelni yopib, AI chatni ochamiz.
+  // Kod maydonidan "AI Ustozdan soʻrash" — kod panelni yopib, AI chatni ochamiz.
   const askAIFromCode = (seed) => { setCodeOpen(false); askAI(seed); };
 
-  // Kursni yuklash. keepCurrent=true bo'lsa tanlangan darsni saqlaydi (vazifa bajarilgandan keyin).
-  // silent=true — fonda jimgina yangilash: xatolik bo'lsa ekranni buzmaydi.
+  // Kursni yuklash. keepCurrent=true boʻlsa tanlangan darsni saqlaydi (vazifa bajarilgandan keyin).
+  // silent=true — fonda jimgina yangilash: xatolik boʻlsa ekranni buzmaydi.
   const load = async (keepCurrent = false, { silent = false } = {}) => {
     if (!keepCurrent) setLoading(true);
     try {
@@ -68,7 +68,7 @@ function LearnInner() {
       }
       lastLoadAt.current = Date.now();
     } catch (err) {
-      // Fon yangilanishi yiqilsa — o'quvchi ko'rib turgan sahifani buzmaymiz
+      // Fon yangilanishi yiqilsa — oʻquvchi koʻrib turgan sahifani buzmaymiz
       if (silent) return;
       setError(err.message);
       setErrorCode(err.code || '');
@@ -81,14 +81,14 @@ function LearnInner() {
 
   // Kurs kontenti ochiq sessiyada eskirib qolmasligi uchun.
   //
-  // Sahifa ma'lumotni faqat ochilganda oladi, admin esa shu payt darsni
-  // tahrirlashi mumkin (masalan video havolasini almashtirishi). O'quvchi
+  // Sahifa maʼlumotni faqat ochilganda oladi, admin esa shu payt darsni
+  // tahrirlashi mumkin (masalan video havolasini almashtirishi). Oʻquvchi
   // sahifaga QAYTGANDA — boshqa ilovadan, boshqa varaqdan yoki "Orqaga"
   // tugmasi bilan (bfcache) — kontentni jimgina yangilaymiz.
   //
   // Uchta hodisa kerak: visibilitychange (varaq almashtirish), focus (oyna
   // almashtirish — bunda varaq yashirilmaydi), pageshow (bfcache dan tiklash).
-  // MIN_GAP — hodisalar ketma-ket kelganda so'rov yog'dirmaslik uchun.
+  // MIN_GAP — hodisalar ketma-ket kelganda soʻrov yogʻdirmaslik uchun.
   useEffect(() => {
     const MIN_GAP = 30000;
     const refresh = () => {
@@ -115,10 +115,10 @@ function LearnInner() {
   const currentIndex = flatLessons.findIndex((l) => l.id === currentId);
   const nextLesson = currentIndex >= 0 ? flatLessons[currentIndex + 1] : null;
 
-  // Vazifa bajarilgandan keyin server javobini qo'llash (progress/sertifikat + qulflarni yangilash)
+  // Vazifa bajarilgandan keyin server javobini qoʻllash (progress/sertifikat + qulflarni yangilash)
   const applyResult = async (res) => {
-    // Dars soni oshgan bo'lsa — tantana ko'rsatamiz (foiz emas, DARS soni,
-    // chunki bitta darsda bir nechta vazifa bo'lishi mumkin)
+    // Dars soni oshgan boʻlsa — tantana koʻrsatamiz (foiz emas, DARS soni,
+    // chunki bitta darsda bir nechta vazifa boʻlishi mumkin)
     const before = progress.completedLessons ?? progress.completed ?? 0;
     const after = res?.progress?.completedLessons ?? res?.progress?.completed ?? before;
     const total = res?.progress?.totalLessons ?? res?.progress?.total ?? 0;
@@ -170,11 +170,11 @@ function LearnInner() {
           <h1 className="mt-4 text-2xl">{expired ? 'Foydalanish muddati tugagan' : 'Siz bu kursga yozilmagansiz'}</h1>
           <p className="mt-2 text-muted">
             {expired
-              ? 'Bu kursdan foydalanish muddati yakunlandi. Davom etish uchun kursga qayta yoziling — o\'quv jarayoningiz saqlanadi.'
+              ? 'Bu kursdan foydalanish muddati yakunlandi. Davom etish uchun kursga qayta yoziling — oʻquv jarayoningiz saqlanadi.'
               : 'Kurs kontentiga kirish uchun avval kursga yoziling.'}
           </p>
           <Link href={`/courses/${slug}`} className="btn-primary mt-6 w-full">
-            {expired ? 'Kursga qayta yozilish' : 'Kurs sahifasiga o\'tish'}
+            {expired ? 'Kursga qayta yozilish' : 'Kurs sahifasiga oʻtish'}
           </Link>
         </div>
       </div>
@@ -184,7 +184,7 @@ function LearnInner() {
   if (error) return <div className="container-page py-10"><ErrorState message={error} /></div>;
   if (!course) return <div className="container-page py-10"><ErrorState message="Kurs kontenti topilmadi" /></div>;
 
-  // Klaviatura mashqi kursi — butunlay boshqa ko'rinish (video/test yo'q)
+  // Klaviatura mashqi kursi — butunlay boshqa koʻrinish (video/test yoʻq)
   if (course.kind === 'TYPING') {
     return (
       <TypingCourseView
@@ -201,7 +201,7 @@ function LearnInner() {
 
   const currentLocked = current.locked;
 
-  // Video qulfi: darsda video bo'lsa va u ko'rilmagan bo'lsa — matn/PDF/test bloklanadi.
+  // Video qulfi: darsda video boʻlsa va u koʻrilmagan boʻlsa — matn/PDF/test bloklanadi.
   const videoTask = current.tasks?.find((t) => t.type === 'VIDEO');
   const videoDone = videoTask?.done ?? false;
   const videoGate = !!current.videoGate; // backend hisoblaydi (staff uchun false)
@@ -260,7 +260,7 @@ function LearnInner() {
                 <p className="font-semibold">Tabriklaymiz! Kursni tugatdingiz 🎉</p>
                 <p className="text-sm text-white/85">Sertifikatingiz tayyor.</p>
               </div>
-              <Link href={`/certificates/${certificate.id}`} className="btn-accent">Sertifikatni ko'rish</Link>
+              <Link href={`/certificates/${certificate.id}`} className="btn-accent">Sertifikatni koʻrish</Link>
             </div>
           )}
 
@@ -269,13 +269,13 @@ function LearnInner() {
             <div className="card p-8 text-center">
               <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-slate-100 text-subtle"><Lock size={26} /></span>
               <h1 className="mt-4 text-2xl">Bu dars hali ochilmagan</h1>
-              <p className="mt-2 text-muted">Ketma-ket o'qish tartibi: avvalgi darsni to'liq yakunlang, keyin bu dars ochiladi.</p>
+              <p className="mt-2 text-muted">Ketma-ket oʻqish tartibi: avvalgi darsni toʻliq yakunlang, keyin bu dars ochiladi.</p>
             </div>
           ) : (
             <>
               <h1 className="text-2xl">{current.title}</h1>
 
-              {/* Video — qulflangan pleer (oxirigacha ko'rilmaguncha keyingi materiallar ochilmaydi) */}
+              {/* Video — qulflangan pleer (oxirigacha koʻrilmaguncha keyingi materiallar ochilmaydi) */}
               {current.videoUrl && (
                 <div className="mt-5">
                   <LockedVideo
@@ -285,14 +285,14 @@ function LearnInner() {
                 </div>
               )}
 
-              {/* Video ko'rilmaguncha qolgan materiallar bloklanadi */}
+              {/* Video koʻrilmaguncha qolgan materiallar bloklanadi */}
               {videoGate ? (
                 <div className="mt-6 rounded-2xl border border-line bg-surface p-6 text-center shadow-card">
                   <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-subtle">
                     <Lock size={22} />
                   </span>
                   <p className="mt-3 font-semibold text-ink">Materiallar bloklangan</p>
-                  <p className="mt-1 text-sm text-muted">Yuqoridagi videoni oxirigacha ko'ring — keyin matn, PDF va test ochiladi.</p>
+                  <p className="mt-1 text-sm text-muted">Yuqoridagi videoni oxirigacha koʻring — keyin matn, PDF va test ochiladi.</p>
                 </div>
               ) : (
                 <>
@@ -303,11 +303,11 @@ function LearnInner() {
                 </div>
               )}
 
-              {/* Qo'shimcha materiallar (video / PDF) */}
+              {/* Qoʻshimcha materiallar (video / PDF) */}
               {current.materials?.length > 0 && (
                 <div className="mt-6 rounded-2xl bg-surface p-6 shadow-card">
                   <h3 className="flex items-center gap-2 text-lg font-semibold">
-                    <Paperclip size={18} className="text-primary" /> Qo'shimcha materiallar
+                    <Paperclip size={18} className="text-primary" /> Qoʻshimcha materiallar
                   </h3>
                   <div className="mt-4 space-y-4">
                     {current.materials.map((m) => (
@@ -359,7 +359,7 @@ function LearnInner() {
                 </>
               )}
 
-              {/* Vazifalar ro'yxati — darsni yakunlash */}
+              {/* Vazifalar roʻyxati — darsni yakunlash */}
               <TaskChecklist
                 lesson={current}
                 busyKey={busyKey}
@@ -413,7 +413,7 @@ function LearnInner() {
                 <div className="mt-8 border-t border-line pt-8">
                   <div className="mb-3">
                     <h2 className="text-lg font-semibold text-heading">Kursni baholang</h2>
-                    <p className="text-sm text-muted">Fikringiz boshqa o'quvchilarga yordam beradi.</p>
+                    <p className="text-sm text-muted">Fikringiz boshqa oʻquvchilarga yordam beradi.</p>
                   </div>
                   <CourseRatingForm slug={slug} />
                 </div>
@@ -451,7 +451,7 @@ function LearnInner() {
   );
 }
 
-// Darsning vazifalari ro'yxati (video/matn/material/test) — har biri belgilanadi.
+// Darsning vazifalari roʻyxati (video/matn/material/test) — har biri belgilanadi.
 function TaskChecklist({ lesson, busyKey, onComplete, videoGate }) {
   const tasks = lesson.tasks || [];
   if (tasks.length === 0) return null;
@@ -469,7 +469,7 @@ function TaskChecklist({ lesson, busyKey, onComplete, videoGate }) {
           const isQuiz = t.type === 'QUIZ';
           const isVideo = t.type === 'VIDEO';
           const busy = busyKey === t.key;
-          // Video vazifasi qulf ostida emas; boshqa vazifalar video ko'rilmasa bloklanadi
+          // Video vazifasi qulf ostida emas; boshqa vazifalar video koʻrilmasa bloklanadi
           const gated = videoGate && !isVideo;
           return (
             <li
@@ -486,11 +486,11 @@ function TaskChecklist({ lesson, busyKey, onComplete, videoGate }) {
               {t.done ? (
                 <span className="text-xs font-medium text-emerald-600">Bajarildi</span>
               ) : isVideo ? (
-                <span className="text-xs text-muted">Video oxirigacha ko'rilganda belgilanadi</span>
+                <span className="text-xs text-muted">Video oxirigacha koʻrilganda belgilanadi</span>
               ) : gated ? (
-                <span className="text-xs text-muted">Avval videoni ko'ring</span>
+                <span className="text-xs text-muted">Avval videoni koʻring</span>
               ) : isQuiz ? (
-                <span className="text-xs text-muted">Yuqoridagi testdan o'ting</span>
+                <span className="text-xs text-muted">Yuqoridagi testdan oʻting</span>
               ) : (
                 <button
                   onClick={() => onComplete(t.key)}

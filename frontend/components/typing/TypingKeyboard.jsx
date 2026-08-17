@@ -1,20 +1,20 @@
 'use client';
 
 // Ekrandagi klaviatura: keyingi bosiladigan tugma yonib turadi, tugmalar esa
-// qaysi barmoq bilan bosilishi bo'yicha ranglangan.
+// qaysi barmoq bilan bosilishi boʻyicha ranglangan.
 //
-// Joylashuv — AQSh/QWERTY, chunki o'zbek lotin yozuvi shu klaviaturada
+// Joylashuv — AQSh/QWERTY, chunki oʻzbek lotin yozuvi shu klaviaturada
 // yoziladi (oʻ va gʻ uchun apostrof tugmasi ishlatiladi).
 //
-// O'lchamlar ekran kengligiga qarab o'sadi — katta monitorda klaviatura
-// haqiqiy o'lchamiga yaqinlashadi va bo'sh joy qolmaydi.
+// Oʻlchamlar ekran kengligiga qarab oʻsadi — katta monitorda klaviatura
+// haqiqiy oʻlchamiga yaqinlashadi va boʻsh joy qolmaydi.
 
 import {
   KEY_ROWS, keyForChar, FINGER_OF, FINGER_COLOR,
 } from '@/lib/typing';
 
-// Oddiy harf tugmasi — kvadrat. O'lchamlar shunday tanlanganki, klaviatura
-// yon paneldan qolgan joyga gorizontal aylantirmasdan sig'adi.
+// Oddiy harf tugmasi — kvadrat. Oʻlchamlar shunday tanlanganki, klaviatura
+// yon paneldan qolgan joyga gorizontal aylantirmasdan sigʻadi.
 const SQUARE = 'h-9 w-9 text-xs xl:h-12 xl:w-12 xl:text-sm 2xl:h-14 2xl:w-14 2xl:text-base';
 
 function Key({ label, width = SQUARE, active, finger }) {
@@ -30,7 +30,7 @@ function Key({ label, width = SQUARE, active, finger }) {
   );
 }
 
-// Chap qo'l tugmalari — o'ng Shift bilan bosiladi (va aksincha)
+// Chap qoʻl tugmalari — oʻng Shift bilan bosiladi (va aksincha)
 const LEFT_KEYS = "`12345qwertasdfgzxcvb";
 const RIGHT_KEYS = "67890-=yuiop[]hjkl;'nm,./";
 
@@ -39,7 +39,7 @@ export default function TypingKeyboard({ nextChar }) {
   const activeKey = target?.key || null;
   const needShift = Boolean(target?.shift);
 
-  // Katta harf/belgi qaysi qo'lda bo'lsa — QARAMA-QARSHI Shift yonadi
+  // Katta harf/belgi qaysi qoʻlda boʻlsa — QARAMA-QARSHI Shift yonadi
   const leftShift = needShift && RIGHT_KEYS.includes(activeKey);
   const rightShift = needShift && LEFT_KEYS.includes(activeKey);
 
@@ -60,7 +60,7 @@ export default function TypingKeyboard({ nextChar }) {
             ))}
 
             {i === 3 && (
-              <Key label="Shift" width={`${tall} w-16 xl:w-24 2xl:w-28`} finger="o'ng-jimjiloq" active={rightShift} />
+              <Key label="Shift" width={`${tall} w-16 xl:w-24 2xl:w-28`} finger="oʻng-jimjiloq" active={rightShift} />
             )}
           </div>
         ))}
@@ -68,7 +68,7 @@ export default function TypingKeyboard({ nextChar }) {
         {/* Probel */}
         <div className="flex">
           <Key
-            label="bo'shliq"
+            label="boʻshliq"
             width={`${tall} w-56 xl:w-96 2xl:w-[28rem]`}
             active={activeKey === ' '}
             finger="bosh barmoq"

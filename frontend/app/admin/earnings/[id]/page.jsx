@@ -35,7 +35,7 @@ export default function InstructorEarningsDetail() {
   useEffect(() => { load(); }, [load]);
 
   const removePayout = async (p) => {
-    if (!confirm(`${formatMoney(p.amount)} o'tkazmasini o'chirasizmi?`)) return;
+    if (!confirm(`${formatMoney(p.amount)} oʻtkazmasini oʻchirasizmi?`)) return;
     try {
       await api.del(`/admin/payouts/${p.id}`);
       load();
@@ -78,7 +78,7 @@ export default function InstructorEarningsDetail() {
             <Download size={16} /> CSV
           </button>
           <button onClick={() => setShowForm((v) => !v)} className="btn-primary">
-            <Wallet size={16} /> O'tkazma qo'shish
+            <Wallet size={16} /> Oʻtkazma qoʻshish
           </button>
         </div>
       </div>
@@ -92,11 +92,11 @@ export default function InstructorEarningsDetail() {
         />
       )}
 
-      {/* Ko'rsatkichlar */}
+      {/* Koʻrsatkichlar */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Jami ishlagan" value={totals.instructor} hint={`${totals.sales} ta sotuv`} icon={Coins} color="bg-emerald-50 text-emerald-600" />
-        <StatCard label="To'langan" value={balance.paid} hint="Hisobiga o'tgan" icon={CheckCircle2} color="bg-indigo-50 text-indigo-600" />
-        <StatCard label="Qoldiq" value={balance.pending} hint="Hali to'lanmagan" icon={Clock} color="bg-amber-50 text-amber-600" />
+        <StatCard label="Toʻlangan" value={balance.paid} hint="Hisobiga oʻtgan" icon={CheckCircle2} color="bg-indigo-50 text-indigo-600" />
+        <StatCard label="Qoldiq" value={balance.pending} hint="Hali toʻlanmagan" icon={Clock} color="bg-amber-50 text-amber-600" />
         <StatCard label="Keltirgan aylanma" value={totals.gross} hint={`Soliq: ${formatMoney(totals.tax)}`} icon={Receipt} color="bg-slate-100 text-slate-600" />
       </div>
 
@@ -124,7 +124,7 @@ export default function InstructorEarningsDetail() {
                     {p.discountPct > 0 && (
                       <span className="badge bg-emerald-50 text-emerald-700"><BadgePercent size={11} /> −{p.discountPct}%</span>
                     )}
-                    {!p.active && <span className="badge bg-slate-100 text-muted">O'chirilgan</span>}
+                    {!p.active && <span className="badge bg-slate-100 text-muted">Oʻchirilgan</span>}
                     <span className="text-xs text-muted">
                       {p.course ? p.course.title : 'Barcha kurslari'} · {p._count.earnings} sotuv
                       {' · '}
@@ -140,7 +140,7 @@ export default function InstructorEarningsDetail() {
         </div>
 
         <div className="card p-5">
-          <h2 className="text-lg">Oylar bo'yicha maosh</h2>
+          <h2 className="text-lg">Oylar boʻyicha maosh</h2>
           <TimeBars
             data={monthly.map((m) => ({ key: m.month, value: m.instructor }))}
             granularity="month"
@@ -150,11 +150,11 @@ export default function InstructorEarningsDetail() {
         </div>
       </div>
 
-      {/* O'tkazmalar */}
-      <h2 className="mt-8 text-lg">Hisobiga o'tkazmalar</h2>
+      {/* Oʻtkazmalar */}
+      <h2 className="mt-8 text-lg">Hisobiga oʻtkazmalar</h2>
       <div className="mt-3">
         {payouts.length === 0 ? (
-          <EmptyState title="O'tkazma yo'q" text="Hali bu ustozga to'lov rasmiylashtirilmagan." icon={Wallet} />
+          <EmptyState title="Oʻtkazma yoʻq" text="Hali bu ustozga toʻlov rasmiylashtirilmagan." icon={Wallet} />
         ) : (
           <div className="card overflow-hidden">
             <div className="overflow-x-auto">
@@ -180,7 +180,7 @@ export default function InstructorEarningsDetail() {
                       <td className="px-4 py-3 text-muted">{p.createdBy?.fullName || '—'}</td>
                       <td className="px-4 py-3">
                         {p.status === 'PAID' ? (
-                          <span className="badge bg-emerald-50 text-emerald-700"><CheckCircle2 size={12} /> O'tkazilgan</span>
+                          <span className="badge bg-emerald-50 text-emerald-700"><CheckCircle2 size={12} /> Oʻtkazilgan</span>
                         ) : (
                           <span className="badge bg-amber-50 text-amber-700"><Clock size={12} /> Kutilmoqda</span>
                         )}
@@ -189,7 +189,7 @@ export default function InstructorEarningsDetail() {
                         <button
                           onClick={() => removePayout(p)}
                           className="ml-auto grid h-8 w-8 place-items-center rounded-lg text-red-600 hover:bg-red-50"
-                          title="O'chirish"
+                          title="Oʻchirish"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -205,10 +205,10 @@ export default function InstructorEarningsDetail() {
 
       {/* Tranzaksiyalar */}
       <h2 className="mt-8 text-lg">Sotuvlar</h2>
-      <p className="mt-1 text-sm text-muted">Oxirgi 100 ta yozuv · to'liq ro'yxat uchun CSV eksportdan foydalaning</p>
+      <p className="mt-1 text-sm text-muted">Oxirgi 100 ta yozuv · toʻliq roʻyxat uchun CSV eksportdan foydalaning</p>
       <div className="mt-3">
         {earnings.length === 0 ? (
-          <EmptyState title="Sotuv yo'q" text="Bu ustozning kurslari hali sotilmagan." icon={Receipt} />
+          <EmptyState title="Sotuv yoʻq" text="Bu ustozning kurslari hali sotilmagan." icon={Receipt} />
         ) : (
           <div className="card overflow-hidden">
             <div className="overflow-x-auto">
@@ -217,8 +217,8 @@ export default function InstructorEarningsDetail() {
                   <tr>
                     <th className="px-4 py-3">Sana</th>
                     <th className="px-4 py-3">Kurs</th>
-                    <th className="px-4 py-3">O'quvchi</th>
-                    <th className="px-4 py-3 text-right">To'langan</th>
+                    <th className="px-4 py-3">Oʻquvchi</th>
+                    <th className="px-4 py-3 text-right">Toʻlangan</th>
                     <th className="px-4 py-3 text-right">Soliq</th>
                     <th className="px-4 py-3">Manba</th>
                     <th className="px-4 py-3 text-right">Ustozga</th>
@@ -273,7 +273,7 @@ function PayoutForm({ instructorId, pending, onClose, onSaved }) {
     e.preventDefault();
     setError('');
     const value = parseInt(amount, 10);
-    if (!Number.isFinite(value) || value <= 0) return setError('Summani to\'g\'ri kiriting');
+    if (!Number.isFinite(value) || value <= 0) return setError('Summani toʻgʻri kiriting');
     setSaving(true);
     try {
       await api.post('/admin/payouts', {
@@ -293,14 +293,14 @@ function PayoutForm({ instructorId, pending, onClose, onSaved }) {
 
   return (
     <form onSubmit={submit} className="card mt-4 p-5">
-      <h2 className="text-lg">O'tkazma qo'shish</h2>
+      <h2 className="text-lg">Oʻtkazma qoʻshish</h2>
       <p className="mt-1 text-sm text-muted">
-        To'lanmagan qoldiq: <b className="tabular-nums">{formatMoney(pending)}</b>
+        Toʻlanmagan qoldiq: <b className="tabular-nums">{formatMoney(pending)}</b>
       </p>
       {error && <div className="mt-3 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700">{error}</div>}
       <div className="mt-4 grid gap-4 md:grid-cols-3">
         <div>
-          <label className="label">Summa (so'm)</label>
+          <label className="label">Summa (soʻm)</label>
           <input type="number" className="input" value={amount} onChange={(e) => setAmount(e.target.value)} min={1} required />
         </div>
         <div>

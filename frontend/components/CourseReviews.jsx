@@ -67,11 +67,11 @@ export default function CourseReviews({ slug }) {
           </div>
         ) : null}
 
-        {/* Sharhlar ro'yxati */}
+        {/* Sharhlar roʻyxati */}
         {reviews.length === 0 ? (
           <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-line py-12 text-center text-muted">
             <MessageSquare size={28} className="text-slate-300" />
-            <p className="text-sm">Hali baho yo'q. Birinchi bo'lib baho bering!</p>
+            <p className="text-sm">Hali baho yoʻq. Birinchi boʻlib baho bering!</p>
           </div>
         ) : (
           <div className="space-y-4">

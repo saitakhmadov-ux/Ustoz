@@ -6,7 +6,7 @@ import { api } from '@/lib/api';
 import { fileUrl } from '@/lib/constants';
 
 // Bitta dars uchun test bazasini va sozlamalarini boshqarish.
-// Bazadan tasodifiy `quizDraw` ta savol beriladi; baza kamida 2×draw bo'lishi kerak.
+// Bazadan tasodifiy `quizDraw` ta savol beriladi; baza kamida 2×draw boʻlishi kerak.
 export default function QuizManager({ lesson, onChange }) {
   const [adding, setAdding] = useState(false);
   const [question, setQuestion] = useState('');
@@ -28,7 +28,7 @@ export default function QuizManager({ lesson, onChange }) {
   const [cfgSaving, setCfgSaving] = useState(false);
 
   const bank = lesson.questions?.length || 0;
-  // Sof test-dars — faqat savoldan iborat (video/matn/material yo'q).
+  // Sof test-dars — faqat savoldan iborat (video/matn/material yoʻq).
   const pure = !lesson.videoUrl
     && !(lesson.content && lesson.content.trim())
     && (lesson.materials?.length || 0) === 0
@@ -69,7 +69,7 @@ export default function QuizManager({ lesson, onChange }) {
     const cleaned = options.map((o) => o.trim()).filter(Boolean);
     if (question.trim().length < 3) return setError('Savol juda qisqa');
     if (cleaned.length < 2) return setError('Kamida 2 ta variant kerak');
-    if (correctIndex >= cleaned.length) return setError('To\'g\'ri javobni tanlang');
+    if (correctIndex >= cleaned.length) return setError('Toʻgʻri javobni tanlang');
     setSaving(true);
     try {
       await api.post('/admin/questions', {
@@ -89,7 +89,7 @@ export default function QuizManager({ lesson, onChange }) {
   };
 
   const removeQuestion = async (qid) => {
-    if (!confirm('Savolni o\'chirasizmi?')) return;
+    if (!confirm('Savolni oʻchirasizmi?')) return;
     try { await api.del(`/admin/questions/${qid}`); onChange?.(); }
     catch (err) { alert(err.message); }
   };
@@ -121,7 +121,7 @@ export default function QuizManager({ lesson, onChange }) {
               <p className="text-xs font-semibold uppercase text-muted">
                 Test bazasi — {bank} / {required} savol (tasodifiy {Math.min(cfg.quizDraw, bank) || cfg.quizDraw} tasi beriladi)
               </p>
-              {/* To'lganlik ko'rsatkichi */}
+              {/* Toʻlganlik koʻrsatkichi */}
               <div className="mt-1.5 h-1.5 w-48 overflow-hidden rounded-full bg-slate-200">
                 <div
                   className={`h-full rounded-full transition-all ${enough ? 'bg-emerald-500' : 'bg-amber-500'}`}
@@ -153,7 +153,7 @@ export default function QuizManager({ lesson, onChange }) {
             <input type="number" min="1" className="input mt-1 text-sm" value={cfg.quizDraw} onChange={(e) => setCfg({ ...cfg, quizDraw: e.target.value })} />
           </label>
           <label className="text-xs">
-            <span className="text-muted">O'tish (%)</span>
+            <span className="text-muted">Oʻtish (%)</span>
             <input type="number" min="1" max="100" className="input mt-1 text-sm" value={cfg.quizPassPercent} onChange={(e) => setCfg({ ...cfg, quizPassPercent: e.target.value })} />
           </label>
           <label className="text-xs">
@@ -168,7 +168,7 @@ export default function QuizManager({ lesson, onChange }) {
             <button onClick={saveConfig} disabled={cfgSaving} className="btn-primary py-1.5 text-sm">
               {cfgSaving && <Loader2 size={14} className="animate-spin" />} Sozlamalarni saqlash
             </button>
-            <p className="mt-1.5 text-xs text-muted">Bo'lim testi odatda 10 savol (baza ≥20), yakuniy test 40 savol (baza ≥80).</p>
+            <p className="mt-1.5 text-xs text-muted">Boʻlim testi odatda 10 savol (baza ≥20), yakuniy test 40 savol (baza ≥80).</p>
           </div>
         </div>
       )}
@@ -196,7 +196,7 @@ export default function QuizManager({ lesson, onChange }) {
         ))}
       </div>
 
-      {/* Yangi savol qo'shish */}
+      {/* Yangi savol qoʻshish */}
       {adding ? (
         <div className="mt-3 rounded-lg border border-line bg-surface p-3">
           {error && <div className="mb-2 rounded bg-red-50 px-3 py-1.5 text-xs text-red-700">{error}</div>}
@@ -213,7 +213,7 @@ export default function QuizManager({ lesson, onChange }) {
             ) : (
               <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-dashed border-line px-3 py-1.5 text-xs font-medium text-muted hover:border-primary hover:text-primary">
                 {imgUploading ? <Loader2 size={13} className="animate-spin" /> : <ImageIcon size={13} />}
-                {imgUploading ? 'Yuklanmoqda...' : 'Skrinshot/rasm qo\'shish'}
+                {imgUploading ? 'Yuklanmoqda...' : 'Skrinshot/rasm qoʻshish'}
                 <input type="file" accept="image/*" className="hidden" onChange={onImage} disabled={imgUploading} />
               </label>
             )}
@@ -222,14 +222,14 @@ export default function QuizManager({ lesson, onChange }) {
           <div className="space-y-1.5">
             {options.map((opt, i) => (
               <div key={i} className="flex items-center gap-2">
-                <input type="radio" name="correct" checked={correctIndex === i} onChange={() => setCorrectIndex(i)} title="To'g'ri javob" className="text-primary" />
+                <input type="radio" name="correct" checked={correctIndex === i} onChange={() => setCorrectIndex(i)} title="Toʻgʻri javob" className="text-primary" />
                 <input className="input text-sm" placeholder={`Variant ${i + 1}`} value={opt} onChange={(e) => setOption(i, e.target.value)} />
                 {options.length > 2 && <button onClick={() => removeOption(i)} className="text-subtle hover:text-red-500"><X size={15} /></button>}
               </div>
             ))}
           </div>
-          <button onClick={addOption} className="mt-2 text-xs font-medium text-primary hover:underline">+ Variant qo'shish</button>
-          <p className="mt-1 text-xs text-muted">Radio tugma orqali to'g'ri javobni belgilang</p>
+          <button onClick={addOption} className="mt-2 text-xs font-medium text-primary hover:underline">+ Variant qoʻshish</button>
+          <p className="mt-1 text-xs text-muted">Radio tugma orqali toʻgʻri javobni belgilang</p>
           <div className="mt-3 flex gap-2">
             <button onClick={save} disabled={saving} className="btn-primary py-1.5 text-sm">
               {saving && <Loader2 size={14} className="animate-spin" />} Saqlash
@@ -239,7 +239,7 @@ export default function QuizManager({ lesson, onChange }) {
         </div>
       ) : (
         <button onClick={() => setAdding(true)} className="mt-3 flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-          <Plus size={15} /> Savol qo'shish
+          <Plus size={15} /> Savol qoʻshish
         </button>
       )}
     </div>

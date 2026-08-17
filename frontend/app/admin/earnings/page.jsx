@@ -1,8 +1,8 @@
 'use client';
 
-// Maosh bo'limi rolga qarab ikki xil ko'rinadi:
-//   ustoz      -> o'z daromadi, tranzaksiyalari, o'tkazmalari va promo kodlari
-//   bosh admin -> barcha ustozlar bo'yicha jamlangan hisobot va boshqaruv
+// Maosh boʻlimi rolga qarab ikki xil koʻrinadi:
+//   ustoz      -> oʻz daromadi, tranzaksiyalari, oʻtkazmalari va promo kodlari
+//   bosh admin -> barcha ustozlar boʻyicha jamlangan hisobot va boshqaruv
 import { useAuth } from '@/lib/auth';
 import { Spinner } from '@/components/ui';
 import AdminEarnings from '@/components/admin/AdminEarnings';

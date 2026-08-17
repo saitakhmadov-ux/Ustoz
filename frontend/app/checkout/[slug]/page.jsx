@@ -6,6 +6,7 @@ import { ShieldCheck, Loader2, CreditCard, Ticket, Check, X } from 'lucide-react
 import { api } from '@/lib/api';
 import { formatPrice, courseAccessMonthsLabel, LEVELS } from '@/lib/constants';
 import RequireAuth from '@/components/RequireAuth';
+import CourseCover from '@/components/CourseCover';
 import { Spinner, ErrorState } from '@/components/ui';
 
 function CheckoutInner() {
@@ -54,9 +55,9 @@ function CheckoutInner() {
         setPromoInput(res.code);
       } else {
         setPromo(null);
-        // Havoladan avtomatik qo'llanganda xatoni jimgina o'tkazib yubormaymiz,
-        // lekin uni yumshoqroq ko'rsatamiz
-        setPromoError(silent ? `Havoladagi kod qo'llanmadi: ${res.reason}` : res.reason);
+        // Havoladan avtomatik qoʻllanganda xatoni jimgina oʻtkazib yubormaymiz,
+        // lekin uni yumshoqroq koʻrsatamiz
+        setPromoError(silent ? `Havoladagi kod qoʻllanmadi: ${res.reason}` : res.reason);
       }
     } catch (err) {
       setPromo(null);
@@ -66,7 +67,7 @@ function CheckoutInner() {
     }
   };
 
-  // Havolada ?promo=KOD bo'lsa — kurs yuklangach avtomatik qo'llaymiz
+  // Havolada ?promo=KOD boʻlsa — kurs yuklangach avtomatik qoʻllaymiz
   useEffect(() => {
     const fromUrl = searchParams.get('promo');
     if (course && fromUrl && !promo) {
@@ -105,19 +106,19 @@ function CheckoutInner() {
   if (!course) return null;
 
   const providers = [
-    { id: 'CLICK', name: 'Click', desc: 'Click orqali to\'lash', color: 'text-sky-600' },
-    { id: 'PAYME', name: 'Payme', desc: 'Payme orqali to\'lash', color: 'text-indigo-600' },
+    { id: 'CLICK', name: 'Click', desc: 'Click orqali toʻlash', color: 'text-sky-600' },
+    { id: 'PAYME', name: 'Payme', desc: 'Payme orqali toʻlash', color: 'text-indigo-600' },
   ];
 
   return (
     <div className="container-page max-w-3xl py-10">
-      <h1 className="text-3xl">To'lovni rasmiylashtirish</h1>
-      <p className="mt-2 text-muted">Kursga to'liq kirish uchun to'lovni amalga oshiring</p>
+      <h1 className="text-3xl">Toʻlovni rasmiylashtirish</h1>
+      <p className="mt-2 text-muted">Kursga toʻliq kirish uchun toʻlovni amalga oshiring</p>
 
       <div className="mt-8 grid gap-6 md:grid-cols-[1fr_320px]">
-        {/* To'lov usuli */}
+        {/* Toʻlov usuli */}
         <div className="card p-6">
-          <h2 className="text-lg">To'lov usulini tanlang</h2>
+          <h2 className="text-lg">Toʻlov usulini tanlang</h2>
           <div className="mt-4 space-y-3">
             {providers.map((p) => (
               <label
@@ -143,7 +144,7 @@ function CheckoutInner() {
 
           <div className="mt-5 flex items-start gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
             <ShieldCheck size={18} className="mt-0.5 shrink-0" />
-            <span>Test rejim: haqiqiy pul yechilmaydi. To'lov darhol tasdiqlanadi.</span>
+            <span>Test rejim: haqiqiy pul yechilmaydi. Toʻlov darhol tasdiqlanadi.</span>
           </div>
 
           {error && <div className="mt-4 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700">{error}</div>}
@@ -154,9 +155,11 @@ function CheckoutInner() {
           <h2 className="text-lg">Buyurtma</h2>
           <div className="mt-4 flex gap-3">
             <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-slate-100">
-              {course.thumbnail && (
+              {course.thumbnail ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={course.thumbnail} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <CourseCover title={course.title} slug={course.slug} />
               )}
             </div>
             <div>
@@ -193,7 +196,7 @@ function CheckoutInner() {
                   value={promoInput}
                   onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError(''); }}
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyPromo(promoInput); } }}
-                  placeholder="Kod bo'lsa kiriting"
+                  placeholder="Kod boʻlsa kiriting"
                   maxLength={24}
                 />
                 <button
@@ -202,7 +205,7 @@ function CheckoutInner() {
                   disabled={checking || !promoInput.trim()}
                   className="btn-outline shrink-0 disabled:opacity-50"
                 >
-                  {checking ? <Loader2 size={16} className="animate-spin" /> : 'Qo\'llash'}
+                  {checking ? <Loader2 size={16} className="animate-spin" /> : 'Qoʻllash'}
                 </button>
               </div>
             )}
@@ -232,7 +235,7 @@ function CheckoutInner() {
 
           <button onClick={handlePay} disabled={paying} className="btn-primary mt-5 w-full">
             {paying && <Loader2 size={16} className="animate-spin" />}
-            {paying ? 'To\'lanmoqda...' : 'To\'lash'}
+            {paying ? 'Toʻlanmoqda...' : 'Toʻlash'}
           </button>
         </div>
       </div>

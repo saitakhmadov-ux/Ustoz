@@ -11,8 +11,8 @@ const OPTIONS = [
 ];
 
 // Tema almashtirgich — uchta holat: yorug' / kecha / tizim.
-// Serverda va mijozda bir xil chiqishi uchun tanlov faqat mount'dan keyin
-// ko'rsatiladi (localStorage serverda yo'q).
+// Serverda va mijozda bir xil chiqishi uchun tanlov faqat mountʼdan keyin
+// koʻrsatiladi (localStorage serverda yoʻq).
 export default function ThemeToggle({ compact = false }) {
   const [theme, setThemeState] = useState('system');
   const [ready, setReady] = useState(false);
@@ -22,7 +22,7 @@ export default function ThemeToggle({ compact = false }) {
     setReady(true);
   }, []);
 
-  // "Tizim" tanlangan bo'lsa, qurilma sozlamasi o'zgarganda darhol ergashadi
+  // "Tizim" tanlangan boʻlsa, qurilma sozlamasi oʻzgarganda darhol ergashadi
   useEffect(() => {
     if (theme !== 'system') return undefined;
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -56,7 +56,7 @@ export default function ThemeToggle({ compact = false }) {
     );
   }
 
-  // Ish stoli uchun: bitta tugma, bosilganda keyingi holatga o'tadi
+  // Ish stoli uchun: bitta tugma, bosilganda keyingi holatga oʻtadi
   const idx = OPTIONS.findIndex((o) => o.value === theme);
   const current = OPTIONS[idx === -1 ? 2 : idx];
   const next = OPTIONS[((idx === -1 ? 2 : idx) + 1) % OPTIONS.length];
@@ -70,7 +70,7 @@ export default function ThemeToggle({ compact = false }) {
       aria-label={`Tema: ${current.label}. Bosing: ${next.label}`}
       className="grid h-9 w-9 place-items-center rounded-xl border border-line bg-surface text-muted transition-colors hover:border-primary hover:text-primary"
     >
-      {/* Mount bo'lgunicha neytral ikonka — server bilan mos kelishi uchun */}
+      {/* Mount boʻlgunicha neytral ikonka — server bilan mos kelishi uchun */}
       <Icon size={17} className={ready ? '' : 'opacity-50'} />
     </button>
   );

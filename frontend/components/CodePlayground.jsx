@@ -13,7 +13,7 @@ const CodeMirror = dynamic(() => import('@uiw/react-codemirror'), { ssr: false }
 
 const RUN_TIMEOUT = 4000; // JS lokal — cheksiz sikldan himoya
 
-// Qo'llab-quvvatlanadigan tillar (backend LANG_MAP bilan mos)
+// Qoʻllab-quvvatlanadigan tillar (backend LANG_MAP bilan mos)
 const LANGS = [
   { id: 'javascript', label: 'JavaScript', local: true },
   { id: 'python', label: 'Python' },
@@ -31,7 +31,7 @@ const EXT = {
   java: StreamLanguage.define(java),
 };
 
-// Har til uchun boshlang'ich namuna
+// Har til uchun boshlangʻich namuna
 const TEMPLATES = {
   javascript: `// JavaScript kodini yozing va "Ishga tushirish" bosing
 function salomla(ism) {
@@ -40,7 +40,7 @@ function salomla(ism) {
 console.log(salomla("Ustoz"));
 
 const sonlar = [1, 2, 3, 4, 5];
-console.log("Yig'indi:", sonlar.reduce((a, b) => a + b, 0));
+console.log("Yigʻindi:", sonlar.reduce((a, b) => a + b, 0));
 `,
   python: `# Python kodini yozing va "Ishga tushirish" bosing
 def salomla(ism):
@@ -49,7 +49,7 @@ def salomla(ism):
 print(salomla("Ustoz"))
 
 sonlar = [1, 2, 3, 4, 5]
-print("Yig'indi:", sum(sonlar))
+print("Yigʻindi:", sum(sonlar))
 `,
   cpp: `#include <iostream>
 using namespace std;
@@ -59,7 +59,7 @@ int main() {
 
     int yigindi = 0;
     for (int i = 1; i <= 5; i++) yigindi += i;
-    cout << "Yig'indi: " << yigindi << endl;
+    cout << "Yigʻindi: " << yigindi << endl;
     return 0;
 }
 `,
@@ -71,7 +71,7 @@ class Program {
 
         int yigindi = 0;
         for (int i = 1; i <= 5; i++) yigindi += i;
-        Console.WriteLine("Yig'indi: " + yigindi);
+        Console.WriteLine("Yigʻindi: " + yigindi);
     }
 }
 `,
@@ -81,7 +81,7 @@ class Program {
 
         int yigindi = 0;
         for (int i = 1; i <= 5; i++) yigindi += i;
-        System.out.println("Yig'indi: " + yigindi);
+        System.out.println("Yigʻindi: " + yigindi);
     }
 }
 `,
@@ -118,7 +118,7 @@ const SANDBOX_SRCDOC = `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
   parent.postMessage({ __pg: true, level: '__ready' }, '*');
 <\/script></body></html>`;
 
-// Kod maydoni modali (o'ng tomondan sirg'alib chiqadi, AI Ustoz kabi).
+// Kod maydoni modali (oʻng tomondan sirgʻalib chiqadi, AI Ustoz kabi).
 // props: open, onClose, enabled (kurs dasturlash kursimi), onAskAI({code, errorText})
 export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
   const [lang, setLang] = useState('javascript');
@@ -177,7 +177,7 @@ export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
     document.body.appendChild(iframe);
     iframeRef.current = iframe;
     timerRef.current = setTimeout(() => {
-      setLogs((prev) => [...prev, { level: 'error', text: 'Vaqt tugadi (4s) — kod juda uzoq ishladi. Cheksiz sikl bo\'lishi mumkin.' }]);
+      setLogs((prev) => [...prev, { level: 'error', text: 'Vaqt tugadi (4s) — kod juda uzoq ishladi. Cheksiz sikl boʻlishi mumkin.' }]);
       finishRun();
     }, RUN_TIMEOUT);
   };
@@ -189,7 +189,7 @@ export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
       if (res.compileOutput?.trim()) out.push({ level: 'error', text: res.compileOutput.trimEnd() });
       if (res.stdout?.trim()) out.push({ level: 'log', text: res.stdout.replace(/\n$/, '') });
       if (res.stderr?.trim()) out.push({ level: 'error', text: res.stderr.trimEnd() });
-      if (out.length === 0) out.push({ level: 'muted', text: `(natija yo'q) — ${LANGS.find((l) => l.id === lang)?.label} muvaffaqiyatli tugadi` });
+      if (out.length === 0) out.push({ level: 'muted', text: `(natija yoʻq) — ${LANGS.find((l) => l.id === lang)?.label} muvaffaqiyatli tugadi` });
       setLogs(out);
     } catch (err) {
       setLogs([{ level: 'error', text: err.message || 'Kodni ishga tushirishda xatolik' }]);
@@ -228,7 +228,7 @@ export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
         </div>
 
         {!enabled ? (
-          /* Dasturlashga aloqasi yo'q kurs */
+          /* Dasturlashga aloqasi yoʻq kurs */
           <div className="flex flex-1 items-center justify-center p-8">
             <div className="max-w-sm text-center">
               <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-slate-100 text-subtle"><Lock size={30} /></span>
@@ -260,16 +260,16 @@ export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
               <button onClick={() => setLogs([])} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-2 text-sm text-ink transition-colors hover:bg-slate-50" title="Konsolni tozalash">
                 <Trash2 size={15} />
               </button>
-              <button onClick={reset} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-2 text-sm text-ink transition-colors hover:bg-slate-50" title="Boshlang'ich kod">
+              <button onClick={reset} className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-2 text-sm text-ink transition-colors hover:bg-slate-50" title="Boshlangʻich kod">
                 <RotateCcw size={15} />
               </button>
               <button
                 onClick={() => onAskAI?.({ code, errorText: lastErrorText || undefined })}
                 className={`ml-auto inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors
                   ${lastErrorText ? 'bg-amber-500 text-inverse hover:bg-amber-400' : 'border border-primary/40 bg-indigo-50 text-primary hover:bg-indigo-100'}`}
-                title="Kodni AI Ustozga yuborib, yordam so'rang"
+                title="Kodni AI Ustozga yuborib, yordam soʻrang"
               >
-                <Sparkles size={15} /> AI Ustozdan so'rash
+                <Sparkles size={15} /> AI Ustozdan soʻrash
               </button>
             </div>
 
@@ -287,14 +287,14 @@ export default function CodePlayground({ open, onClose, enabled, onAskAI }) {
 
             {/* Konsol */}
             <div className="max-h-[38%] shrink-0 overflow-y-auto border-t border-line bg-slate-900 px-4 py-3">
-              {/* Konsol qorong'i fonda — bu yerda `muted`/`subtle` tokenlari ishlamaydi
+              {/* Konsol qorongʻi fonda — bu yerda `muted`/`subtle` tokenlari ishlamaydi
                   (ular oq fon uchun hisoblangan). Och slate qiymatlari ishlatiladi. */}
               <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">
                 <Terminal size={12} /> Konsol {!isLocal && running && <span className="text-slate-400">— serverda bajarilmoqda...</span>}
               </div>
               <div className="space-y-1 font-mono text-[13px] leading-relaxed">
                 {logs.length === 0 ? (
-                  <p className="text-slate-400">// Natija shu yerda ko'rinadi</p>
+                  <p className="text-slate-400">// Natija shu yerda koʻrinadi</p>
                 ) : (
                   logs.map((l, i) => (
                     <div key={i} className={`whitespace-pre-wrap break-words ${

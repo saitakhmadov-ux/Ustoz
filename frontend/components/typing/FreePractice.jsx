@@ -2,8 +2,8 @@
 
 // Erkin mashq — kursdan tashqari vaqtli test (Monkeytype uslubida).
 //
-// Progressga ta'sir qilmaydi: natija faqat shaxsiy rekord uchun saqlanadi.
-// Matnni server tuzadi va o'zi tekshiradi, shuning uchun rekord ishonarli.
+// Progressga taʼsir qilmaydi: natija faqat shaxsiy rekord uchun saqlanadi.
+// Matnni server tuzadi va oʻzi tekshiradi, shuning uchun rekord ishonarli.
 
 import { useCallback, useEffect, useState } from 'react';
 import { Timer, Type, Loader2, Zap } from 'lucide-react';
@@ -11,7 +11,7 @@ import { api } from '@/lib/api';
 import TypingPlayer from './TypingPlayer';
 
 const TIMES = [15, 30, 60, 120];
-// Eng kichik variant ham maydonni to'ldiradi (backend bilan bir xil ro'yxat)
+// Eng kichik variant ham maydonni toʻldiradi (backend bilan bir xil roʻyxat)
 const COUNTS = [40, 60, 100, 200];
 
 export default function FreePractice() {
@@ -71,7 +71,7 @@ export default function FreePractice() {
                 onClick={() => { setMode('words'); setValue(40); }}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${mode === 'words' ? 'bg-primary text-on-primary' : 'text-muted hover:text-ink'}`}
               >
-                <Type size={15} /> So'zlar
+                <Type size={15} /> Soʻzlar
               </button>
             </div>
 
@@ -91,7 +91,7 @@ export default function FreePractice() {
 
           {best && (
             <span className="flex items-center gap-1.5 rounded-xl bg-amber-50 px-3 py-1.5 text-sm text-amber-800">
-              <Zap size={15} /> Rekordingiz: <b>{best.wpm}</b> so'z/daq · {best.accuracy}%
+              <Zap size={15} /> Rekordingiz: <b>{best.wpm}</b> soʻz/daq · {best.accuracy}%
             </span>
           )}
         </div>
@@ -103,7 +103,7 @@ export default function FreePractice() {
         <div className="card flex flex-wrap items-center gap-x-8 gap-y-3 p-5">
           <span className="flex items-baseline gap-1.5">
             <b className="font-display text-3xl text-ink">{result.wpm}</b>
-            <span className="text-sm text-muted">so'z/daqiqa</span>
+            <span className="text-sm text-muted">soʻz/daqiqa</span>
           </span>
           <span className="flex items-baseline gap-1.5">
             <b className="font-display text-3xl text-ink">{result.accuracy}%</b>
@@ -131,7 +131,7 @@ export default function FreePractice() {
       )}
 
       <p className="text-center text-xs text-muted">
-        Erkin mashq natijasi kurs progressiga ta'sir qilmaydi — faqat shaxsiy rekordingiz saqlanadi.
+        Erkin mashq natijasi kurs progressiga taʼsir qilmaydi — faqat shaxsiy rekordingiz saqlanadi.
       </p>
     </div>
   );

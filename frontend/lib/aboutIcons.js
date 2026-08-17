@@ -1,6 +1,6 @@
 // "Biz haqimizda" kartochkalari uchun ikonkalar.
 // Backend faqat shu nomlarni qabul qiladi (settings.js -> ABOUT_ICONS),
-// bu yerda nom lucide komponentiga bog'lanadi.
+// bu yerda nom lucide komponentiga bogʻlanadi.
 import {
   Target, Heart, Users, GraduationCap, BookOpen, Award,
   Rocket, Star, Shield, Globe, Lightbulb, TrendingUp,

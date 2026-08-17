@@ -1,8 +1,8 @@
 // Sertifikat bezaklari — sof SVG, tashqi kutubxonasiz.
 //
 // Motiv: sakkiz burchakli yulduz va uning ichki geometriyasi. Bu shakl
-// o'zbek ganch va koshin naqshlarining asosi — sertifikatga mahalliy
-// xarakter beradi, lekin qat'iy geometrik bo'lgani uchun rasmiy hujjat
+// oʻzbek ganch va koshin naqshlarining asosi — sertifikatga mahalliy
+// xarakter beradi, lekin qatʼiy geometrik boʻlgani uchun rasmiy hujjat
 // ohangini buzmaydi.
 //
 // Barcha shakllar `currentColor` bilan chiziladi — rangni ota element beradi.
@@ -19,10 +19,10 @@ export function CornerOrnament({ size = 64, className = '', rotate = 0 }) {
       className={className}
       style={{ transform: `rotate(${rotate}deg)` }}
     >
-      {/* Ikkita burchak chizig'i — "o'yilgan" hoshiya taassuroti */}
+      {/* Ikkita burchak chizigʻi — "oʻyilgan" hoshiya taassuroti */}
       <path d="M2 20V6a4 4 0 0 1 4-4h14" stroke="currentColor" strokeWidth="1.6" />
       <path d="M7 22V11a4 4 0 0 1 4-4h11" stroke="currentColor" strokeWidth="0.9" opacity="0.65" />
-      {/* Sakkiz burchakli yulduz — ikkita kvadratning ustma-ust qo'yilishi */}
+      {/* Sakkiz burchakli yulduz — ikkita kvadratning ustma-ust qoʻyilishi */}
       <g transform="translate(30 30)" stroke="currentColor" fill="none">
         <rect x="-9" y="-9" width="18" height="18" strokeWidth="1.1" />
         <rect x="-9" y="-9" width="18" height="18" strokeWidth="1.1" transform="rotate(45)" />
@@ -32,7 +32,7 @@ export function CornerOrnament({ size = 64, className = '', rotate = 0 }) {
   );
 }
 
-// Bo'luvchi: markazda yulduz, ikki yonida ingichka chiziq
+// Boʻluvchi: markazda yulduz, ikki yonida ingichka chiziq
 export function Divider({ className = '' }) {
   return (
     <svg
@@ -53,7 +53,7 @@ export function Divider({ className = '' }) {
   );
 }
 
-// Muhr — konsentrik halqalar, sakkiz burchakli yulduz va aylana bo'ylab yozuv
+// Muhr — konsentrik halqalar, sakkiz burchakli yulduz va aylana boʻylab yozuv
 export function Seal({ size = 104, text = 'USTOZ · TASDIQLANGAN · ', id = 'seal' }) {
   return (
     <svg width={size} height={size} viewBox="0 0 120 120" fill="none" aria-hidden="true">
@@ -64,7 +64,7 @@ export function Seal({ size = 104, text = 'USTOZ · TASDIQLANGAN · ', id = 'sea
       <circle cx="60" cy="60" r="37" stroke="currentColor" strokeWidth="1.4" />
       <circle cx="60" cy="60" r="34" stroke="currentColor" strokeWidth="0.6" opacity="0.6" />
 
-      {/* Aylana bo'ylab matn */}
+      {/* Aylana boʻylab matn */}
       <text fill="currentColor" fontSize="7.4" letterSpacing="2.6" fontWeight="600">
         <textPath href={`#${id}-arc`} startOffset="0">{text.repeat(2)}</textPath>
       </text>

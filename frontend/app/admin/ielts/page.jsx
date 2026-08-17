@@ -1,7 +1,7 @@
 'use client';
 
 // Admin → IELTS topshiriqlari.
-// Savol matni, diagramma ma'lumoti, rasm va sozlamalar shu yerdan boshqariladi.
+// Savol matni, diagramma maʼlumoti, rasm va sozlamalar shu yerdan boshqariladi.
 
 import { useEffect, useState } from 'react';
 import {
@@ -47,7 +47,7 @@ export default function AdminIeltsPage() {
   };
 
   const remove = async (t) => {
-    if (!confirm(`"${t.title}" topshirig'ini o'chirasizmi?`)) return;
+    if (!confirm(`"${t.title}" topshirigʻini oʻchirasizmi?`)) return;
     try {
       await api.del(`/admin/ielts/tasks/${t.id}`);
       load();
@@ -81,7 +81,7 @@ export default function AdminIeltsPage() {
           <div>
             <h1 className="text-2xl">IELTS topshiriqlari</h1>
             <p className="text-sm text-muted">
-              Klaviatura kursi ichidagi IELTS Writing bo'limi uchun savollar va mashqlar
+              Klaviatura kursi ichidagi IELTS Writing boʻlimi uchun savollar va mashqlar
             </p>
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function AdminIeltsPage() {
 
       <div className="mt-5">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : shown.length === 0 ? (
-          <EmptyState title="Topshiriq topilmadi" text="Yangi topshiriq qo'shing yoki filtrni o'zgartiring" />
+          <EmptyState title="Topshiriq topilmadi" text="Yangi topshiriq qoʻshing yoki filtrni oʻzgartiring" />
         ) : (
           <div className="card overflow-hidden">
             <div className="overflow-x-auto">
@@ -163,7 +163,7 @@ export default function AdminIeltsPage() {
                           <button onClick={() => setEditing(t)} title="Tahrirlash" className="grid h-8 w-8 place-items-center rounded-lg hover:bg-slate-200">
                             <Pencil size={16} />
                           </button>
-                          <button onClick={() => remove(t)} title="O'chirish" className="grid h-8 w-8 place-items-center rounded-lg text-red-600 hover:bg-red-50">
+                          <button onClick={() => remove(t)} title="Oʻchirish" className="grid h-8 w-8 place-items-center rounded-lg text-red-600 hover:bg-red-50">
                             <Trash2 size={16} />
                           </button>
                         </div>

@@ -22,7 +22,7 @@ function CoursesInner() {
   const [level, setLevel] = useState('');
   const [onlyFree, setOnlyFree] = useState(false);
 
-  // URL dagi ?search o'zgarsa (masalan navbardan qidirilsa) sinxronlaymiz
+  // URL dagi ?search oʻzgarsa (masalan navbardan qidirilsa) sinxronlaymiz
   useEffect(() => {
     setSearch(searchParams.get('search') || '');
     const cat = searchParams.get('category');
@@ -53,7 +53,7 @@ function CoursesInner() {
     }
   }, [search, category, level, onlyFree]);
 
-  // Filtr o'zgarganda qayta yuklash (qidiruv uchun debounce)
+  // Filtr oʻzgarganda qayta yuklash (qidiruv uchun debounce)
   useEffect(() => {
     const t = setTimeout(fetchCourses, 300);
     return () => clearTimeout(t);
@@ -63,7 +63,7 @@ function CoursesInner() {
     <div className="container-page py-10">
       <Reveal className="mb-8">
         <h1 className="text-3xl">Barcha kurslar</h1>
-        <p className="mt-2 text-muted">O'zingizga mos kursni toping va o'rganishni boshlang</p>
+        <p className="mt-2 text-muted">Oʻzingizga mos kursni toping va oʻrganishni boshlang</p>
       </Reveal>
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
@@ -131,7 +131,7 @@ function CoursesInner() {
           </div>
         </aside>
 
-        {/* Kurslar to'ri */}
+        {/* Kurslar toʻri */}
         <div>
           {error ? (
             <ErrorState message={error} />
@@ -140,7 +140,7 @@ function CoursesInner() {
               {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
             </div>
           ) : courses.length === 0 ? (
-            <EmptyState title="Kurs topilmadi" text="Filtrlarni o'zgartirib ko'ring" />
+            <EmptyState title="Kurs topilmadi" text="Filtrlarni oʻzgartirib koʻring" />
           ) : (
             <>
               <p className="mb-4 text-sm text-muted">{courses.length} ta kurs topildi</p>

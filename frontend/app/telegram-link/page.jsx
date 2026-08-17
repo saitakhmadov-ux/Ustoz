@@ -3,10 +3,10 @@
 // Telegram Mini App sahifasi — botdagi "Hisobni ulash" tugmasi shu yerni
 // Telegram ilovasi ichida ochadi.
 //
-// Nega shunday: parol BOTGA emas, saytning o'z HTTPS formasiga kiritiladi.
+// Nega shunday: parol BOTGA emas, saytning oʻz HTTPS formasiga kiritiladi.
 // Telegram sahifaga `initData` beradi — u bot tokeni bilan imzolangan, server
 // imzoni tekshiradi (backend/src/utils/telegramWebApp.js), shuning uchun
-// o'zini boshqa Telegram foydalanuvchisi qilib ko'rsatib bo'lmaydi.
+// oʻzini boshqa Telegram foydalanuvchisi qilib koʻrsatib boʻlmaydi.
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
@@ -22,7 +22,7 @@ const S = {
   BOOT: 'boot', // Telegram skripti va seans kutilmoqda
   NO_TELEGRAM: 'noTelegram', // Telegram tashqarisida ochilgan
   LOGIN: 'login', // kirish formasi
-  LINKING: 'linking', // so'rov ketmoqda
+  LINKING: 'linking', // soʻrov ketmoqda
   DONE: 'done',
   ERROR: 'error',
 };
@@ -39,7 +39,7 @@ export default function TelegramLinkPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [busy, setBusy] = useState(false);
 
-  // Telegram skripti yuklangach initData ni o'qiymiz
+  // Telegram skripti yuklangach initData ni oʻqiymiz
   const readInitData = useCallback(() => {
     const wa = tg();
     if (!wa) {
@@ -51,7 +51,7 @@ export default function TelegramLinkPage() {
     setInitData(wa.initData || '');
   }, []);
 
-  // Skript allaqachon yuklangan bo'lishi mumkin (qayta kirishda)
+  // Skript allaqachon yuklangan boʻlishi mumkin (qayta kirishda)
   useEffect(() => {
     if (tg()) readInitData();
     // Skript umuman kelmasa ham sahifa muzlab qolmasin
@@ -59,7 +59,7 @@ export default function TelegramLinkPage() {
     return () => clearTimeout(t);
   }, [readInitData]);
 
-  // Ulash so'rovi
+  // Ulash soʻrovi
   const link = useCallback(async (data) => {
     setState(S.LINKING);
     setError('');
@@ -74,7 +74,7 @@ export default function TelegramLinkPage() {
     }
   }, []);
 
-  // Holatni hisoblaymiz: initData bor -> seans bor bo'lsa ulaymiz, yo'q bo'lsa kirish
+  // Holatni hisoblaymiz: initData bor -> seans bor boʻlsa ulaymiz, yoʻq boʻlsa kirish
   useEffect(() => {
     if (initData === null || authLoading) return;
     if (state !== S.BOOT) return;
@@ -95,7 +95,7 @@ export default function TelegramLinkPage() {
       await link(initData);
     } catch (err) {
       if (err.code === 'EMAIL_NOT_VERIFIED') {
-        setError('Email hali tasdiqlanmagan. Avval emailingizni tasdiqlang, so\'ng qaytib ulang.');
+        setError('Email hali tasdiqlanmagan. Avval emailingizni tasdiqlang, soʻng qaytib ulang.');
       } else {
         setError(err.message);
       }
@@ -119,8 +119,8 @@ export default function TelegramLinkPage() {
               <Send size={20} />
             </span>
             <div>
-              <h1 className="font-display text-lg font-bold">Telegram'ga ulash</h1>
-              <p className="text-sm text-muted">{SITE_NAME} hisobingizni botga bog'lash</p>
+              <h1 className="font-display text-lg font-bold">Telegramʼga ulash</h1>
+              <p className="text-sm text-muted">{SITE_NAME} hisobingizni botga bogʻlash</p>
             </div>
           </div>
 
@@ -136,7 +136,7 @@ export default function TelegramLinkPage() {
               <CheckCircle2 size={44} className="mx-auto text-emerald-500" />
               <p className="mt-3 font-semibold">Hisobingiz ulandi</p>
               <p className="mt-1 text-sm text-muted">
-                Botga qaytishingiz mumkin — oyna o'zi yopiladi.
+                Botga qaytishingiz mumkin — oyna oʻzi yopiladi.
               </p>
             </div>
           )}
@@ -146,10 +146,10 @@ export default function TelegramLinkPage() {
               <TriangleAlert size={28} className="text-amber-500" />
               <p className="mt-3 text-sm">
                 Bu sahifa <b>Telegram ilovasi ichida</b> ochilishi kerak.
-                Botni oching va <b>/ulash</b> buyrug'ini berib, "Hisobni ulash" tugmasini bosing.
+                Botni oching va <b>/ulash</b> buyrugʻini berib, "Hisobni ulash" tugmasini bosing.
               </p>
               <Link href="/profile" className="btn-primary mt-5 w-full">
-                Profilga o'tish
+                Profilga oʻtish
               </Link>
             </div>
           )}
@@ -157,7 +157,7 @@ export default function TelegramLinkPage() {
           {state === S.LOGIN && (
             <form onSubmit={handleLogin}>
               <p className="mb-4 text-sm text-muted">
-                Ulash uchun hisobingizga kiring. Faqat ro'yxatdan o'tganlar ulay oladi.
+                Ulash uchun hisobingizga kiring. Faqat roʻyxatdan oʻtganlar ulay oladi.
               </p>
 
               {error && (
@@ -201,14 +201,14 @@ export default function TelegramLinkPage() {
 
               <p className="mt-4 flex items-start gap-2 text-xs text-muted">
                 <ShieldCheck size={14} className="mt-0.5 shrink-0 text-emerald-600" />
-                Parolingiz botga emas, {SITE_NAME} saytining o'ziga yuboriladi.
-                Bot hech qachon parol so'ramaydi.
+                Parolingiz botga emas, {SITE_NAME} saytining oʻziga yuboriladi.
+                Bot hech qachon parol soʻramaydi.
               </p>
 
               <p className="mt-4 text-center text-sm text-muted">
-                Hisobingiz yo'qmi?{' '}
+                Hisobingiz yoʻqmi?{' '}
                 <Link href="/register" className="font-semibold text-primary hover:underline">
-                  Ro'yxatdan o'ting
+                  Roʻyxatdan oʻting
                 </Link>
               </p>
             </form>

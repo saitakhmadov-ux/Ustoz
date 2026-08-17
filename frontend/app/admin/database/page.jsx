@@ -3,7 +3,7 @@
 // Baza — bosh admin uchun: hajm manzarasi, avtomatik tozalash muddatlari va
 // zaxira yuklab olish.
 //
-// Tiklash (restore) tugmasi ATAYLAB yo'q: bitta tasodifiy bosish butun bazani
+// Tiklash (restore) tugmasi ATAYLAB yoʻq: bitta tasodifiy bosish butun bazani
 // almashtirib yuborishi mumkin. Tiklash terminal orqali qilinadi (README).
 
 import { useEffect, useState } from 'react';
@@ -14,35 +14,35 @@ import {
 import { api } from '@/lib/api';
 import { Spinner, ErrorState } from '@/components/ui';
 
-// Avtomatik tozalanadigan jadvallar — ro'yxatda belgilab turamiz
+// Avtomatik tozalanadigan jadvallar — roʻyxatda belgilab turamiz
 const CLEANED = {
   TypingAttempt: 'klaviatura urinishlari',
   QuizAttempt: 'test urinishlari',
   IeltsAttempt: 'IELTS insholari',
-  AiUsage: 'AI so\'rovlari',
+  AiUsage: 'AI soʻrovlari',
   Notification: 'bildirishnomalar',
   VerificationCode: 'tasdiqlash kodlari',
   TelegramLink: 'ulash havolalari',
 };
 
-// Tozalash natijasidagi kalitlar uchun o'zbekcha nom
+// Tozalash natijasidagi kalitlar uchun oʻzbekcha nom
 const RESULT_LABELS = {
   verificationCodes: 'Tasdiqlash kodlari',
   telegramLinks: 'Telegram havolalari',
-  notificationsRead: 'O\'qilgan bildirishnomalar',
-  notificationsUnread: 'O\'qilmagan bildirishnomalar',
-  aiUsage: 'AI so\'rovlari tarixi',
+  notificationsRead: 'Oʻqilgan bildirishnomalar',
+  notificationsUnread: 'Oʻqilmagan bildirishnomalar',
+  aiUsage: 'AI soʻrovlari tarixi',
   typingAttempts: 'Klaviatura urinishlari',
   quizAttempts: 'Test urinishlari',
   ieltsAttempts: 'IELTS insholari',
 };
 
-// Sozlama maydonlari — guruhlar bo'yicha
+// Sozlama maydonlari — guruhlar boʻyicha
 const GROUPS = [
   {
     title: 'Mashq va test urinishlari',
-    hint: 'Har (o\'quvchi × dars) juftligi uchun oxirgi N ta urinish yoshidan '
-      + 'qat\'i nazar saqlanadi. Progress va sertifikat alohida jadvalda — ular o\'chmaydi.',
+    hint: 'Har (oʻquvchi × dars) juftligi uchun oxirgi N ta urinish yoshidan '
+      + 'qatʼi nazar saqlanadi. Progress va sertifikat alohida jadvalda — ular oʻchmaydi.',
     rows: [
       { label: 'Klaviatura mashqi', days: 'typingAttemptDays', keep: 'typingAttemptKeep' },
       { label: 'Testlar', days: 'quizAttemptDays', keep: 'quizAttemptKeep' },
@@ -51,11 +51,11 @@ const GROUPS = [
   },
   {
     title: 'Xabarlar va tarix',
-    hint: 'Bildirishnomalar o\'qilgan-o\'qilmaganiga qarab alohida muddat bilan saqlanadi.',
+    hint: 'Bildirishnomalar oʻqilgan-oʻqilmaganiga qarab alohida muddat bilan saqlanadi.',
     rows: [
-      { label: 'O\'qilgan bildirishnomalar', days: 'notificationReadDays' },
-      { label: 'O\'qilmagan bildirishnomalar', days: 'notificationUnreadDays' },
-      { label: 'AI so\'rovlari tarixi', days: 'aiUsageDays' },
+      { label: 'Oʻqilgan bildirishnomalar', days: 'notificationReadDays' },
+      { label: 'Oʻqilmagan bildirishnomalar', days: 'notificationUnreadDays' },
+      { label: 'AI soʻrovlari tarixi', days: 'aiUsageDays' },
     ],
   },
   {
@@ -83,7 +83,7 @@ export default function AdminDatabasePage() {
 
   useEffect(() => { load(); }, []);
 
-  if (loading && !data) return <Spinner label="Baza holati o'qilmoqda..." />;
+  if (loading && !data) return <Spinner label="Baza holati oʻqilmoqda..." />;
   if (error && !data) return <ErrorState message={error} />;
 
   return (
@@ -181,7 +181,7 @@ function BackupCard({ pgDump }) {
         <Download size={18} className="text-primary" /> Zaxira nusxa
       </h2>
       <p className="mt-1 text-sm text-muted">
-        Barcha jadvallar bitta faylga yig'iladi. Sxemaga yangi jadval qo'shilsa,
+        Barcha jadvallar bitta faylga yigʻiladi. Sxemaga yangi jadval qoʻshilsa,
         u ham avtomatik zaxiraga tushadi.
       </p>
 
@@ -210,8 +210,8 @@ function BackupCard({ pgDump }) {
 
       {!pgDump.available && (
         <p className="mt-2 text-xs text-muted">
-          SQL zaxira bu serverda mavjud emas (<code>pg_dump</code> o'rnatilmagan) —
-          JSON zaxira barcha maʼlumotni to'liq saqlaydi.
+          SQL zaxira bu serverda mavjud emas (<code>pg_dump</code> oʻrnatilmagan) —
+          JSON zaxira barcha maʼlumotni toʻliq saqlaydi.
         </p>
       )}
       {busy && <p className="mt-2 text-xs text-muted">Fayl tayyorlanmoqda, kuting…</p>}
@@ -221,9 +221,9 @@ function BackupCard({ pgDump }) {
         <ShieldAlert size={16} className="mt-0.5 shrink-0" />
         <p>
           Faylda foydalanuvchi maʼlumotlari va maxfiy kalitlar (bot tokeni, SMTP
-          paroli, AI kaliti) bo'ladi. Uni ochiq joyga qo'ymang.
+          paroli, AI kaliti) boʻladi. Uni ochiq joyga qoʻymang.
           <br />
-          Tiklash panelda ataylab yo'q — terminal orqali:{' '}
+          Tiklash panelda ataylab yoʻq — terminal orqali:{' '}
           <code>npm run db:restore -- fayl.ndjson.gz</code>
         </p>
       </div>
@@ -264,13 +264,13 @@ function CleanupCard({ lastCleanup, onDone }) {
         <Trash2 size={18} className="text-primary" /> Tozalash
       </h2>
       <p className="mt-1 text-sm text-muted">
-        Har kuni avtomatik ishlaydi. Bu yerdan qo'lda ham ishga tushirish mumkin.
+        Har kuni avtomatik ishlaydi. Bu yerdan qoʻlda ham ishga tushirish mumkin.
       </p>
 
       {lastCleanup && !shown && (
         <p className="mt-3 text-xs text-muted">
           Oxirgi tozalash: {new Date(lastCleanup.at).toLocaleString('uz')} ·{' '}
-          {lastCleanup.total} ta yozuv o'chirilgan
+          {lastCleanup.total} ta yozuv oʻchirilgan
         </p>
       )}
 
@@ -278,8 +278,8 @@ function CleanupCard({ lastCleanup, onDone }) {
         <div className="mt-3 rounded-xl bg-slate-50 p-3 text-sm">
           <p className={`font-medium ${done ? 'text-emerald-700' : 'text-ink'}`}>
             {done
-              ? <><CheckCircle2 size={15} className="mr-1 inline" />{done.total} ta yozuv o'chirildi</>
-              : `${preview.total} ta yozuv o'chiriladi`}
+              ? <><CheckCircle2 size={15} className="mr-1 inline" />{done.total} ta yozuv oʻchirildi</>
+              : `${preview.total} ta yozuv oʻchiriladi`}
           </p>
           {rows.length > 0 && (
             <ul className="mt-2 space-y-0.5 text-xs text-muted">
@@ -289,7 +289,7 @@ function CleanupCard({ lastCleanup, onDone }) {
             </ul>
           )}
           {rows.length === 0 && (
-            <p className="mt-1 text-xs text-muted">Tozalanadigan eskirgan yozuv yo'q.</p>
+            <p className="mt-1 text-xs text-muted">Tozalanadigan eskirgan yozuv yoʻq.</p>
           )}
         </div>
       )}
@@ -302,7 +302,7 @@ function CleanupCard({ lastCleanup, onDone }) {
           className="btn-outline px-4 py-2 text-sm"
         >
           {busy === 'preview' ? <Loader2 size={15} className="animate-spin" /> : <Eye size={15} />}
-          Nima o'chishini ko'rish
+          Nima oʻchishini koʻrish
         </button>
         {preview && preview.total > 0 && (
           <button
@@ -357,7 +357,7 @@ function RetentionCard({ retention, defaults }) {
         <div>
           <h2 className="text-lg font-semibold">Saqlash muddatlari</h2>
           <p className="mt-1 text-sm text-muted">
-            <strong>0</strong> qo'ysangiz o'sha qoida o'chadi — hech narsa o'chirilmaydi.
+            <strong>0</strong> qoʻysangiz oʻsha qoida oʻchadi — hech narsa oʻchirilmaydi.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -428,8 +428,8 @@ function RetentionCard({ retention, defaults }) {
       <div className="mt-5 flex gap-2 rounded-xl bg-slate-50 p-3 text-xs text-muted">
         <AlertTriangle size={16} className="mt-0.5 shrink-0 text-subtle" />
         <p>
-          To'lovlar, daromadlar, o'tkazmalar, sertifikatlar, yozilishlar, progress
-          va sharhlar <strong>hech qachon</strong> o'chirilmaydi — bu yerdagi
+          Toʻlovlar, daromadlar, oʻtkazmalar, sertifikatlar, yozilishlar, progress
+          va sharhlar <strong>hech qachon</strong> oʻchirilmaydi — bu yerdagi
           muddatlar ularga taalluqli emas.
         </p>
       </div>

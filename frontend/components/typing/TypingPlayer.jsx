@@ -3,13 +3,13 @@
 // Yozish mashqi pleeri — mashqning yuragi.
 //
 // Ishlash tartibi: matn belgi-belgi chiziladi, foydalanuvchi klaviaturada
-// yozadi, har bir belgi darhol bo'yaladi (to'g'ri / xato / joriy). Vaqt
+// yozadi, har bir belgi darhol boʻyaladi (toʻgʻri / xato / joriy). Vaqt
 // BIRINCHI bosishda boshlanadi — sahifa ochilib turgani hisobga olinmaydi.
 //
 // Matn oddiy <div> ichida: <input> ishlatilmaydi, shuning uchun matnni
-// nusxa-ko'chirib qo'yib bo'lmaydi.
+// nusxa-koʻchirib qoʻyib boʻlmaydi.
 //
-// Aniqlik YAKUNIY matn bo'yicha hisoblanadi (server bilan bir xil qoida):
+// Aniqlik YAKUNIY matn boʻyicha hisoblanadi (server bilan bir xil qoida):
 // xatoni backspace bilan tuzatsangiz aniqlik tiklanadi, ammo vaqt ketadi.
 
 import {
@@ -22,7 +22,7 @@ import {
 import TypingKeyboard from './TypingKeyboard';
 
 const VISIBLE_LINES = 3;
-// Zaxira qiymat — o'lchash tugagunicha (birinchi chizishda) ishlatiladi
+// Zaxira qiymat — oʻlchash tugagunicha (birinchi chizishda) ishlatiladi
 const FALLBACK_PER_LINE = 46;
 
 export default function TypingPlayer({
@@ -34,9 +34,9 @@ export default function TypingPlayer({
   hint = null,
   busy = false, // natija serverga yuborilmoqda
   onFinish, // (typed, durationMs)
-  onRestart, // yangi urinish so'raladi (server yangi matn beradi)
+  onRestart, // yangi urinish soʻraladi (server yangi matn beradi)
   // Darsga biriktirilgan animatsiya uslubi (lib/typing.js -> styleFor).
-  // Ketma-ket darslar bir xil ko'rinmasligi uchun har darsda boshqacha.
+  // Ketma-ket darslar bir xil koʻrinmasligi uchun har darsda boshqacha.
   anim = {},
 }) {
   const [typed, setTyped] = useState('');
@@ -61,16 +61,16 @@ export default function TypingPlayer({
     setTouch(typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches);
   }, []);
 
-  // Bir qatorga nechta belgi sig'ishini MAYDONNING O'ZIDAN o'lchaymiz: shrift
-  // ekran kengligiga qarab o'zgaradi (text-xl → text-3xl), qat'iy son bo'lsa
-  // matn yo o'ng tomonda bo'sh joy qoldirardi, yo qatorga sig'may ketardi.
+  // Bir qatorga nechta belgi sigʻishini MAYDONNING OʻZIDAN oʻlchaymiz: shrift
+  // ekran kengligiga qarab oʻzgaradi (text-xl → text-3xl), qatʼiy son boʻlsa
+  // matn yo oʻng tomonda boʻsh joy qoldirardi, yo qatorga sigʻmay ketardi.
   useEffect(() => {
     const box = boxRef.current;
     const probe = measureRef.current;
     if (!box || !probe || typeof ResizeObserver === 'undefined') return undefined;
 
     const recalc = () => {
-      const charWidth = probe.getBoundingClientRect().width / 20; // 20 ta belgi o'lchandi
+      const charWidth = probe.getBoundingClientRect().width / 20; // 20 ta belgi oʻlchandi
       const style = getComputedStyle(box);
       const inner = box.clientWidth
         - parseFloat(style.paddingLeft || 0)
@@ -110,7 +110,7 @@ export default function TypingPlayer({
     if (busy || done) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return; // nusxa/qidiruv kabi amallarga tegmaymiz
 
-    // Tab — qayta boshlash (brauzer fokusni ko'chirmasin)
+    // Tab — qayta boshlash (brauzer fokusni koʻchirmasin)
     if (e.key === 'Tab') {
       e.preventDefault();
       onRestart?.();
@@ -135,7 +135,7 @@ export default function TypingPlayer({
     });
   };
 
-  // Jonli ko'rsatkichlar (server ham xuddi shunday hisoblaydi)
+  // Jonli koʻrsatkichlar (server ham xuddi shunday hisoblaydi)
   const stats = useMemo(() => {
     const { correct, chars } = compare(text.slice(0, typed.length), typed);
     return {
@@ -147,7 +147,7 @@ export default function TypingPlayer({
 
   const lines = useMemo(() => splitLines(text, perLine), [text, perLine]);
   const curLine = lineIndexAt(lines, typed.length);
-  // Joriy qator o'rtada tursin (birinchi qatorlarda esa boshidan)
+  // Joriy qator oʻrtada tursin (birinchi qatorlarda esa boshidan)
   const from = Math.max(0, Math.min(curLine - 1, lines.length - VISIBLE_LINES));
   const shown = lines.slice(from, from + VISIBLE_LINES);
 
@@ -165,16 +165,16 @@ export default function TypingPlayer({
 
       {touch && (
         <p className="mb-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Bu mashq kompyuter klaviaturasi uchun mo'ljallangan. Telefonda ham yozish
-          mumkin, ammo natija haqiqiy tezligingizni ko'rsatmaydi.
+          Bu mashq kompyuter klaviaturasi uchun moʻljallangan. Telefonda ham yozish
+          mumkin, ammo natija haqiqiy tezligingizni koʻrsatmaydi.
         </p>
       )}
 
-      {/* Ko'rsatkichlar */}
+      {/* Koʻrsatkichlar */}
       <div className="mb-4 flex flex-wrap items-center gap-x-8 gap-y-2 text-sm">
         <span className="flex items-baseline gap-1.5">
           <b className="font-display text-3xl text-ink">{stats.wpm}</b>
-          <span className="text-muted">so'z/daqiqa</span>
+          <span className="text-muted">soʻz/daqiqa</span>
           {targetWpm > 0 && <span className="text-xs text-muted">(maqsad: {targetWpm})</span>}
         </span>
         <span className="flex items-baseline gap-1.5">
@@ -204,10 +204,10 @@ export default function TypingPlayer({
         className={`relative cursor-text rounded-2xl border-2 bg-surface p-6 font-mono outline-none transition-colors
           text-xl leading-[2] md:p-8 xl:text-2xl 2xl:text-3xl
           ${focused ? 'border-primary' : 'border-line'}`}
-        /* Uch qator joy doim band: matn qisqa bo'lsa ham maydon "sakramaydi" */
+        /* Uch qator joy doim band: matn qisqa boʻlsa ham maydon "sakramaydi" */
         style={{ minHeight: `calc(${VISIBLE_LINES} * 2em + 3rem)` }}
       >
-        {/* Belgi kengligini o'lchash uchun ko'rinmas namuna (matn bilan bir xil shriftda) */}
+        {/* Belgi kengligini oʻlchash uchun koʻrinmas namuna (matn bilan bir xil shriftda) */}
         <span
           ref={measureRef}
           aria-hidden
@@ -223,7 +223,7 @@ export default function TypingPlayer({
               const isTyped = i < typed.length;
               const correct = isTyped && normalizeChar(typed[i]) === normalizeChar(ch);
               const isCurrent = i === typed.length;
-              // Animatsiya sinfi belgining holati o'zgarganda qo'shiladi,
+              // Animatsiya sinfi belgining holati oʻzgarganda qoʻshiladi,
               // shuning uchun har bir belgi aynan bir marta "jonlanadi".
               const animClass = isCurrent
                 ? anim.cursor || ''
@@ -262,7 +262,7 @@ export default function TypingPlayer({
         )}
       </div>
 
-      {/* Progress chizig'i */}
+      {/* Progress chizigʻi */}
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
         <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
       </div>

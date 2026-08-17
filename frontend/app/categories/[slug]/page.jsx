@@ -45,7 +45,7 @@ export default function CategoryPage() {
       </Reveal>
 
       {category.courses.length === 0 ? (
-        <EmptyState title="Bu yo'nalishda hali kurs yo'q" text="Tez orada qo'shiladi" />
+        <EmptyState title="Bu yoʻnalishda hali kurs yoʻq" text="Tez orada qoʻshiladi" />
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {category.courses.map((c, i) => (

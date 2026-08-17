@@ -93,7 +93,7 @@ export default function AdminMessagesPage() {
 
   const modes = [
     ...(isAdmin ? [{ key: 'all', label: 'Barcha foydalanuvchilar', icon: Users }] : []),
-    { key: 'course', label: 'Kurs o\'quvchilari', icon: BookOpen },
+    { key: 'course', label: 'Kurs oʻquvchilari', icon: BookOpen },
     { key: 'users', label: 'Muayyan foydalanuvchilar', icon: UserCheck },
   ];
 
@@ -103,7 +103,7 @@ export default function AdminMessagesPage() {
       <p className="mt-1 text-sm text-muted">
         {isAdmin
           ? "Foydalanuvchilarga akkaunt xabari va (ixtiyoriy) email yoki Telegram orqali yuboring"
-          : 'O\'z kurslaringiz o\'quvchilariga xabar yuboring'}
+          : 'Oʻz kurslaringiz oʻquvchilariga xabar yuboring'}
       </p>
 
       {result && (
@@ -112,7 +112,7 @@ export default function AdminMessagesPage() {
           {result.email && <span className="text-indigo-600">· email: {result.email.mocked ? 'mock (log)' : 'yuborildi'} ({result.email.attempted} ta)</span>}
           {result.telegram && (
             <span className="text-indigo-600">
-              · Telegram: {result.telegram.queued} ta navbatga qo'yildi
+              · Telegram: {result.telegram.queued} ta navbatga qoʻyildi
               {result.telegram.skipped > 0 && `, ${result.telegram.skipped} ta hisobini ulamagan`}
             </span>
           )}
@@ -147,9 +147,9 @@ export default function AdminMessagesPage() {
           <div className="mt-4">
             <label className="label">Kurs</label>
             <select className="input" value={courseId} onChange={(e) => setCourseId(e.target.value)}>
-              {aud.courses.length === 0 && <option value="">Kurs yo'q</option>}
+              {aud.courses.length === 0 && <option value="">Kurs yoʻq</option>}
               {aud.courses.map((c) => (
-                <option key={c.id} value={c.id}>{c.title} ({c._count.enrollments} o'quvchi)</option>
+                <option key={c.id} value={c.id}>{c.title} ({c._count.enrollments} oʻquvchi)</option>
               ))}
             </select>
           </div>
@@ -161,7 +161,7 @@ export default function AdminMessagesPage() {
             <label className="label">Foydalanuvchilar ({selectedUsers.length} tanlangan)</label>
             <div className="relative mb-2">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-subtle" />
-              <input className="input pl-9" placeholder="Ism yoki email bo'yicha qidirish..." value={search} onChange={(e) => setSearch(e.target.value)} />
+              <input className="input pl-9" placeholder="Ism yoki email boʻyicha qidirish..." value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <div className="max-h-56 overflow-y-auto rounded-xl border border-line">
               {filteredUsers.length === 0 ? (
@@ -180,14 +180,14 @@ export default function AdminMessagesPage() {
         {/* Xabar mazmuni */}
         <div className="mt-4">
           <label className="label">Sarlavha</label>
-          <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Masalan: Yangi dars qo'shildi" maxLength={160} />
+          <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Masalan: Yangi dars qoʻshildi" maxLength={160} />
         </div>
         <div className="mt-4">
           <label className="label">Xabar matni</label>
           <textarea className="input min-h-[120px]" value={body} onChange={(e) => setBody(e.target.value)} placeholder="Xabaringizni yozing..." maxLength={4000} />
         </div>
 
-        {/* Qo'shimcha kanallar — sayt bildirishnomasi har doim yuboriladi */}
+        {/* Qoʻshimcha kanallar — sayt bildirishnomasi har doim yuboriladi */}
         <div className="mt-4 space-y-2">
           <label className="flex cursor-pointer items-center gap-2 text-sm">
             <input type="checkbox" checked={sendEmail} onChange={(e) => setSendEmail(e.target.checked)} className="h-4 w-4 rounded text-primary focus:ring-primary" />
@@ -210,7 +210,7 @@ export default function AdminMessagesPage() {
 
       {/* Yuborilganlar tarixi */}
       <div className="mt-8">
-        <h2 className="flex items-center gap-2 text-lg"><History size={18} className="text-primary" /> So'nggi yuborilgan xabarlar</h2>
+        <h2 className="flex items-center gap-2 text-lg"><History size={18} className="text-primary" /> Soʻnggi yuborilgan xabarlar</h2>
         {sent.length === 0 ? (
           <p className="mt-3 rounded-xl border border-dashed border-line p-6 text-center text-sm text-muted">Hali xabar yuborilmagan</p>
         ) : (
@@ -236,7 +236,7 @@ export default function AdminMessagesPage() {
                       <td className="px-4 py-3">{n.telegramSent ? <span className="badge bg-sky-50 text-sky-700"><Bot size={11} /> Ha</span> : <span className="text-subtle">—</span>}</td>
                       <td className="px-4 py-3">
                         <span className={`badge ${n.read ? 'bg-indigo-50 text-indigo-700' : 'bg-amber-50 text-amber-700'}`}>
-                          {n.read ? 'O\'qilgan' : 'O\'qilmagan'}
+                          {n.read ? 'Oʻqilgan' : 'Oʻqilmagan'}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-muted">{new Date(n.createdAt).toLocaleString('uz-UZ')}</td>

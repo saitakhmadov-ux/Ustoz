@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { GraduationCap } from 'lucide-react';
 import { SITE_NAME } from '@/lib/constants';
 
-// Admin tahrirlagan footer matnini serverdan oladi (yo'q bo'lsa — standart).
+// Admin tahrirlagan footer matnini serverdan oladi (yoʻq boʻlsa — standart).
 async function getFooterText() {
   try {
     const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -33,7 +33,7 @@ export default async function Footer() {
       title: 'Hisob',
       links: [
         { href: '/login', label: 'Kirish' },
-        { href: '/register', label: 'Ro\'yxatdan o\'tish' },
+        { href: '/register', label: 'Roʻyxatdan oʻtish' },
         { href: '/dashboard', label: 'Shaxsiy kabinet' },
       ],
     },
@@ -41,7 +41,7 @@ export default async function Footer() {
       title: 'Yordam',
       links: [
         { href: '/contact', label: 'Kontaktlar' },
-        { href: '/faq', label: 'Ko\'p so\'raladigan savollar' },
+        { href: '/faq', label: 'Koʻp soʻraladigan savollar' },
       ],
     },
   ];
@@ -58,7 +58,7 @@ export default async function Footer() {
               <span className="font-display text-xl font-bold">{SITE_NAME}</span>
             </Link>
             <p className="mt-3 text-sm text-muted">
-              O'zbek tilidagi onlayn IT ta'lim platformasi. Zamonaviy kasblarni o'zlashtiring.
+              Oʻzbek tilidagi onlayn IT taʼlim platformasi. Zamonaviy kasblarni oʻzlashtiring.
             </p>
           </div>
 

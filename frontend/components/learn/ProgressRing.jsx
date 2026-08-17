@@ -1,7 +1,7 @@
-// Kurs progressi — halqa ko'rsatkich.
+// Kurs progressi — halqa koʻrsatkich.
 //
-// Foiz chizig'idan farqi: halqa "qancha qoldi" ni bir qarashda ko'rsatadi va
-// markazda qolgan darslar soni turadi — o'quvchi uchun foizdan ko'ra shu
+// Foiz chizigʻidan farqi: halqa "qancha qoldi" ni bir qarashda koʻrsatadi va
+// markazda qolgan darslar soni turadi — oʻquvchi uchun foizdan koʻra shu
 // tushunarliroq ("3 ta dars qoldi" > "72%").
 
 const SIZE = 96;

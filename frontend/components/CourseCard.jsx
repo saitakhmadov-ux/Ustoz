@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { Users, BarChart, PlayCircle, Keyboard } from 'lucide-react';
+import { Users, BarChart, Keyboard } from 'lucide-react';
 import { LEVELS, formatPrice } from '@/lib/constants';
 import { RatingBadge } from '@/components/Stars';
 import TiltCard from '@/components/TiltCard';
+import CourseCover from '@/components/CourseCover';
 
 const levelColors = {
   BEGINNER: 'bg-indigo-50 text-indigo-700',
@@ -29,9 +30,11 @@ export default function CourseCard({ course }) {
             className="h-full w-full object-cover transition-transform group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-slate-300">
-            <PlayCircle size={40} />
-          </div>
+          <CourseCover
+            title={course.title}
+            slug={course.slug}
+            className="transition-transform group-hover:scale-105"
+          />
         )}
         <span className={`badge absolute left-3 top-3 ${levelColors[course.level] || levelColors.BEGINNER}`}>
           <BarChart size={12} /> {LEVELS[course.level] || course.level}
@@ -62,7 +65,7 @@ export default function CourseCard({ course }) {
 
         <div className="mt-auto flex items-center justify-between pt-3">
           <span className="flex items-center gap-1 text-xs text-muted">
-            <Users size={14} /> {enrollCount} o'quvchi
+            <Users size={14} /> {enrollCount} oʻquvchi
           </span>
           <span className={`font-display font-bold ${course.isFree ? 'text-primary' : 'text-ink'}`}>
             {formatPrice(course.price, course.isFree)}

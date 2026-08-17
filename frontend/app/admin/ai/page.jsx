@@ -130,18 +130,18 @@ function SettingsTab() {
           <Power size={20} />
         </span>
         <div className="flex-1">
-          <p className="font-semibold text-ink">AI Ustoz {enabled ? 'yoqilgan' : 'o\'chirilgan'}</p>
+          <p className="font-semibold text-ink">AI Ustoz {enabled ? 'yoqilgan' : 'oʻchirilgan'}</p>
           <p className="text-sm text-muted">
             Kalit: {cfg.keySet
-              ? <>o'rnatilgan <span className="font-mono">{cfg.keyPreview}</span> <span className="badge bg-slate-100 text-slate-600">{cfg.keySource === 'db' ? 'panel' : cfg.keySource === 'env' ? '.env' : '—'}</span></>
-              : <span className="text-red-500">yo'q</span>}
+              ? <>oʻrnatilgan <span className="font-mono">{cfg.keyPreview}</span> <span className="badge bg-slate-100 text-slate-600">{cfg.keySource === 'db' ? 'panel' : cfg.keySource === 'env' ? '.env' : '—'}</span></>
+              : <span className="text-red-500">yoʻq</span>}
           </p>
         </div>
         {/* Toggle */}
         <button
           onClick={() => { setEnabled((v) => !v); setSavedMsg(''); }}
           className={`relative h-7 w-12 rounded-full transition-colors ${enabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
-          aria-label="AI yoqish/o'chirish"
+          aria-label="AI yoqish/oʻchirish"
         >
           <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-surface shadow transition-all ${enabled ? 'left-[22px]' : 'left-0.5'}`} />
         </button>
@@ -150,7 +150,7 @@ function SettingsTab() {
       {/* API kalit */}
       <div className="card p-5">
         <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading"><KeyRound size={18} className="text-primary" /> API kalit</h2>
-        <p className="mt-1 text-sm text-muted">Google AI Studio (aistudio.google.com/apikey) dan olinadi. Bo'sh qoldirsangiz mavjud kalit o'zgarmaydi.</p>
+        <p className="mt-1 text-sm text-muted">Google AI Studio (aistudio.google.com/apikey) dan olinadi. Boʻsh qoldirsangiz mavjud kalit oʻzgarmaydi.</p>
         <input
           type="password"
           value={apiKey}
@@ -183,17 +183,17 @@ function SettingsTab() {
         </div>
       </div>
 
-      {/* Yo'naltiruvchi ko'rsatmalar */}
+      {/* Yoʻnaltiruvchi koʻrsatmalar */}
       <div className="card p-5">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading"><Sparkles size={18} className="text-primary" /> Yo'naltiruvchi ko'rsatmalar</h2>
+        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading"><Sparkles size={18} className="text-primary" /> Yoʻnaltiruvchi koʻrsatmalar</h2>
         <p className="mt-1 text-sm text-muted">
-          AI xatti-harakatiga qo'shimcha yo'nalish bering — ohang, uslub, ustuvorliklar. Bu matn har bir javob uchun tizim ko'rsatmasiga qo'shiladi.
+          AI xatti-harakatiga qoʻshimcha yoʻnalish bering — ohang, uslub, ustuvorliklar. Bu matn har bir javob uchun tizim koʻrsatmasiga qoʻshiladi.
         </p>
         <textarea
           value={instructions}
           onChange={(e) => { setInstructions(e.target.value); setSavedMsg(''); }}
           rows={5}
-          placeholder="Masalan: Javoblarni doim amaliy misol bilan tushuntir. Talabani o'ylashga undaydigan savol ber. Juda uzun yozma."
+          placeholder="Masalan: Javoblarni doim amaliy misol bilan tushuntir. Talabani oʻylashga undaydigan savol ber. Juda uzun yozma."
           className="input mt-3 min-h-[120px]"
         />
         <p className="mt-1 text-right text-xs text-muted">{instructions.length} / 4000</p>
@@ -205,7 +205,7 @@ function SettingsTab() {
           {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Saqlash
         </button>
         <button onClick={runTest} disabled={testing} className="btn-outline disabled:opacity-50">
-          {testing ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />} Sinab ko'rish
+          {testing ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />} Sinab koʻrish
         </button>
         {savedMsg && <span className="text-sm font-medium text-accent">{savedMsg}</span>}
       </div>
@@ -248,8 +248,8 @@ function AnalyticsTab() {
     return (
       <div className="card grid place-items-center py-16 text-center text-muted">
         <Bot size={36} className="mb-3 opacity-50" />
-        <p className="font-medium text-ink">Hali foydalanish yo'q</p>
-        <p className="text-sm">Talabalar AI Ustozdan foydalanishni boshlaganda bu yerda tahlil paydo bo'ladi.</p>
+        <p className="font-medium text-ink">Hali foydalanish yoʻq</p>
+        <p className="text-sm">Talabalar AI Ustozdan foydalanishni boshlaganda bu yerda tahlil paydo boʻladi.</p>
       </div>
     );
   }
@@ -259,12 +259,12 @@ function AnalyticsTab() {
 
   return (
     <div className="space-y-4">
-      {/* Asosiy ko'rsatkichlar */}
+      {/* Asosiy koʻrsatkichlar */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat icon={MessageSquare} label="Jami savollar" value={a.total} tint="indigo" />
         <Stat icon={Users} label="Noyob foydalanuvchi" value={a.uniqueUsers} tint="emerald" />
-        <Stat icon={TrendingUp} label="So'nggi 7 kun" value={a.last7} tint="sky" />
-        <Stat icon={BarChart3} label="So'nggi 30 kun" value={a.last30} tint="violet" />
+        <Stat icon={TrendingUp} label="Soʻnggi 7 kun" value={a.last7} tint="sky" />
+        <Stat icon={BarChart3} label="Soʻnggi 30 kun" value={a.last30} tint="violet" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -272,7 +272,7 @@ function AnalyticsTab() {
         <div className="card p-5">
           <h3 className="flex items-center gap-2 font-semibold text-heading"><ThumbsUp size={17} className="text-primary" /> Foydalilik bahosi</h3>
           {a.helpfulRate === null ? (
-            <p className="mt-4 text-sm text-muted">Hali baho berilmagan. Talabalar javoblarni 👍/👎 baholasa, foydalilik shu yerda ko'rinadi.</p>
+            <p className="mt-4 text-sm text-muted">Hali baho berilmagan. Talabalar javoblarni 👍/👎 baholasa, foydalilik shu yerda koʻrinadi.</p>
           ) : (
             <>
               <div className="mt-4 flex items-end gap-2">
@@ -301,9 +301,9 @@ function AnalyticsTab() {
         </div>
       </div>
 
-      {/* Kurslar bo'yicha */}
+      {/* Kurslar boʻyicha */}
       <div className="card p-5">
-        <h3 className="flex items-center gap-2 font-semibold text-heading"><BarChart3 size={17} className="text-primary" /> Kurslar bo'yicha foydalanish</h3>
+        <h3 className="flex items-center gap-2 font-semibold text-heading"><BarChart3 size={17} className="text-primary" /> Kurslar boʻyicha foydalanish</h3>
         <div className="mt-4 space-y-2.5">
           {a.byCourse.map((c) => (
             <div key={c.courseId || 'none'} className="flex items-center gap-3">
@@ -320,7 +320,7 @@ function AnalyticsTab() {
 
       {/* Kunlik trend */}
       <div className="card p-5">
-        <h3 className="flex items-center gap-2 font-semibold text-heading"><TrendingUp size={17} className="text-primary" /> So'nggi 14 kun</h3>
+        <h3 className="flex items-center gap-2 font-semibold text-heading"><TrendingUp size={17} className="text-primary" /> Soʻnggi 14 kun</h3>
         <div className="mt-4 flex items-end gap-1.5" style={{ height: 120 }}>
           {a.byDay.map((d) => (
             <div key={d.date} className="group flex flex-1 flex-col items-center justify-end gap-1">
@@ -336,11 +336,11 @@ function AnalyticsTab() {
         </div>
       </div>
 
-      {/* Ko'p so'raladigan mavzular */}
+      {/* Koʻp soʻraladigan mavzular */}
       {a.keywords.length > 0 && (
         <div className="card p-5">
-          <h3 className="flex items-center gap-2 font-semibold text-heading"><Sparkles size={17} className="text-primary" /> Ko'p so'raladigan mavzular</h3>
-          <p className="mt-1 text-sm text-muted">Savollardagi eng ko'p uchraydigan so'zlar (umumiy tasavvur uchun).</p>
+          <h3 className="flex items-center gap-2 font-semibold text-heading"><Sparkles size={17} className="text-primary" /> Koʻp soʻraladigan mavzular</h3>
+          <p className="mt-1 text-sm text-muted">Savollardagi eng koʻp uchraydigan soʻzlar (umumiy tasavvur uchun).</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {a.keywords.map((k) => (
               <span key={k.word} className="rounded-full border border-line bg-slate-50 px-3 py-1 text-sm" style={{ fontSize: `${Math.min(1.15, 0.85 + k.count * 0.04)}rem` }}>
@@ -351,10 +351,10 @@ function AnalyticsTab() {
         </div>
       )}
 
-      {/* So'nggi savollar namunasi */}
+      {/* Soʻnggi savollar namunasi */}
       {a.recentSample.length > 0 && (
         <div className="card p-5">
-          <h3 className="flex items-center gap-2 font-semibold text-heading"><MessageSquare size={17} className="text-primary" /> So'nggi savollar (namuna)</h3>
+          <h3 className="flex items-center gap-2 font-semibold text-heading"><MessageSquare size={17} className="text-primary" /> Soʻnggi savollar (namuna)</h3>
           <ul className="mt-3 space-y-2">
             {a.recentSample.map((r, i) => (
               <li key={i} className="flex items-start gap-2 border-b border-line/60 pb-2 text-sm last:border-0">
@@ -371,7 +371,7 @@ function AnalyticsTab() {
 
       <p className="flex items-start gap-1.5 text-xs text-muted">
         <Info size={14} className="mt-px shrink-0" />
-        Foydalilik = 👍 / (👍 + 👎). Talabalar chatda javoblarni baholaydi. Ko'proq baho — aniqroq tahlil.
+        Foydalilik = 👍 / (👍 + 👎). Talabalar chatda javoblarni baholaydi. Koʻproq baho — aniqroq tahlil.
       </p>
     </div>
   );

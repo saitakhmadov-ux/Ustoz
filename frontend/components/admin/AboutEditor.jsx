@@ -1,8 +1,8 @@
 'use client';
 
-// "Biz haqimizda" sahifasini to'liq boshqarish: sarlavha, video, qadriyat
-// kartochkalari, missiya bloki va qo'shimcha bo'limlar.
-// Ommaviy /about sahifasi aynan shu ma'lumotdan chiziladi.
+// "Biz haqimizda" sahifasini toʻliq boshqarish: sarlavha, video, qadriyat
+// kartochkalari, missiya bloki va qoʻshimcha boʻlimlar.
+// Ommaviy /about sahifasi aynan shu maʼlumotdan chiziladi.
 
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -34,11 +34,11 @@ export default function AboutEditor() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Har qanday o'zgarish "Saqlandi" belgisini o'chiradi — nima saqlanmagani aniq bo'lsin
+  // Har qanday oʻzgarish "Saqlandi" belgisini oʻchiradi — nima saqlanmagani aniq boʻlsin
   const patch = (changes) => { setForm((f) => ({ ...f, ...changes })); setSavedMsg(''); };
   const patchIn = (key, changes) => patch({ [key]: { ...form[key], ...changes } });
 
-  // Ro'yxatlar (values / sections) uchun umumiy amallar
+  // Roʻyxatlar (values / sections) uchun umumiy amallar
   const listOps = (key, max, blank) => ({
     add: () => {
       if (form[key].length >= max) return;
@@ -87,7 +87,7 @@ export default function AboutEditor() {
           <textarea className="input min-h-[90px]" value={form.subtitle} onChange={(e) => patch({ subtitle: e.target.value })} />
         </div>
         <p className="flex items-start gap-1.5 text-xs text-muted">
-          <Info size={14} className="mt-px shrink-0" /> Bo'sh qoldirsangiz standart matn ko'rsatiladi.
+          <Info size={14} className="mt-px shrink-0" /> Boʻsh qoldirsangiz standart matn koʻrsatiladi.
         </p>
       </div>
 
@@ -104,12 +104,12 @@ export default function AboutEditor() {
             <p className="mt-1 text-sm text-muted">Sahifadagi uch ustunli ikonkali bloklar.</p>
           </div>
           <button type="button" onClick={values.add} disabled={form.values.length >= MAX_VALUES} className="btn-outline disabled:opacity-50">
-            <Plus size={16} /> Kartochka qo'shish
+            <Plus size={16} /> Kartochka qoʻshish
           </button>
         </div>
 
         {form.values.length === 0 ? (
-          <EmptyHint text="Kartochka yo'q — sahifada bu blok butunlay ko'rinmaydi." />
+          <EmptyHint text="Kartochka yoʻq — sahifada bu blok butunlay koʻrinmaydi." />
         ) : (
           <div className="mt-5 space-y-3">
             {form.values.map((v, i) => {
@@ -152,7 +152,7 @@ export default function AboutEditor() {
       <div className="card space-y-4 p-6">
         <div>
           <h2 className="font-display text-lg font-semibold text-heading">Missiya bloki</h2>
-          <p className="mt-1 text-sm text-muted">Sahifa pastidagi ajratilgan blok. Ikkalasi ham bo'sh bo'lsa ko'rinmaydi.</p>
+          <p className="mt-1 text-sm text-muted">Sahifa pastidagi ajratilgan blok. Ikkalasi ham boʻsh boʻlsa koʻrinmaydi.</p>
         </div>
         <div>
           <label className="label">Sarlavha</label>
@@ -164,22 +164,22 @@ export default function AboutEditor() {
         </div>
       </div>
 
-      {/* Qo'shimcha bo'limlar */}
+      {/* Qoʻshimcha boʻlimlar */}
       <div className="card p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="font-display text-lg font-semibold text-heading">
-              Qo'shimcha bo'limlar <span className="text-sm font-normal text-muted">({form.sections.length}/{MAX_SECTIONS})</span>
+              Qoʻshimcha boʻlimlar <span className="text-sm font-normal text-muted">({form.sections.length}/{MAX_SECTIONS})</span>
             </h2>
             <p className="mt-1 text-sm text-muted">Ixtiyoriy sondagi matnli bloklar — tarix, jamoa, hamkorlar va h.k.</p>
           </div>
           <button type="button" onClick={sections.add} disabled={form.sections.length >= MAX_SECTIONS} className="btn-outline disabled:opacity-50">
-            <Plus size={16} /> Bo'lim qo'shish
+            <Plus size={16} /> Boʻlim qoʻshish
           </button>
         </div>
 
         {form.sections.length === 0 ? (
-          <EmptyHint text="Qo'shimcha bo'lim yo'q. Kerak bo'lsa yuqoridagi tugma orqali qo'shing." />
+          <EmptyHint text="Qoʻshimcha boʻlim yoʻq. Kerak boʻlsa yuqoridagi tugma orqali qoʻshing." />
         ) : (
           <div className="mt-5 space-y-3">
             {form.sections.map((s, i) => (
@@ -203,7 +203,7 @@ export default function AboutEditor() {
         </button>
         {savedMsg && <span className="text-sm font-medium text-accent">{savedMsg}</span>}
         <a href="/about" target="_blank" rel="noreferrer" className="ml-auto text-sm text-primary hover:underline">
-          Sahifani ko'rish <ExternalLink size={13} className="inline" />
+          Sahifani koʻrish <ExternalLink size={13} className="inline" />
         </a>
       </div>
     </div>
@@ -218,7 +218,7 @@ function EmptyHint({ text }) {
   );
 }
 
-// Ro'yxat qatori uchun tartib va o'chirish tugmalari
+// Roʻyxat qatori uchun tartib va oʻchirish tugmalari
 function RowActions({ index, total, onMove, onRemove }) {
   return (
     <div className="flex shrink-0 flex-col gap-1">
@@ -228,7 +228,7 @@ function RowActions({ index, total, onMove, onRemove }) {
       <button type="button" onClick={() => onMove(index, 1)} disabled={index === total - 1} title="Pastga" className="grid h-7 w-7 place-items-center rounded-lg text-muted hover:bg-slate-100 disabled:opacity-30">
         <ChevronDown size={15} />
       </button>
-      <button type="button" onClick={() => onRemove(index)} title="O'chirish" className="grid h-7 w-7 place-items-center rounded-lg text-red-600 hover:bg-red-50">
+      <button type="button" onClick={() => onRemove(index)} title="Oʻchirish" className="grid h-7 w-7 place-items-center rounded-lg text-red-600 hover:bg-red-50">
         <Trash2 size={15} />
       </button>
     </div>
@@ -263,7 +263,7 @@ function VideoBlock({ video, onChange }) {
           <Video size={18} className="text-primary" /> Video
         </h2>
         <p className="mt-1 text-sm text-muted">
-          YouTube yoki Vimeo havolasini qo'ying, yoki video faylni to'g'ridan-to'g'ri yuklang.
+          YouTube yoki Vimeo havolasini qoʻying, yoki video faylni toʻgʻridan-toʻgʻri yuklang.
         </p>
       </div>
 
@@ -289,7 +289,7 @@ function VideoBlock({ video, onChange }) {
         </div>
         {unknown && (
           <p className="mt-2 text-xs text-amber-700">
-            Bu havola tanilmadi. YouTube, Vimeo yoki mp4/webm/mov/mkv fayl havolasi bo'lishi kerak — aks holda sahifada video ko'rsatilmaydi.
+            Bu havola tanilmadi. YouTube, Vimeo yoki mp4/webm/mov/mkv fayl havolasi boʻlishi kerak — aks holda sahifada video koʻrsatilmaydi.
           </p>
         )}
       </div>
@@ -305,10 +305,10 @@ function VideoBlock({ video, onChange }) {
         </div>
       </div>
 
-      {/* Jonli ko'rinish — saqlashdan oldin tekshirib olish uchun */}
+      {/* Jonli koʻrinish — saqlashdan oldin tekshirib olish uchun */}
       {embed.kind !== 'none' && (
         <div>
-          <p className="label">Ko'rinishi</p>
+          <p className="label">Koʻrinishi</p>
           <div className="aspect-video overflow-hidden rounded-xl border border-line bg-black">
             {embed.kind === 'embed' ? (
               <iframe
@@ -329,7 +329,7 @@ function VideoBlock({ video, onChange }) {
   );
 }
 
-// Qo'shimcha bo'lim: sarlavha, matn va ixtiyoriy rasm
+// Qoʻshimcha boʻlim: sarlavha, matn va ixtiyoriy rasm
 function SectionRow({ section, index, total, onChange, onMove, onRemove }) {
   const fileRef = useRef(null);
   const [uploading, setUploading] = useState(false);
@@ -355,13 +355,13 @@ function SectionRow({ section, index, total, onChange, onMove, onRemove }) {
         <div className="min-w-0 flex-1 space-y-3">
           <input
             className="input"
-            placeholder="Bo'lim sarlavhasi"
+            placeholder="Boʻlim sarlavhasi"
             value={section.title}
             onChange={(e) => onChange({ title: e.target.value })}
           />
           <textarea
             className="input min-h-[100px]"
-            placeholder="Matn. Yangi qatordan yozsangiz sahifada ham alohida abzats bo'ladi."
+            placeholder="Matn. Yangi qatordan yozsangiz sahifada ham alohida abzats boʻladi."
             value={section.text}
             onChange={(e) => onChange({ text: e.target.value })}
           />
@@ -370,7 +370,7 @@ function SectionRow({ section, index, total, onChange, onMove, onRemove }) {
             <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden onChange={pick} />
             <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="btn-ghost text-sm disabled:opacity-50">
               {uploading ? <Loader2 size={15} className="animate-spin" /> : <ImageIcon size={15} />}
-              {section.image ? 'Rasmni almashtirish' : 'Rasm qo\'shish'}
+              {section.image ? 'Rasmni almashtirish' : 'Rasm qoʻshish'}
             </button>
             {section.image && (
               <>

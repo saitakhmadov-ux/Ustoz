@@ -32,7 +32,7 @@ export default function AdminCoursesPage() {
   };
 
   const remove = async (id, title) => {
-    if (!confirm(`"${title}" kursini o'chirasizmi? Bu amalni ortga qaytarib bo'lmaydi.`)) return;
+    if (!confirm(`"${title}" kursini oʻchirasizmi? Bu amalni ortga qaytarib boʻlmaydi.`)) return;
     try {
       await api.del(`/courses/${id}`);
       load();
@@ -54,8 +54,8 @@ export default function AdminCoursesPage() {
       <div className="mt-6">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : courses.length === 0 ? (
           <EmptyState
-            title={isAdmin ? "Hali kurs yo'q" : 'Sizga kurs biriktirilmagan'}
-            text={isAdmin ? 'Birinchi kursingizni yarating' : 'Bosh admin sizga kurs biriktirgach shu yerda ko\'rinadi'}
+            title={isAdmin ? "Hali kurs yoʻq" : 'Sizga kurs biriktirilmagan'}
+            text={isAdmin ? 'Birinchi kursingizni yarating' : 'Bosh admin sizga kurs biriktirgach shu yerda koʻrinadi'}
           />
         ) : (
           <div className="card overflow-hidden">
@@ -83,7 +83,7 @@ export default function AdminCoursesPage() {
                             </span>
                           )}
                         </p>
-                        <p className="text-xs text-muted">{LEVELS[c.level]} · {c._count.sections} bo'lim · {c._count.enrollments} o'quvchi</p>
+                        <p className="text-xs text-muted">{LEVELS[c.level]} · {c._count.sections} boʻlim · {c._count.enrollments} oʻquvchi</p>
                       </td>
                       <td className="px-4 py-3 text-muted">{c.category?.name}</td>
                       {isAdmin && (
@@ -113,7 +113,7 @@ export default function AdminCoursesPage() {
                             <Pencil size={16} />
                           </Link>
                           {isAdmin && (
-                            <button onClick={() => remove(c.id, c.title)} title="O'chirish" className="grid h-8 w-8 place-items-center rounded-lg text-red-600 hover:bg-red-50">
+                            <button onClick={() => remove(c.id, c.title)} title="Oʻchirish" className="grid h-8 w-8 place-items-center rounded-lg text-red-600 hover:bg-red-50">
                               <Trash2 size={16} />
                             </button>
                           )}

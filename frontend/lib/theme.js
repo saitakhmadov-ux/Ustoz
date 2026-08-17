@@ -1,7 +1,7 @@
 // Tema (yorug'/kecha) boshqaruvi.
 //
-// Tanlov <html data-theme="..."> orqali qo'llaniladi — globals.css dagi
-// [data-theme='dark'] bloki barcha rang o'zgaruvchilarini almashtiradi.
+// Tanlov <html data-theme="..."> orqali qoʻllaniladi — globals.css dagi
+// [data-theme='dark'] bloki barcha rang oʻzgaruvchilarini almashtiradi.
 //
 // Uch holat bor: 'light', 'dark' va 'system' (qurilma sozlamasiga ergashadi).
 // Standart holat — 'system'.
@@ -9,23 +9,23 @@
 export const THEME_KEY = 'ustoz-theme';
 export const THEMES = ['light', 'dark', 'system'];
 
-// Sahifa chizilishidan OLDIN <head> da ishlaydigan skript. Bo'lmasa, kecha
-// rejimida sahifa bir lahza oq bo'lib chaqnaydi (FOUC).
-// Diqqat: bu matn brauzerga o'zgarishsiz yuboriladi — qisqa va bog'liqliksiz.
+// Sahifa chizilishidan OLDIN <head> da ishlaydigan skript. Boʻlmasa, kecha
+// rejimida sahifa bir lahza oq boʻlib chaqnaydi (FOUC).
+// Diqqat: bu matn brauzerga oʻzgarishsiz yuboriladi — qisqa va bogʻliqliksiz.
 export const THEME_INIT_SCRIPT = `(function(){try{
 var t=localStorage.getItem('${THEME_KEY}')||'system';
 var d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
 if(d)document.documentElement.setAttribute('data-theme','dark');
 }catch(e){}})();`;
 
-// Saqlangan tanlovni o'qiydi ('system' — standart)
+// Saqlangan tanlovni oʻqiydi ('system' — standart)
 export function getStoredTheme() {
   if (typeof window === 'undefined') return 'system';
   const t = localStorage.getItem(THEME_KEY);
   return THEMES.includes(t) ? t : 'system';
 }
 
-// Tanlovni <html> ga qo'llaydi
+// Tanlovni <html> ga qoʻllaydi
 export function applyTheme(theme) {
   if (typeof document === 'undefined') return;
   const dark = theme === 'dark'
@@ -37,7 +37,7 @@ export function applyTheme(theme) {
   }
 }
 
-// Tanlovni saqlaydi va darhol qo'llaydi
+// Tanlovni saqlaydi va darhol qoʻllaydi
 export function setTheme(theme) {
   if (typeof window === 'undefined') return;
   localStorage.setItem(THEME_KEY, theme);

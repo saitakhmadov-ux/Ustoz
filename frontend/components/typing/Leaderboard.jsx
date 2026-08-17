@@ -4,7 +4,7 @@
 //
 // Kurs darslari va erkin mashq natijalari birga hisoblanadi. Jadvalga faqat
 // yetarli uzun urinishlar kiradi (server tekshiradi), aks holda qisqa mashqda
-// chiqqan sun'iy yuqori tezlik ro'yxatni buzardi.
+// chiqqan sunʼiy yuqori tezlik roʻyxatni buzardi.
 
 import { useEffect, useState } from 'react';
 import {
@@ -61,7 +61,7 @@ export default function Leaderboard() {
           <div>
             <h2 className="font-display text-lg font-semibold text-heading">Eng kuchli natijalar</h2>
             <p className="text-sm text-muted">
-              Darslar va erkin mashq bo'yicha eng tez yozgan {rows.length} ta foydalanuvchi
+              Darslar va erkin mashq boʻyicha eng tez yozgan {rows.length} ta foydalanuvchi
             </p>
           </div>
         </div>
@@ -72,7 +72,7 @@ export default function Leaderboard() {
 
       {rows.length === 0 ? (
         <div className="card p-10 text-center">
-          <p className="font-medium text-ink">Hali rekord yo'q</p>
+          <p className="font-medium text-ink">Hali rekord yoʻq</p>
           <p className="mt-1 text-sm text-muted">
             Jadvalga tushish uchun kamida {data?.minSec || 15} soniya davom etadigan
             mashqni yakunlang — masalan erkin mashqdagi 30 soniyalik test.
@@ -84,7 +84,7 @@ export default function Leaderboard() {
             <table className="w-full text-sm">
               <thead className="border-b border-line bg-slate-50 text-left text-xs uppercase text-muted">
                 <tr>
-                  <th className="px-4 py-3 w-16">O'rin</th>
+                  <th className="px-4 py-3 w-16">Oʻrin</th>
                   <th className="px-4 py-3">Foydalanuvchi</th>
                   <th className="px-4 py-3">Tezlik</th>
                   <th className="px-4 py-3">Aniqlik</th>
@@ -102,7 +102,7 @@ export default function Leaderboard() {
                     </td>
                     <td className="px-4 py-3">
                       <b className="font-display text-lg text-ink">{r.wpm}</b>
-                      <span className="ml-1 text-xs text-muted">so'z/daq</span>
+                      <span className="ml-1 text-xs text-muted">soʻz/daq</span>
                     </td>
                     <td className="px-4 py-3 text-muted">{r.accuracy != null ? `${r.accuracy}%` : '—'}</td>
                     <td className="px-4 py-3">
@@ -121,20 +121,20 @@ export default function Leaderboard() {
         </div>
       )}
 
-      {/* Ro'yxatga kirmagan bo'lsangiz ham o'z o'rningiz ko'rinadi */}
+      {/* Roʻyxatga kirmagan boʻlsangiz ham oʻz oʻrningiz koʻrinadi */}
       {data?.me && !data.me.inTop && (
         <div className="card flex flex-wrap items-center gap-x-6 gap-y-2 p-4">
-          <span className="text-sm text-muted">Sizning o'rningiz:</span>
-          <span className="font-display text-lg text-ink">{data.me.rank}-o'rin</span>
-          <span className="text-sm text-muted">{data.me.wpm} so'z/daqiqa</span>
+          <span className="text-sm text-muted">Sizning oʻrningiz:</span>
+          <span className="font-display text-lg text-ink">{data.me.rank}-oʻrin</span>
+          <span className="text-sm text-muted">{data.me.wpm} soʻz/daqiqa</span>
           <span className="text-sm text-muted">{data.me.attempts} ta urinish</span>
         </div>
       )}
 
       <p className="text-center text-xs text-muted">
         Jadvalga faqat kamida {data?.minChars || 100} belgi va {data?.minSec || 15} soniyadan
-        uzun mashqlar kiradi — qisqa mashqda tezlik haqiqiy ko'rsatkichni bermaydi.
-        Ro'yxat har safar ochilganda qaytadan hisoblanadi.
+        uzun mashqlar kiradi — qisqa mashqda tezlik haqiqiy koʻrsatkichni bermaydi.
+        Roʻyxat har safar ochilganda qaytadan hisoblanadi.
       </p>
     </div>
   );

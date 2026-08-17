@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
 
-// Qidiruv oynasi — yuborilganda /courses?search=... ga o'tadi.
-// withButton=true bo'lsa yonida "Qidirish" tugmasi chiqadi (hero uchun).
+// Qidiruv oynasi — yuborilganda /courses?search=... ga oʻtadi.
+// withButton=true boʻlsa yonida "Qidirish" tugmasi chiqadi (hero uchun).
 export default function SearchBox({
   placeholder = 'Kurs qidirish...',
   className = '',

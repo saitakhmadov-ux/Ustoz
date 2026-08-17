@@ -27,18 +27,18 @@ function PaletteButton({ className = '' }) {
   );
 }
 
-// Menyu vazifasi yaqin bo'limlar bo'yicha guruhlangan:
-// katalog (kurs/kategoriya), o'quvchi bilan ishlash, pul, odamlar, sozlamalar.
+// Menyu vazifasi yaqin boʻlimlar boʻyicha guruhlangan:
+// katalog (kurs/kategoriya), oʻquvchi bilan ishlash, pul, odamlar, sozlamalar.
 const adminGroups = [
   {
     title: 'Umumiy',
     items: [
-      // Statistika shu sahifaning ikkinchi yorlig'i — alohida bo'lim emas
+      // Statistika shu sahifaning ikkinchi yorligʻi — alohida boʻlim emas
       { href: '/admin', label: 'Boshqaruv paneli', icon: LayoutDashboard, exact: true },
     ],
   },
   {
-    title: "Ta'lim",
+    title: "Taʼlim",
     items: [
       { href: '/admin/courses', label: 'Kurslar', icon: BookOpen },
       { href: '/admin/ielts', label: 'IELTS topshiriqlari', icon: PenLine },
@@ -46,9 +46,9 @@ const adminGroups = [
     ],
   },
   {
-    title: "O'quvchilar",
+    title: "Oʻquvchilar",
     items: [
-      { href: '/admin/students', label: "O'quvchilar", icon: UserCheck },
+      { href: '/admin/students', label: "Oʻquvchilar", icon: UserCheck },
       { href: '/admin/reviews', label: 'Sharhlar', icon: MessageSquare },
       { href: '/admin/certificates', label: 'Sertifikatlar', icon: Award },
       { href: '/admin/messages', label: 'Xabarlar', icon: Send },
@@ -57,14 +57,14 @@ const adminGroups = [
   {
     title: 'Moliya',
     items: [
-      // To'lovlar, taqsimot, o'tkazmalar va foizlar — hammasi yorliqlar ichida
+      // Toʻlovlar, taqsimot, oʻtkazmalar va foizlar — hammasi yorliqlar ichida
       { href: '/admin/earnings', label: 'Moliya', icon: Coins },
     ],
   },
   {
     title: 'Odamlar',
     items: [
-      // O'quvchi, ustoz va admin bitta sahifada — ichida rol yorliqlari bor
+      // Oʻquvchi, ustoz va admin bitta sahifada — ichida rol yorliqlari bor
       { href: '/admin/users', label: 'Odamlar', icon: Users },
     ],
   },
@@ -79,19 +79,19 @@ const adminGroups = [
   },
 ];
 
-// Ustoz admin uchun cheklangan menyu — faqat o'z kurslari, o'quvchilari va maoshi
+// Ustoz admin uchun cheklangan menyu — faqat oʻz kurslari, oʻquvchilari va maoshi
 const instructorGroups = [
   {
-    title: "Ta'lim",
+    title: "Taʼlim",
     items: [
       { href: '/admin/courses', label: 'Kurslarim', icon: BookOpen },
       { href: '/admin/stats', label: 'Statistika', icon: BarChart3 },
     ],
   },
   {
-    title: "O'quvchilarim",
+    title: "Oʻquvchilarim",
     items: [
-      { href: '/admin/students', label: "O'quvchilarim", icon: UserCheck },
+      { href: '/admin/students', label: "Oʻquvchilarim", icon: UserCheck },
       { href: '/admin/messages', label: 'Xabarlar', icon: Send },
     ],
   },
@@ -103,7 +103,7 @@ const instructorGroups = [
   },
 ];
 
-// Ustoz kira oladigan yo'llar (boshqalaridan qaytariladi)
+// Ustoz kira oladigan yoʻllar (boshqalaridan qaytariladi)
 const instructorAllowed = [
   '/admin/courses', '/admin/students', '/admin/earnings', '/admin/stats', '/admin/messages',
 ];
@@ -149,14 +149,14 @@ export default function AdminLayout({ children }) {
   const groups = isAdmin ? adminGroups : instructorGroups;
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Ustoz faqat ruxsat etilgan bo'limlarga kira oladi — boshqalaridan qaytaramiz
+  // Ustoz faqat ruxsat etilgan boʻlimlarga kira oladi — boshqalaridan qaytaramiz
   useEffect(() => {
     if (loading || !isStaff || isAdmin) return;
     const allowed = instructorAllowed.some((p) => pathname.startsWith(p));
     if (!allowed) router.replace('/admin/courses');
   }, [loading, isStaff, isAdmin, pathname, router]);
 
-  // Drawer ochiq bo'lsa: sahifa scroll'ini to'xtatamiz va Esc bilan yopamiz
+  // Drawer ochiq boʻlsa: sahifa scrollʼini toʻxtatamiz va Esc bilan yopamiz
   useEffect(() => {
     if (!drawerOpen) return;
     const onKey = (e) => { if (e.key === 'Escape') setDrawerOpen(false); };
@@ -169,10 +169,10 @@ export default function AdminLayout({ children }) {
     };
   }, [drawerOpen]);
 
-  // Yo'l o'zgarganda drawer yopiladi
+  // Yoʻl oʻzgarganda drawer yopiladi
   useEffect(() => { setDrawerOpen(false); }, [pathname]);
 
-  // Mobil sarlavha uchun joriy bo'lim nomi
+  // Mobil sarlavha uchun joriy boʻlim nomi
   const currentLabel = groups
     .flatMap((g) => g.items)
     .find((item) => isActive(item, pathname))?.label || 'Panel';

@@ -55,13 +55,13 @@ export default function AdminEmailPage() {
   );
 }
 
-// Manba yorlig'i — sozlama paneldan keldimi yoki .env dan
+// Manba yorligʻi — sozlama paneldan keldimi yoki .env dan
 function SourceBadge({ source }) {
   const label = source === 'db' ? 'panel' : source === 'env' ? '.env' : 'sozlanmagan';
   return <span className="badge bg-slate-100 text-slate-600">{label}</span>;
 }
 
-// Tez to'ldirish uchun tayyor SMTP shablonlari
+// Tez toʻldirish uchun tayyor SMTP shablonlari
 const PRESETS = [
   { label: 'Gmail', host: 'smtp.gmail.com', port: 587, secure: false },
   { label: 'Yandex', host: 'smtp.yandex.ru', port: 465, secure: true },
@@ -104,7 +104,7 @@ function EmailTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Har qanday o'zgarish "Saqlandi" xabarini so'ndiradi — eskirgan holat ko'rinmasin
+  // Har qanday oʻzgarish "Saqlandi" xabarini soʻndiradi — eskirgan holat koʻrinmasin
   const change = (patch) => { setForm((f) => ({ ...f, ...patch })); setSavedMsg(''); };
 
   const save = async () => {
@@ -161,33 +161,33 @@ function EmailTab() {
           <p className="text-sm text-muted">
             {live
               ? <>Server: <span className="font-mono">{cfg.host || '—'}</span> <SourceBadge source={cfg.source} /></>
-              : "Tasdiqlash kodlari faqat server konsoliga chiqadi. Ishga tayyor bo'lgach yoqing."}
+              : "Tasdiqlash kodlari faqat server konsoliga chiqadi. Ishga tayyor boʻlgach yoqing."}
           </p>
         </div>
         <button
           onClick={() => { setLive((v) => !v); setSavedMsg(''); }}
           className={`relative h-7 w-12 rounded-full transition-colors ${live ? 'bg-emerald-500' : 'bg-slate-300'}`}
-          aria-label="Haqiqiy xat yuborishni yoqish/o'chirish"
+          aria-label="Haqiqiy xat yuborishni yoqish/oʻchirish"
         >
           <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-surface shadow transition-all ${live ? 'left-[22px]' : 'left-0.5'}`} />
         </button>
       </div>
 
-      {/* Yoqilgan, ammo server yo'q — jimgina ishlamay qolmasin */}
+      {/* Yoqilgan, ammo server yoʻq — jimgina ishlamay qolmasin */}
       {live && !form.host && (
         <p className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
           <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-          SMTP server ko'rsatilmagan — yoqilgan bo'lsa ham xatlar yuborilmaydi. Quyidagi maydonlarni to'ldiring.
+          SMTP server koʻrsatilmagan — yoqilgan boʻlsa ham xatlar yuborilmaydi. Quyidagi maydonlarni toʻldiring.
         </p>
       )}
 
-      {/* Jo'natuvchi */}
+      {/* Joʻnatuvchi */}
       <div className="card p-5">
         <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-heading">
-          <AtSign size={18} className="text-primary" /> Jo'natuvchi
+          <AtSign size={18} className="text-primary" /> Joʻnatuvchi
         </h2>
         <p className="mt-1 text-sm text-muted">
-          Xat kimdan kelayotgani. Ko'rinishi: <span className="font-mono">Ustoz &lt;no-reply@ustoz.uz&gt;</span>
+          Xat kimdan kelayotgani. Koʻrinishi: <span className="font-mono">Ustoz &lt;no-reply@ustoz.uz&gt;</span>
         </p>
         <input
           value={form.from}
@@ -216,8 +216,8 @@ function EmailTab() {
           </div>
         </div>
         <p className="mt-1 text-sm text-muted">
-          Bu yerni to'ldirsangiz <span className="font-mono">.env</span> dagi SMTP qiymatlari e'tiborga olinmaydi.
-          Bo'sh qoldirsangiz — aksincha, <span className="font-mono">.env</span> ga qaytadi.
+          Bu yerni toʻldirsangiz <span className="font-mono">.env</span> dagi SMTP qiymatlari eʼtiborga olinmaydi.
+          Boʻsh qoldirsangiz — aksincha, <span className="font-mono">.env</span> ga qaytadi.
         </p>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -272,7 +272,7 @@ function EmailTab() {
         <p className="mt-3 flex items-start gap-1.5 text-xs text-muted">
           <Info size={14} className="mt-px shrink-0" />
           Gmail uchun oddiy parol emas, 16 belgili <b className="mx-1">App password</b> kerak
-          (akkauntda 2 bosqichli tasdiqlash yoqilgan bo'lishi shart). Parol bo'sh qoldirilsa mavjudi o'zgarmaydi.
+          (akkauntda 2 bosqichli tasdiqlash yoqilgan boʻlishi shart). Parol boʻsh qoldirilsa mavjudi oʻzgarmaydi.
         </p>
       </div>
 
@@ -290,7 +290,7 @@ function EmailTab() {
           <Send size={18} className="text-primary" /> Sinov xati
         </h2>
         <p className="mt-1 text-sm text-muted">
-          Avval saqlang, keyin sinang. Sinov mock rejimni chetlab o'tadi — sozlamani yoqishdan oldin tekshirib olasiz.
+          Avval saqlang, keyin sinang. Sinov mock rejimni chetlab oʻtadi — sozlamani yoqishdan oldin tekshirib olasiz.
         </p>
         <div className="mt-3 flex flex-wrap gap-3">
           <input
@@ -389,10 +389,10 @@ function TelegramTab() {
   if (loading) return <Spinner />;
 
   const st = cfg.status || {};
-  // Nega ishlamayotganini aniq aytamiz — "ishlamayapti" o'zi yetarli emas
+  // Nega ishlamayotganini aniq aytamiz — "ishlamayapti" oʻzi yetarli emas
   const reasonText = {
-    'no-token': 'Token qo\'yilmagan',
-    disabled: 'O\'chirib qo\'yilgan',
+    'no-token': 'Token qoʻyilmagan',
+    disabled: 'Oʻchirib qoʻyilgan',
     error: st.error || 'Xatolik',
   }[st.reason] || 'Ishlamayapti';
 
@@ -420,7 +420,7 @@ function TelegramTab() {
         <button
           onClick={() => { setEnabled((v) => !v); setSavedMsg(''); }}
           className={`relative h-7 w-12 rounded-full transition-colors ${enabled ? 'bg-emerald-500' : 'bg-slate-300'}`}
-          aria-label="Botni yoqish/o'chirish"
+          aria-label="Botni yoqish/oʻchirish"
         >
           <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-surface shadow transition-all ${enabled ? 'left-[22px]' : 'left-0.5'}`} />
         </button>
@@ -436,7 +436,7 @@ function TelegramTab() {
       <p className="flex items-start gap-2 rounded-xl border border-line bg-slate-50 p-3 text-sm text-muted">
         <Info size={16} className="mt-0.5 shrink-0" />
         <span>
-          Token Telegram'dagi <span className="font-mono">@BotFather</span> dan olinadi:
+          Token Telegramʼdagi <span className="font-mono">@BotFather</span> dan olinadi:
           <span className="font-mono"> /newbot</span> → nom va foydalanuvchi nomini kiriting → token beriladi.
           Saqlagach bot darhol ishga tushadi (server qayta yuklanmaydi).
         </span>
@@ -456,7 +456,7 @@ function TelegramTab() {
           autoComplete="new-password"
         />
         <p className="mt-2 flex items-center gap-1.5 text-xs text-muted">
-          <Lock size={12} /> Faqat serverda qoladi. Bo'sh qoldirilsa mavjudi o'zgarmaydi.
+          <Lock size={12} /> Faqat serverda qoladi. Boʻsh qoldirilsa mavjudi oʻzgarmaydi.
         </p>
       </div>
 
@@ -491,8 +491,8 @@ function TelegramTab() {
           <Users size={18} className="text-primary" /> Foydalanuvchilar qanday ulanadi
         </h2>
         <ol className="mt-3 space-y-1.5 text-sm text-muted">
-          <li>1. Saytga kiradi → <b className="text-ink">Profil</b> → "Telegram'ga ulash"</li>
-          <li>2. Bir martalik havola botni ochadi va hisob bog'lanadi (havola 15 daqiqa amal qiladi)</li>
+          <li>1. Saytga kiradi → <b className="text-ink">Profil</b> → "Telegramʼga ulash"</li>
+          <li>2. Bir martalik havola botni ochadi va hisob bogʻlanadi (havola 15 daqiqa amal qiladi)</li>
           <li>3. Botda <span className="font-mono">/kurslarim</span>, <span className="font-mono">/yordam</span>, <span className="font-mono">/uzish</span> buyruqlari ishlaydi</li>
         </ol>
       </div>
@@ -551,12 +551,12 @@ function SecurityTab() {
         </span>
         <div className="flex-1">
           <p className="font-semibold text-ink">
-            CAPTCHA {cfg.active ? 'yoqilgan' : "o'chirilgan"}
+            CAPTCHA {cfg.active ? 'yoqilgan' : "oʻchirilgan"}
           </p>
           <p className="text-sm text-muted">
             {cfg.active
-              ? <>Ro'yxatdan o'tish va parol tiklash formalari himoyalangan <SourceBadge source={cfg.source} /></>
-              : "Ikkala kalit ham to'ldirilsa himoya avtomatik yoqiladi."}
+              ? <>Roʻyxatdan oʻtish va parol tiklash formalari himoyalangan <SourceBadge source={cfg.source} /></>
+              : "Ikkala kalit ham toʻldirilsa himoya avtomatik yoqiladi."}
           </p>
         </div>
       </div>
@@ -564,9 +564,9 @@ function SecurityTab() {
       <p className="flex items-start gap-2 rounded-xl border border-line bg-slate-50 p-3 text-sm text-muted">
         <Info size={16} className="mt-0.5 shrink-0" />
         <span>
-          Kalitlar Cloudflare Turnstile'dan olinadi (bepul va cheksiz):
+          Kalitlar Cloudflare Turnstileʼdan olinadi (bepul va cheksiz):
           <span className="font-mono"> dash.cloudflare.com → Turnstile → Add site</span>.
-          Saytga <span className="font-mono">ustoz.uz</span> va <span className="font-mono">localhost</span> domenlarini qo'shing.
+          Saytga <span className="font-mono">ustoz.uz</span> va <span className="font-mono">localhost</span> domenlarini qoʻshing.
         </span>
       </p>
 
@@ -596,7 +596,7 @@ function SecurityTab() {
               autoComplete="new-password"
             />
             <p className="mt-1 flex items-center gap-1.5 text-xs text-muted">
-              <Lock size={12} /> Faqat serverda qoladi. Bo'sh qoldirilsa mavjudi o'zgarmaydi.
+              <Lock size={12} /> Faqat serverda qoladi. Boʻsh qoldirilsa mavjudi oʻzgarmaydi.
             </p>
           </Field>
         </div>

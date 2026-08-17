@@ -19,7 +19,7 @@ const STATUS = {
   expired: { label: 'Muddati tugagan', cls: 'bg-amber-50 text-amber-700', Icon: Clock },
 };
 
-// Holat yorliqlari (chap tomondan o'ngga) — summary'dagi kalitlar bilan bir xil
+// Holat yorliqlari (chap tomondan oʻngga) — summaryʼdagi kalitlar bilan bir xil
 const TABS = [
   { key: '', label: 'Barchasi', count: 'all' },
   { key: 'inProgress', label: 'Jarayonda', count: 'inProgress' },
@@ -30,12 +30,12 @@ const TABS = [
 
 const SORTS = [
   { value: 'recent', label: 'Yangi yozilganlar' },
-  { value: 'progress', label: "Progress bo'yicha" },
-  { value: 'name', label: "Ism bo'yicha" },
+  { value: 'progress', label: "Progress boʻyicha" },
+  { value: 'name', label: "Ism boʻyicha" },
 ];
 
 const COLUMNS = [
-  { label: "O'quvchi" },
+  { label: "Oʻquvchi" },
   { label: 'Kurs' },
   { label: 'Progress', minWidth: 160 },
   { label: 'Oxirgi faollik' },
@@ -43,14 +43,14 @@ const COLUMNS = [
   { label: 'Holat' },
 ];
 
-// Progress foiziga qarab rang: past — qizil, o'rta — sabzi, yuqori — yashil
+// Progress foiziga qarab rang: past — qizil, oʻrta — sabzi, yuqori — yashil
 function barColor(percent) {
   if (percent >= 70) return 'bg-emerald-500';
   if (percent >= 30) return 'bg-amber-500';
   return 'bg-rose-500';
 }
 
-// "3 kun oldin" ko'rinishidagi nisbiy vaqt
+// "3 kun oldin" koʻrinishidagi nisbiy vaqt
 function relativeTime(date) {
   if (!date) return null;
   const days = Math.floor((Date.now() - new Date(date).getTime()) / 86400000);
@@ -92,11 +92,11 @@ export default function TeachingStudentsPage() {
   if (!loading && !error && courses.length === 0) {
     return (
       <div>
-        <h1 className="text-2xl">{isAdmin ? 'O\'quvchilar' : 'O\'quvchilarim'}</h1>
+        <h1 className="text-2xl">{isAdmin ? 'Oʻquvchilar' : 'Oʻquvchilarim'}</h1>
         <div className="mt-6">
           <EmptyState
             title="Hali kurs biriktirilmagan"
-            text="Sizga kurs biriktirilgach, unga yozilgan o'quvchilar shu yerda ko'rinadi."
+            text="Sizga kurs biriktirilgach, unga yozilgan oʻquvchilar shu yerda koʻrinadi."
             icon={UsersIcon}
           />
         </div>
@@ -107,8 +107,8 @@ export default function TeachingStudentsPage() {
   return (
     <div>
       <PageHeader
-        title={isAdmin ? "O'quvchilar" : "O'quvchilarim"}
-        subtitle={`${isAdmin ? 'Kurslarga' : 'Kurslaringizga'} yozilgan o'quvchilar va ularning progressi (${pagination?.total ?? 0})`}
+        title={isAdmin ? "Oʻquvchilar" : "Oʻquvchilarim"}
+        subtitle={`${isAdmin ? 'Kurslarga' : 'Kurslaringizga'} yozilgan oʻquvchilar va ularning progressi (${pagination?.total ?? 0})`}
       />
 
       {summary && (
@@ -122,7 +122,7 @@ export default function TeachingStudentsPage() {
       <DataToolbar
         search={t.search}
         onSearch={t.setSearch}
-        placeholder="Ism yoki email bo'yicha qidirish..."
+        placeholder="Ism yoki email boʻyicha qidirish..."
         hasFilters={t.hasFilters}
         onReset={t.reset}
       >
@@ -145,8 +145,8 @@ export default function TeachingStudentsPage() {
       <div className="mt-4">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : students.length === 0 ? (
           <EmptyState
-            title="O'quvchi topilmadi"
-            text={t.hasFilters ? 'Qidiruv yoki filtrni o\'zgartirib ko\'ring.' : 'Kurslaringizga hali hech kim yozilmagan.'}
+            title="Oʻquvchi topilmadi"
+            text={t.hasFilters ? 'Qidiruv yoki filtrni oʻzgartirib koʻring.' : 'Kurslaringizga hali hech kim yozilmagan.'}
             icon={UsersIcon}
           />
         ) : (
@@ -158,7 +158,7 @@ export default function TeachingStudentsPage() {
                 pages={pagination.pages}
                 total={pagination.total}
                 onChange={t.setPage}
-                label="o'quvchi"
+                label="oʻquvchi"
               />
             )}
           >

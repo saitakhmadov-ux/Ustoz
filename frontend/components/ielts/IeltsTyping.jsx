@@ -3,8 +3,8 @@
 // IELTS Typing Practice va Vocabulary Practice.
 //
 // Yozish dvigateli qayta yozilmadi — mavjud `TypingPlayer` ishlatiladi
-// (belgi-belgi bo'yash, jonli WPM/aniqlik, klaviatura tasviri). Farqi:
-// matn inglizcha va serverdan IELTS topshirig'i sifatida keladi.
+// (belgi-belgi boʻyash, jonli WPM/aniqlik, klaviatura tasviri). Farqi:
+// matn inglizcha va serverdan IELTS topshirigʻi sifatida keladi.
 
 import { LEVELS } from '@/lib/ielts';
 import TypingPlayer from '@/components/typing/TypingPlayer';

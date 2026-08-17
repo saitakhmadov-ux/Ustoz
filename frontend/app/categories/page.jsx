@@ -24,7 +24,7 @@ export default function CategoriesPage() {
     <div className="container-page py-10">
       <Reveal className="mb-8">
         <h1 className="text-3xl">Kategoriyalar</h1>
-        <p className="mt-2 text-muted">Yo'nalishni tanlang va shu sohadagi kurslarni ko'ring</p>
+        <p className="mt-2 text-muted">Yoʻnalishni tanlang va shu sohadagi kurslarni koʻring</p>
       </Reveal>
 
       {error ? (
@@ -32,7 +32,7 @@ export default function CategoriesPage() {
       ) : loading ? (
         <Spinner />
       ) : categories.length === 0 ? (
-        <EmptyState title="Kategoriyalar yo'q" />
+        <EmptyState title="Kategoriyalar yoʻq" />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((c, i) => (

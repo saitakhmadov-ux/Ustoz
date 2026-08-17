@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { BookOpen, LayoutGrid, Users, Star } from 'lucide-react';
 import { api } from '@/lib/api';
 
-// Bosh sahifa uchun jonli ko'rsatkichlar (haqiqiy ma'lumotlardan)
+// Bosh sahifa uchun jonli koʻrsatkichlar (haqiqiy maʼlumotlardan)
 export default function HomeStats() {
   const [stats, setStats] = useState(null);
 
@@ -14,10 +14,10 @@ export default function HomeStats() {
 
   const items = [
     { key: 'courses', label: 'Kurslar', icon: BookOpen, value: stats ? `${stats.courses}` : '—' },
-    { key: 'categories', label: "Yo'nalishlar", icon: LayoutGrid, value: stats ? `${stats.categories}` : '—' },
-    { key: 'students', label: "O'quvchilar", icon: Users, value: stats ? `${stats.students}+` : '—' },
+    { key: 'categories', label: "Yoʻnalishlar", icon: LayoutGrid, value: stats ? `${stats.categories}` : '—' },
+    { key: 'students', label: "Oʻquvchilar", icon: Users, value: stats ? `${stats.students}+` : '—' },
     {
-      key: 'rating', label: "O'rtacha baho", icon: Star,
+      key: 'rating', label: "Oʻrtacha baho", icon: Star,
       value: stats && stats.reviewCount > 0 ? stats.avgRating.toFixed(1) : '—',
     },
   ];

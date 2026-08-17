@@ -25,13 +25,13 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     if (!passwordOk) {
-      setError('Parol kamida 8 belgi bo\'lsin va harf ham, raqam ham bo\'lsin');
+      setError('Parol kamida 8 belgi boʻlsin va harf ham, raqam ham boʻlsin');
       return;
     }
     setLoading(true);
     try {
       const res = await register({ ...form, ...shield.fields() });
-      // Token berilmaydi — email tasdiqlash sahifasiga o'tamiz
+      // Token berilmaydi — email tasdiqlash sahifasiga oʻtamiz
       router.push(`/verify-email?email=${encodeURIComponent(res.email || form.email)}`);
     } catch (err) {
       setError(err.message);
@@ -41,8 +41,8 @@ export default function RegisterPage() {
 
   return (
     <AuthShell
-      title="Ro'yxatdan o'tish"
-      subtitle="Bepul hisob yarating va o'rganishni boshlang"
+      title="Roʻyxatdan oʻtish"
+      subtitle="Bepul hisob yarating va oʻrganishni boshlang"
       footer={
         <p className="mt-4 text-center text-sm text-muted">
           Hisobingiz bormi?{' '}
@@ -99,7 +99,7 @@ export default function RegisterPage() {
           />
           {form.password && !passwordOk && (
             <p className="mt-1 text-xs text-amber-700">
-              Parol kamida 8 belgi bo'lsin va harf ham, raqam ham bo'lsin.
+              Parol kamida 8 belgi boʻlsin va harf ham, raqam ham boʻlsin.
             </p>
           )}
         </div>
@@ -108,7 +108,7 @@ export default function RegisterPage() {
 
         <button type="submit" className="btn-primary w-full" disabled={loading || !shield.ready}>
           {loading ? <Loader2 size={16} className="animate-spin" /> : null}
-          {loading ? 'Yaratilmoqda...' : 'Ro\'yxatdan o\'tish'}
+          {loading ? 'Yaratilmoqda...' : 'Roʻyxatdan oʻtish'}
         </button>
 
         {!shield.ready && (

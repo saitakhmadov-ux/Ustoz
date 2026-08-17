@@ -46,7 +46,7 @@ export default function CurriculumPage() {
     load();
   };
 
-  // ---- Bo'lim amallari ----
+  // ---- Boʻlim amallari ----
   const addSection = async () => {
     if (newSection.trim().length < 2) return;
     setAddingSection(true);
@@ -59,13 +59,13 @@ export default function CurriculumPage() {
   };
 
   const deleteSection = async (sid, title) => {
-    if (!confirm(`"${title}" bo'limini va uning barcha darslarini o'chirasizmi?`)) return;
+    if (!confirm(`"${title}" boʻlimini va uning barcha darslarini oʻchirasizmi?`)) return;
     try { await api.del(`/admin/sections/${sid}`); load(); }
     catch (err) { alert(err.message); }
   };
 
   const deleteLesson = async (lid, title) => {
-    if (!confirm(`"${title}" darsini o'chirasizmi?`)) return;
+    if (!confirm(`"${title}" darsini oʻchirasizmi?`)) return;
     try { await api.del(`/admin/lessons/${lid}`); load(); }
     catch (err) { alert(err.message); }
   };
@@ -74,7 +74,7 @@ export default function CurriculumPage() {
   if (error) return <ErrorState message={error} />;
   if (!course) return null;
 
-  // Klaviatura mashqi kursida darsda video/test emas, mashq matni bo'ladi
+  // Klaviatura mashqi kursida darsda video/test emas, mashq matni boʻladi
   const isTyping = course.kind === 'TYPING';
 
   return (
@@ -84,7 +84,7 @@ export default function CurriculumPage() {
       </Link>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl">O'quv dasturi</h1>
+          <h1 className="text-2xl">Oʻquv dasturi</h1>
           <p className="mt-1 text-sm text-muted">
             {course.title}
             {isTyping && (
@@ -97,11 +97,11 @@ export default function CurriculumPage() {
         <Link href={`/admin/courses/${id}`} className="btn-outline"><Pencil size={16} /> Kurs sozlamalari</Link>
       </div>
 
-      {/* Bo'limlar */}
+      {/* Boʻlimlar */}
       <div className="mt-6 space-y-3">
         {course.sections.length === 0 && (
           <p className="rounded-xl border border-dashed border-line p-6 text-center text-sm text-muted">
-            Hali bo'lim yo'q. Pastdan birinchi bo'limni qo'shing.
+            Hali boʻlim yoʻq. Pastdan birinchi boʻlimni qoʻshing.
           </p>
         )}
 
@@ -109,14 +109,14 @@ export default function CurriculumPage() {
           const isOpen = openSections[section.id] ?? true;
           return (
             <div key={section.id} className="card overflow-hidden">
-              {/* Bo'lim sarlavhasi */}
+              {/* Boʻlim sarlavhasi */}
               <div className="flex items-center gap-2 bg-slate-50 px-4 py-3">
                 <button onClick={() => setOpenSections({ ...openSections, [section.id]: !isOpen })}>
                   <ChevronDown size={18} className={`transition-transform ${isOpen ? '' : '-rotate-90'}`} />
                 </button>
                 <span className="font-semibold">{si + 1}. {section.title}</span>
                 <span className="text-xs text-muted">({section.lessons.length} dars)</span>
-                <button onClick={() => deleteSection(section.id, section.title)} className="ml-auto text-red-500 hover:text-red-700" title="Bo'limni o'chirish">
+                <button onClick={() => deleteSection(section.id, section.title)} className="ml-auto text-red-500 hover:text-red-700" title="Boʻlimni oʻchirish">
                   <Trash2 size={16} />
                 </button>
               </div>
@@ -141,9 +141,9 @@ export default function CurriculumPage() {
                               <span className="flex-1 text-sm">{lesson.title}</span>
                               {lesson.isFreePreview && <span className="badge bg-indigo-50 text-indigo-700">Bepul</span>}
                               {isTyping ? (
-                                // Klaviatura kursida test/material yo'q — faqat mashq
+                                // Klaviatura kursida test/material yoʻq — faqat mashq
                                 !lesson.typingDrill && (
-                                  <span className="badge bg-amber-50 text-amber-700">Mashq yo'q</span>
+                                  <span className="badge bg-amber-50 text-amber-700">Mashq yoʻq</span>
                                 )
                               ) : (
                                 <button
@@ -173,14 +173,14 @@ export default function CurriculumPage() {
                     ))}
                   </div>
 
-                  {/* Dars qo'shish */}
+                  {/* Dars qoʻshish */}
                   {addingLessonTo === section.id ? (
                     <div className="mt-3">
                       <LessonEditor sectionId={section.id} typing={isTyping} onDone={refresh} onCancel={() => setAddingLessonTo(null)} />
                     </div>
                   ) : (
                     <button onClick={() => setAddingLessonTo(section.id)} className="mt-3 flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-                      <Plus size={15} /> Dars qo'shish
+                      <Plus size={15} /> Dars qoʻshish
                     </button>
                   )}
                 </div>
@@ -190,17 +190,17 @@ export default function CurriculumPage() {
         })}
       </div>
 
-      {/* Bo'lim qo'shish */}
+      {/* Boʻlim qoʻshish */}
       <div className="mt-4 flex gap-2">
         <input
           className="input"
-          placeholder="Yangi bo'lim nomi (masalan: Kirish)"
+          placeholder="Yangi boʻlim nomi (masalan: Kirish)"
           value={newSection}
           onChange={(e) => setNewSection(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && addSection()}
         />
         <button onClick={addSection} disabled={addingSection} className="btn-primary shrink-0">
-          {addingSection ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />} Bo'lim
+          {addingSection ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />} Boʻlim
         </button>
       </div>
     </div>

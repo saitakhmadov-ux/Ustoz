@@ -6,8 +6,8 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import RequireAuth from '@/components/RequireAuth';
 
-// Telegram bot bilan bog'lanish. Havola bir martalik va 15 daqiqa amal qiladi,
-// shuning uchun uni oldindan emas, bosilganda so'raymiz.
+// Telegram bot bilan bogʻlanish. Havola bir martalik va 15 daqiqa amal qiladi,
+// shuning uchun uni oldindan emas, bosilganda soʻraymiz.
 function TelegramCard() {
   const [tg, setTg] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -33,7 +33,7 @@ function TelegramCard() {
   };
 
   const disconnect = async () => {
-    if (!window.confirm('Telegram bog\'lanishini uzasizmi? Botga xabarlar kelmay qoladi.')) return;
+    if (!window.confirm('Telegram bogʻlanishini uzasizmi? Botga xabarlar kelmay qoladi.')) return;
     setBusy(true); setErr('');
     try {
       await api.del('/me/telegram');
@@ -45,7 +45,7 @@ function TelegramCard() {
     }
   };
 
-  // Bot sozlanmagan bo'lsa kartochkani umuman ko'rsatmaymiz
+  // Bot sozlanmagan boʻlsa kartochkani umuman koʻrsatmaymiz
   if (!tg || (!tg.available && !tg.linked)) return null;
 
   return (
@@ -70,11 +70,11 @@ function TelegramCard() {
       ) : (
         <>
           <p className="text-sm text-muted">
-            Hisobingizni botga ulang — kurslaringiz, progressingiz va xabarlar Telegram'ga keladi.
+            Hisobingizni botga ulang — kurslaringiz, progressingiz va xabarlar Telegramʼga keladi.
             {tg.botUsername ? <> Bot: <span className="font-mono">@{tg.botUsername}</span></> : null}
           </p>
           <button onClick={connect} disabled={busy} className="btn-primary mt-4 disabled:opacity-50">
-            {busy ? <Loader2 size={16} className="animate-spin" /> : <Link2 size={16} />} Telegram'ga ulash
+            {busy ? <Loader2 size={16} className="animate-spin" /> : <Link2 size={16} />} Telegramʼga ulash
           </button>
           <p className="mt-2 text-xs text-muted">
             Bot yangi oynada ochiladi. Ulangach shu sahifani yangilang.
@@ -85,8 +85,8 @@ function TelegramCard() {
   );
 }
 
-// Qaysi hodisalar Telegram'ga yuborilishi. Sayt ichidagi xabarlar ro'yxati
-// baribir to'ladi — bu sozlama faqat botga ta'sir qiladi (botdagi /sozlamalar
+// Qaysi hodisalar Telegramʼga yuborilishi. Sayt ichidagi xabarlar roʻyxati
+// baribir toʻladi — bu sozlama faqat botga taʼsir qiladi (botdagi /sozlamalar
 // bilan bir xil joyda saqlanadi).
 function NotifyPrefsCard() {
   const [data, setData] = useState(null);
@@ -128,7 +128,7 @@ function NotifyPrefsCard() {
       <p className="mb-4 text-sm text-muted">
         {data.telegramLinked
           ? 'Qaysi xabarlar Telegram botga kelishini tanlang.'
-          : 'Telegram ulanmagan — sozlama Telegram\'ni ulaganingizda kuchga kiradi.'}
+          : 'Telegram ulanmagan — sozlama Telegramʼni ulaganingizda kuchga kiradi.'}
       </p>
 
       {msg && <div className="mb-4 rounded-xl bg-emerald-50 px-4 py-2.5 text-sm text-emerald-700">{msg}</div>}
@@ -148,7 +148,7 @@ function NotifyPrefsCard() {
                 checked={!off.includes(e.key)}
                 onChange={() => toggle(e.key)}
               />
-              <span className="text-muted">{off.includes(e.key) ? 'O\'chiq' : 'Yoniq'}</span>
+              <span className="text-muted">{off.includes(e.key) ? 'Oʻchiq' : 'Yoniq'}</span>
             </label>
           </li>
         ))}
@@ -159,7 +159,7 @@ function NotifyPrefsCard() {
       </button>
 
       <p className="mt-3 text-xs text-muted">
-        O'chirilgan xabarlar ham saytdagi "Xabarlar" bo'limida saqlanadi.
+        Oʻchirilgan xabarlar ham saytdagi "Xabarlar" boʻlimida saqlanadi.
       </p>
     </div>
   );
@@ -198,7 +198,7 @@ function ProfileInner() {
     try {
       await api.put('/me/password', pwd);
       setPwd({ currentPassword: '', newPassword: '' });
-      setMsg('Parol o\'zgartirildi');
+      setMsg('Parol oʻzgartirildi');
     } catch (e2) {
       setErr(e2.message);
     } finally {
@@ -215,7 +215,7 @@ function ProfileInner() {
 
       {/* Profil */}
       <form onSubmit={saveProfile} className="card mt-6 p-6">
-        <div className="mb-4 flex items-center gap-2 font-semibold"><User size={18} /> Shaxsiy ma'lumotlar</div>
+        <div className="mb-4 flex items-center gap-2 font-semibold"><User size={18} /> Shaxsiy maʼlumotlar</div>
         <div className="mb-4">
           <label className="label">Ism-familiya</label>
           <input className="input" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} required />
@@ -230,7 +230,7 @@ function ProfileInner() {
         </div>
         <div className="mb-5">
           <label className="label">Bio</label>
-          <textarea className="input min-h-[90px]" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="O'zingiz haqingizda..." />
+          <textarea className="input min-h-[90px]" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Oʻzingiz haqingizda..." />
         </div>
         <button className="btn-primary" disabled={saving}>
           {saving && <Loader2 size={16} className="animate-spin" />} Saqlash
@@ -239,7 +239,7 @@ function ProfileInner() {
 
       {/* Parol */}
       <form onSubmit={savePassword} className="card mt-6 p-6">
-        <div className="mb-4 flex items-center gap-2 font-semibold"><KeyRound size={18} /> Parolni o'zgartirish</div>
+        <div className="mb-4 flex items-center gap-2 font-semibold"><KeyRound size={18} /> Parolni oʻzgartirish</div>
         <div className="mb-4">
           <label className="label">Joriy parol</label>
           <input type="password" className="input" value={pwd.currentPassword} onChange={(e) => setPwd({ ...pwd, currentPassword: e.target.value })} required />

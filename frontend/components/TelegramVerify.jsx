@@ -1,10 +1,10 @@
 'use client';
 
-// Ro'yxatdan o'tishni Telegram orqali tasdiqlash.
+// Roʻyxatdan oʻtishni Telegram orqali tasdiqlash.
 //
 // Oqim: "Telegram orqali tasdiqlash" -> server bir martalik t.me havolasini
 // beradi -> odam botda "Start" bosadi -> shu sahifa har necha soniyada
-// "tasdiqlandimi?" deb so'rab turadi -> tasdiqlangach seans o'zi boshlanadi.
+// "tasdiqlandimi?" deb soʻrab turadi -> tasdiqlangach seans oʻzi boshlanadi.
 //
 // Nega kerak: emailga kod yuborish kunlik chegarali va xat spamga tushishi
 // mumkin. Telegram bepul, tezkor va odam ayni paytda botga ham ulanadi.
@@ -14,7 +14,7 @@ import { Loader2, Send, ExternalLink } from 'lucide-react';
 import { api } from '@/lib/api';
 
 const POLL_MS = 3000;
-// Cheksiz so'rab turmaymiz — 5 daqiqadan keyin "Tekshirish" tugmasi qoladi
+// Cheksiz soʻrab turmaymiz — 5 daqiqadan keyin "Tekshirish" tugmasi qoladi
 const POLL_LIMIT = Math.round((5 * 60 * 1000) / POLL_MS);
 
 export default function TelegramVerify({ pendingToken, onDone }) {
@@ -25,8 +25,8 @@ export default function TelegramVerify({ pendingToken, onDone }) {
   const [unavailable, setUnavailable] = useState(false);
   const pollsLeft = useRef(0);
 
-  // Bir marta so'rov: tasdiqlandimi? Ha bo'lsa seansni boshlaymiz.
-  // Qaytaradi: true — javob keldi va kutishni to'xtatish kerak.
+  // Bir marta soʻrov: tasdiqlandimi? Ha boʻlsa seansni boshlaymiz.
+  // Qaytaradi: true — javob keldi va kutishni toʻxtatish kerak.
   const checkOnce = useCallback(async (pollKey) => {
     const res = await api.post('/auth/telegram-verify/status', { pollKey }, { auth: false });
     if (res.token) {
@@ -35,7 +35,7 @@ export default function TelegramVerify({ pendingToken, onDone }) {
     }
     if (res.status === 'expired') {
       setLink(null);
-      setError('Havola muddati tugadi. Qaytadan urinib ko\'ring.');
+      setError('Havola muddati tugadi. Qaytadan urinib koʻring.');
       return true;
     }
     return false;
@@ -72,12 +72,12 @@ export default function TelegramVerify({ pendingToken, onDone }) {
         { auth: false },
       );
       setLink(res);
-      // Telegram'ni yangi oynada ochamiz — bu sahifa javobni kutib qoladi.
-      // Brauzer bloklasa, quyidagi havola qo'lda bosiladi.
+      // Telegramʼni yangi oynada ochamiz — bu sahifa javobni kutib qoladi.
+      // Brauzer bloklasa, quyidagi havola qoʻlda bosiladi.
       window.open(res.url, '_blank', 'noopener');
     } catch (err) {
       setError(err.message);
-      // Bot sozlanmagan bo'lsa tugmani qayta ko'rsatishdan ma'no yo'q
+      // Bot sozlanmagan boʻlsa tugmani qayta koʻrsatishdan maʼno yoʻq
       if (/mavjud emas|sozlanmagan/i.test(err.message)) setUnavailable(true);
     } finally {
       setStarting(false);
@@ -126,7 +126,7 @@ export default function TelegramVerify({ pendingToken, onDone }) {
           </p>
           <p className="mt-2 text-xs text-muted">
             Ochilgan botda <b>“Start”</b> tugmasini bosing — hisobingiz shu zahoti
-            tasdiqlanadi va bu sahifa o'zi davom etadi.
+            tasdiqlanadi va bu sahifa oʻzi davom etadi.
           </p>
 
           <a

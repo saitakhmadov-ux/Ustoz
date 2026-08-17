@@ -9,7 +9,7 @@ import { Spinner, ErrorState, EmptyState, Pagination } from '@/components/ui';
 import { PageHeader, DataToolbar, DataTable } from '@/components/admin/table';
 
 const COLUMNS = [
-  { label: "O'quvchi" },
+  { label: "Oʻquvchi" },
   { label: 'Kurs' },
   { label: 'Raqam' },
   { label: 'Berilgan sana' },
@@ -39,7 +39,7 @@ export default function AdminCertificatesPage() {
     const who = c.user?.fullName || 'Foydalanuvchi';
     if (!confirm(
       `${who}ning "${c.course?.title}" sertifikatini bekor qilasizmi?\n\n` +
-      'Eslatma: agar o\'quvchi kursni 100% tugatgan holatda qolsa, keyingi ' +
+      'Eslatma: agar oʻquvchi kursni 100% tugatgan holatda qolsa, keyingi ' +
       'vazifa bajarilishida sertifikat qayta beriladi.'
     )) return;
     try {
@@ -52,7 +52,7 @@ export default function AdminCertificatesPage() {
     <div>
       <PageHeader
         title="Sertifikatlar"
-        subtitle="Kursni tugatgan o'quvchilarga berilgan sertifikatlar"
+        subtitle="Kursni tugatgan oʻquvchilarga berilgan sertifikatlar"
       />
 
       <DataToolbar
@@ -67,7 +67,7 @@ export default function AdminCertificatesPage() {
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : certificates.length === 0 ? (
           <EmptyState
             title="Sertifikat topilmadi"
-            text={t.hasFilters ? 'Qidiruvni o\'zgartirib ko\'ring.' : 'Hali hech kim kursni tugatmagan.'}
+            text={t.hasFilters ? 'Qidiruvni oʻzgartirib koʻring.' : 'Hali hech kim kursni tugatmagan.'}
             icon={Award}
           />
         ) : (
@@ -99,7 +99,7 @@ export default function AdminCertificatesPage() {
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
                     <Link href={`/certificates/${c.id}`} className="text-primary hover:underline">
-                      Ko'rish
+                      Koʻrish
                     </Link>
                     <button
                       onClick={() => revoke(c)}

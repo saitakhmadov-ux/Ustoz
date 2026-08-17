@@ -1,7 +1,7 @@
 'use client';
 
-// Ctrl+K (Mac'da ⌘K) — panel bo'ylab tezkor qidiruv va bo'limlarga sakrash.
-// 14 ta bo'lim orasida sichqoncha bilan yurish o'rniga bir necha harf yetadi.
+// Ctrl+K (Macʼda ⌘K) — panel boʻylab tezkor qidiruv va boʻlimlarga sakrash.
+// 14 ta boʻlim orasida sichqoncha bilan yurish oʻrniga bir necha harf yetadi.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,28 +13,28 @@ import {
 import { api } from '@/lib/api';
 import { formatPrice } from '@/lib/constants';
 
-// Bo'limlar — qidiruvsiz ham ko'rinadigan asosiy ro'yxat
+// Boʻlimlar — qidiruvsiz ham koʻrinadigan asosiy roʻyxat
 const SECTIONS = [
   { label: 'Boshqaruv paneli', href: '/admin', icon: LayoutDashboard, keywords: 'dashboard statistika asosiy' },
-  { label: "O'quvchilar tahlili", href: '/admin?tab=students', icon: LayoutDashboard, keywords: 'statistika funnel tugatish' },
+  { label: "Oʻquvchilar tahlili", href: '/admin?tab=students', icon: LayoutDashboard, keywords: 'statistika funnel tugatish' },
   { label: 'Kurslar', href: '/admin/courses', icon: BookOpen, keywords: 'course dars kontent' },
-  { label: 'Kategoriyalar', href: '/admin/categories', icon: FolderTree, keywords: 'category yo\'nalish' },
-  { label: "O'quvchilar", href: '/admin/students', icon: UserCheck, keywords: 'student progress' },
+  { label: 'Kategoriyalar', href: '/admin/categories', icon: FolderTree, keywords: 'category yoʻnalish' },
+  { label: "Oʻquvchilar", href: '/admin/students', icon: UserCheck, keywords: 'student progress' },
   { label: 'Sharhlar', href: '/admin/reviews', icon: MessageSquare, keywords: 'review baho izoh' },
   { label: 'Sertifikatlar', href: '/admin/certificates', icon: Award, keywords: 'certificate diplom' },
   { label: 'Xabarlar', href: '/admin/messages', icon: Send, keywords: 'notification bildirishnoma' },
   { label: 'Moliya', href: '/admin/earnings', icon: Coins, keywords: 'maosh pul daromad aylanma' },
-  { label: "To'lovlar", href: '/admin/earnings?tab=payments', icon: Coins, keywords: 'payment tranzaksiya click payme' },
-  { label: "O'tkazmalar", href: '/admin/earnings?tab=payouts', icon: Coins, keywords: 'payout maosh to\'lash' },
+  { label: "Toʻlovlar", href: '/admin/earnings?tab=payments', icon: Coins, keywords: 'payment tranzaksiya click payme' },
+  { label: "Oʻtkazmalar", href: '/admin/earnings?tab=payouts', icon: Coins, keywords: 'payout maosh toʻlash' },
   { label: 'Odamlar', href: '/admin/users', icon: Users, keywords: 'foydalanuvchi user' },
   { label: 'Ustozlar', href: '/admin/users?role=INSTRUCTOR', icon: Users, keywords: 'instructor teacher' },
-  { label: 'Ustoz AI', href: '/admin/ai', icon: Bot, keywords: 'gemini sun\'iy intellekt' },
+  { label: 'Ustoz AI', href: '/admin/ai', icon: Bot, keywords: 'gemini sunʼiy intellekt' },
   { label: 'Bosh sahifa', href: '/admin/home', icon: LayoutTemplate, keywords: 'hero banner matn' },
   { label: 'Aloqa va himoya', href: '/admin/email', icon: Mail, keywords: 'smtp pochta xat email telegram bot captcha turnstile' },
   { label: 'Baza', href: '/admin/database', icon: Database, keywords: 'database zaxira backup tozalash hajm sql' },
 ];
 
-const ROLE_LABEL = { ADMIN: 'Bosh admin', INSTRUCTOR: 'Ustoz', USER: "O'quvchi" };
+const ROLE_LABEL = { ADMIN: 'Bosh admin', INSTRUCTOR: 'Ustoz', USER: "Oʻquvchi" };
 
 export default function CommandPalette() {
   const router = useRouter();
@@ -74,7 +74,7 @@ export default function CommandPalette() {
     }
   }, [open]);
 
-  // Serverdan qidiruv — yozishni to'xtatgandan 250ms keyin
+  // Serverdan qidiruv — yozishni toʻxtatgandan 250ms keyin
   useEffect(() => {
     const term = q.trim();
     if (term.length < 2) { setResults(null); setLoading(false); return; }
@@ -88,7 +88,7 @@ export default function CommandPalette() {
     return () => clearTimeout(t);
   }, [q]);
 
-  // Bo'limlar mahalliy filtrlanadi — server kutilmaydi
+  // Boʻlimlar mahalliy filtrlanadi — server kutilmaydi
   const sections = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return SECTIONS.slice(0, 6);
@@ -97,7 +97,7 @@ export default function CommandPalette() {
     );
   }, [q]);
 
-  // Barcha natijalar bitta tekis ro'yxatda — klaviatura bilan yurish uchun
+  // Barcha natijalar bitta tekis roʻyxatda — klaviatura bilan yurish uchun
   const flat = useMemo(() => {
     const out = sections.map((s) => ({ type: 'section', href: s.href, label: s.label, icon: s.icon }));
     for (const u of results?.users || []) {
@@ -117,7 +117,7 @@ export default function CommandPalette() {
   const go = useCallback((item) => {
     if (!item) return;
     setOpen(false);
-    // Query'li havolalar sahifa mount bo'lishidan oldin manzilda turishi kerak
+    // Queryʼli havolalar sahifa mount boʻlishidan oldin manzilda turishi kerak
     if (item.href.includes('?')) window.location.assign(item.href);
     else router.push(item.href);
   }, [router]);
@@ -132,10 +132,10 @@ export default function CommandPalette() {
   if (!open) return null;
 
   const groups = [
-    { title: "Bo'limlar", items: flat.filter((i) => i.type === 'section') },
+    { title: "Boʻlimlar", items: flat.filter((i) => i.type === 'section') },
     { title: 'Odamlar', items: flat.filter((i) => i.type === 'user') },
     { title: 'Kurslar', items: flat.filter((i) => i.type === 'course') },
-    { title: "To'lovlar", items: flat.filter((i) => i.type === 'payment') },
+    { title: "Toʻlovlar", items: flat.filter((i) => i.type === 'payment') },
   ].filter((g) => g.items.length > 0);
 
   return (
@@ -156,7 +156,7 @@ export default function CommandPalette() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Bo'lim, odam, kurs yoki to'lov qidiring..."
+            placeholder="Boʻlim, odam, kurs yoki toʻlov qidiring..."
             className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-subtle"
           />
           <kbd className="rounded border border-line px-1.5 py-0.5 text-[10px] text-muted">Esc</kbd>

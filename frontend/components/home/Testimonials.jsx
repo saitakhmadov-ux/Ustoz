@@ -17,15 +17,15 @@ export default function Testimonials({ limit = 6 }) {
       .catch(() => setReviews([]));
   }, [limit]);
 
-  // Sharh bo'lmasa bo'limni ko'rsatmaymiz
+  // Sharh boʻlmasa boʻlimni koʻrsatmaymiz
   if (!reviews || reviews.length === 0) return null;
 
   return (
     <section className="bg-indigo-50/40 py-16 sm:py-20">
       <div className="container-page">
         <Reveal className="mx-auto mb-10 max-w-2xl text-center">
-          <h2 className="text-3xl">O'quvchilar nima deydi</h2>
-          <p className="mt-2 text-muted">Haqiqiy o'quvchilarning kurslar haqidagi fikrlari</p>
+          <h2 className="text-3xl">Oʻquvchilar nima deydi</h2>
+          <p className="mt-2 text-muted">Haqiqiy oʻquvchilarning kurslar haqidagi fikrlari</p>
         </Reveal>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

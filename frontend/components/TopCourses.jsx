@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import CourseCard from '@/components/CourseCard';
 import { SkeletonCard } from '@/components/ui';
 
-// Bosh sahifa uchun eng yuqori baholi kurslar bo'limi
+// Bosh sahifa uchun eng yuqori baholi kurslar boʻlimi
 export default function TopCourses({ limit = 4 }) {
   const [courses, setCourses] = useState(null); // null = yuklanmoqda
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,7 @@ export default function TopCourses({ limit = 4 }) {
       .finally(() => setLoading(false));
   }, [limit]);
 
-  // Baholangan kurs bo'lmasa bo'limni ko'rsatmaymiz
+  // Baholangan kurs boʻlmasa boʻlimni koʻrsatmaymiz
   if (!loading && (!courses || courses.length === 0)) return null;
 
   return (
@@ -30,7 +30,7 @@ export default function TopCourses({ limit = 4 }) {
             <h2 className="flex items-center gap-2 text-3xl">
               <Star size={26} className="text-amber-400" fill="currentColor" /> Eng yuqori baholi kurslar
             </h2>
-            <p className="mt-2 text-muted">O'quvchilar eng yuqori baholagan kurslar</p>
+            <p className="mt-2 text-muted">Oʻquvchilar eng yuqori baholagan kurslar</p>
           </div>
           <Link href="/courses" className="hidden shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline sm:flex">
             Barcha kurslar <ArrowRight size={16} />

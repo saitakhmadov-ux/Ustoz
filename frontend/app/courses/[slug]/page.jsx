@@ -12,6 +12,7 @@ import { useAuth } from '@/lib/auth';
 import { LEVELS, formatPrice, courseAccessMonthsLabel } from '@/lib/constants';
 import { StarRating } from '@/components/Stars';
 import CourseReviews from '@/components/CourseReviews';
+import CourseCover from '@/components/CourseCover';
 import { Spinner, ErrorState } from '@/components/ui';
 
 function CourseDetailInner() {
@@ -20,7 +21,7 @@ function CourseDetailInner() {
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAuth();
   // Ustozning ulashgan havolasidan kelgan promo kod (?promo=KOD) —
-  // checkout sahifasiga o'tkaziladi va u yerda avtomatik qo'llanadi.
+  // checkout sahifasiga oʻtkaziladi va u yerda avtomatik qoʻllanadi.
   const promo = searchParams.get('promo');
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -88,7 +89,7 @@ function CourseDetailInner() {
               )}
               <span className="flex items-center gap-1.5"><BarChart size={16} /> {LEVELS[course.level]}</span>
               <span className="flex items-center gap-1.5"><BookOpen size={16} /> {course.lessonCount} dars</span>
-              <span className="flex items-center gap-1.5"><Users size={16} /> {course._count?.enrollments ?? 0} o'quvchi</span>
+              <span className="flex items-center gap-1.5"><Users size={16} /> {course._count?.enrollments ?? 0} oʻquvchi</span>
               <span className="flex items-center gap-1.5"><Award size={16} /> Sertifikat</span>
             </div>
             <p className="mt-4 text-sm text-subtle">Muallif: <span className="text-white">{course.authorName}</span></p>
@@ -102,7 +103,7 @@ function CourseDetailInner() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={course.thumbnail} alt={course.title} className="h-full w-full object-cover" />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-slate-300"><PlayCircle size={48} /></div>
+                  <CourseCover title={course.title} slug={course.slug} />
                 )}
               </div>
               <div className="p-6">
@@ -126,7 +127,7 @@ function CourseDetailInner() {
                   <li className="flex items-center gap-2"><CheckCircle2 size={16} className="text-primary" /> Yakuniy sertifikat</li>
                 </ul>
                 <p className="mt-3 text-xs text-muted">
-                  Kurs {courseAccessMonthsLabel(course)} davomida ochiq bo'ladi. Muddat tugagach kursga qayta yozilish mumkin.
+                  Kurs {courseAccessMonthsLabel(course)} davomida ochiq boʻladi. Muddat tugagach kursga qayta yozilish mumkin.
                 </p>
               </div>
             </div>
@@ -139,12 +140,12 @@ function CourseDetailInner() {
         <div className="max-w-3xl">
           <h2 className="text-2xl">Kurs dasturi</h2>
           <p className="mt-1 text-sm text-muted">
-            {course.sections.length} bo'lim · {course.lessonCount} dars
+            {course.sections.length} boʻlim · {course.lessonCount} dars
           </p>
 
           <div className="mt-6 space-y-3">
             {course.sections.length === 0 && (
-              <p className="text-sm text-muted">Bu kursga hali darslar qo'shilmagan.</p>
+              <p className="text-sm text-muted">Bu kursga hali darslar qoʻshilmagan.</p>
             )}
             {course.sections.map((section, idx) => {
               const isOpen = openSection === idx;
@@ -194,7 +195,7 @@ function CourseDetailInner() {
         <div className="container-page py-12">
           <div className="max-w-4xl">
             <h2 className="text-2xl">Baholar va sharhlar</h2>
-            <p className="mt-1 text-sm text-muted">O'quvchilarning kurs haqidagi fikrlari</p>
+            <p className="mt-1 text-sm text-muted">Oʻquvchilarning kurs haqidagi fikrlari</p>
             <div className="mt-6">
               <CourseReviews slug={slug} />
             </div>

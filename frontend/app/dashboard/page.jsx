@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Award, PlayCircle, GraduationCap, Lock } from 'lucide-react';
+import { BookOpen, Award, GraduationCap, Lock } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { LEVELS } from '@/lib/constants';
 import RequireAuth from '@/components/RequireAuth';
 import Reveal from '@/components/Reveal';
 import AccessChip from '@/components/AccessChip';
+import CourseCover from '@/components/CourseCover';
 import { Spinner, ErrorState, EmptyState } from '@/components/ui';
 
 function DashboardInner() {
@@ -33,7 +34,7 @@ function DashboardInner() {
       {/* Salomlashuv */}
       <Reveal className="overflow-hidden rounded-3xl bg-gradient-to-br from-band-from via-band-from to-band-to px-7 py-8 text-white sm:px-9">
         <h1 className="text-3xl text-white">Salom, {user?.fullName?.split(' ')[0]} 👋</h1>
-        <p className="mt-1.5 text-white/85">O'quv jarayoningizni davom ettiring va yangi cho'qqilarni zabt eting.</p>
+        <p className="mt-1.5 text-white/85">Oʻquv jarayoningizni davom ettiring va yangi choʻqqilarni zabt eting.</p>
       </Reveal>
 
       {/* Statistika */}
@@ -61,7 +62,7 @@ function DashboardInner() {
             <span className="grid h-12 w-12 place-items-center rounded-xl bg-indigo-50 text-indigo-600"><GraduationCap size={22} /></span>
             <div>
               <div className="font-semibold">Sertifikatlarim</div>
-              <div className="text-sm text-muted">Barchasini ko'rish →</div>
+              <div className="text-sm text-muted">Barchasini koʻrish →</div>
             </div>
           </Link>
         </Reveal>
@@ -77,7 +78,7 @@ function DashboardInner() {
         ) : enrollments.length === 0 ? (
           <EmptyState
             title="Hali kursga yozilmagansiz"
-            text="Kurslar sahifasidan o'zingizga mos kursni tanlang"
+            text="Kurslar sahifasidan oʻzingizga mos kursni tanlang"
             icon={BookOpen}
           />
         ) : (
@@ -92,7 +93,11 @@ function DashboardInner() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={course.thumbnail} alt="" className={`h-full w-full object-cover ${expired ? 'opacity-60 grayscale' : ''}`} />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-slate-300"><PlayCircle size={36} /></div>
+                    <CourseCover
+                      title={course.title}
+                      slug={course.slug}
+                      className={expired ? 'opacity-60 grayscale' : ''}
+                    />
                   )}
                   {expired && (
                     <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-500 px-2.5 py-1 text-xs font-medium text-white">

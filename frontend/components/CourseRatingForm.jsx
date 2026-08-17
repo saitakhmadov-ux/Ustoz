@@ -6,9 +6,9 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { StarInput } from '@/components/Stars';
 
-// Kursga baho + izoh formasi. Holatni (myReview/canReview) o'zi serverdan oladi.
-// Har foydalanuvchiga kurs bo'yicha bitta baho — qaysi sahifada qo'yilsa,
-// boshqa sahifalarda (kurs, tugatish, sertifikat) ham shu ko'rinadi.
+// Kursga baho + izoh formasi. Holatni (myReview/canReview) oʻzi serverdan oladi.
+// Har foydalanuvchiga kurs boʻyicha bitta baho — qaysi sahifada qoʻyilsa,
+// boshqa sahifalarda (kurs, tugatish, sertifikat) ham shu koʻrinadi.
 export default function CourseRatingForm({ slug, onSaved, className = '' }) {
   const { isAuthenticated } = useAuth();
   const [myReview, setMyReview] = useState(null);
@@ -30,7 +30,7 @@ export default function CourseRatingForm({ slug, onSaved, className = '' }) {
         setComment(res.myReview.comment || '');
       }
     } catch {
-      /* jim — ochiq sahifada token bo'lmasligi mumkin */
+      /* jim — ochiq sahifada token boʻlmasligi mumkin */
     } finally {
       setLoading(false);
     }
@@ -55,7 +55,7 @@ export default function CourseRatingForm({ slug, onSaved, className = '' }) {
   };
 
   const removeReview = async () => {
-    if (!confirm('Bahoyingizni o\'chirasizmi?')) return;
+    if (!confirm('Bahoyingizni oʻchirasizmi?')) return;
     try {
       await api.del(`/courses/${slug}/reviews`);
       setRating(0); setComment(''); setMyReview(null);
@@ -64,7 +64,7 @@ export default function CourseRatingForm({ slug, onSaved, className = '' }) {
     } catch (err) { alert(err.message); }
   };
 
-  // Kirmagan / yozilmagan / hali yuklanmoqda bo'lsa forma ko'rsatilmaydi
+  // Kirmagan / yozilmagan / hali yuklanmoqda boʻlsa forma koʻrsatilmaydi
   if (!isAuthenticated || loading || !canReview) return null;
 
   return (
@@ -95,7 +95,7 @@ export default function CourseRatingForm({ slug, onSaved, className = '' }) {
         </button>
         {myReview && (
           <button type="button" onClick={removeReview} className="btn-ghost text-red-600">
-            <Trash2 size={16} /> O'chirish
+            <Trash2 size={16} /> Oʻchirish
           </button>
         )}
       </div>

@@ -1,11 +1,11 @@
 'use client';
 
 // Mashq yakunlangandan keyingi natija paneli.
-// Maqsadga yetilgan bo'lsa dars yakunlanadi va keyingisiga o'tish tugmasi chiqadi.
+// Maqsadga yetilgan boʻlsa dars yakunlanadi va keyingisiga oʻtish tugmasi chiqadi.
 //
-// O'ng tomonda — yulduzchali baho: aniqlik va maqsadli tezlikka yetish
+// Oʻng tomonda — yulduzchali baho: aniqlik va maqsadli tezlikka yetish
 // darajasidan chiqadigan umumiy foiz (lib/typing.js -> scoreOf/starsOf).
-// Animatsiya uslubi darsga qarab o'zgaradi (styleFor).
+// Animatsiya uslubi darsga qarab oʻzgaradi (styleFor).
 
 import Link from 'next/link';
 import {
@@ -14,7 +14,7 @@ import {
 import { StarRating } from '@/components/Stars';
 import { scoreOf, starsOf, starLabel } from '@/lib/typing';
 
-// Tantana uchun konfetti bo'lakchalari — faqat shu uslubdagi darslarda
+// Tantana uchun konfetti boʻlakchalari — faqat shu uslubdagi darslarda
 const CONFETTI = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#0ea5e9', '#a855f7'];
 
 function Confetti() {
@@ -72,12 +72,12 @@ export default function TypingResults({
             <p className="text-sm text-muted">
               {passed
                 ? 'Maqsadli tezlik va aniqlikka yetdingiz.'
-                : `Kerak: ${target.wpm} so'z/daqiqa va ${target.accuracy}% aniqlik. Qayta urinib ko'ring — urinishlar soni cheklanmagan.`}
+                : `Kerak: ${target.wpm} soʻz/daqiqa va ${target.accuracy}% aniqlik. Qayta urinib koʻring — urinishlar soni cheklanmagan.`}
             </p>
           </div>
         </div>
 
-        {/* Baho — sarlavha yonidagi bo'sh joyda */}
+        {/* Baho — sarlavha yonidagi boʻsh joyda */}
         <div className="tp-star-in flex items-center gap-3 rounded-xl bg-surface-glass px-4 py-2.5">
           <StarRating value={stars} size={22} />
           <span className="leading-tight">
@@ -88,7 +88,7 @@ export default function TypingResults({
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat value={result.wpm} label="so'z/daqiqa" good={result.wpm >= target.wpm} />
+        <Stat value={result.wpm} label="soʻz/daqiqa" good={result.wpm >= target.wpm} />
         <Stat value={`${result.accuracy}%`} label="aniqlik" good={result.accuracy >= target.accuracy} />
         <Stat value={result.errors} label="xato belgi" />
         <Stat value={`${Math.round(result.durationMs / 1000)}s`} label="vaqt" />

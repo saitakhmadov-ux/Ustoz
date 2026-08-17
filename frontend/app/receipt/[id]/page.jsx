@@ -36,7 +36,7 @@ function ReceiptInner() {
         <div className={`px-6 py-8 text-center text-white ${paid ? 'bg-gradient-to-r from-band-from to-band-to' : 'bg-inverse'}`}>
           {paid && <CheckCircle2 size={48} className="mx-auto" />}
           <h1 className="mt-3 text-2xl text-white">
-            {paid ? 'To\'lov muvaffaqiyatli!' : 'To\'lov holati'}
+            {paid ? 'Toʻlov muvaffaqiyatli!' : 'Toʻlov holati'}
           </h1>
           <p className="mt-1 text-white/85">{PAYMENT_STATUS[payment.status]}</p>
         </div>
@@ -57,7 +57,7 @@ function ReceiptInner() {
               <dd className="font-mono text-xs">{payment.transactionId}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-muted">To'lov usuli</dt>
+              <dt className="text-muted">Toʻlov usuli</dt>
               <dd>{PAYMENT_PROVIDERS[payment.provider]}</dd>
             </div>
             <div className="flex justify-between">
@@ -68,7 +68,7 @@ function ReceiptInner() {
               <dt className="text-muted">Sana</dt>
               <dd>{date}</dd>
             </div>
-            {/* Promo kod ishlatilgan bo'lsa — asl narx va chegirma ko'rsatiladi */}
+            {/* Promo kod ishlatilgan boʻlsa — asl narx va chegirma koʻrsatiladi */}
             {payment.discountPct > 0 && (
               <>
                 <div className="flex justify-between border-t border-line pt-3">

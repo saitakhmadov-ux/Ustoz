@@ -50,7 +50,7 @@ function CodeBlock({ code }) {
 }
 
 // Kurs-doirasidagi AI Ustoz chat modali.
-// props: open, onClose, slug, lessonId, seed({code, errorText}) — playground'dan uzatilgan kontekst.
+// props: open, onClose, slug, lessonId, seed({code, errorText}) — playgroundʼdan uzatilgan kontekst.
 export default function AIChat({ open, onClose, slug, lessonId, seed }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -66,7 +66,7 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
     setInput('');
     setError('');
     const history = messages.map((mm) => ({ role: mm.role, text: mm.text }));
-    // Foydalanuvchi xabarini ko'rsatishda kod/xatoni ham ko'rsatamiz
+    // Foydalanuvchi xabarini koʻrsatishda kod/xatoni ham koʻrsatamiz
     let shown = text;
     if (extra.code) shown += `\n\n\`\`\`javascript\n${extra.code}\n\`\`\``;
     if (extra.errorText) shown += `\n\n⚠️ Xato: ${extra.errorText}`;
@@ -100,15 +100,15 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
     }
   };
 
-  // Playground'dan seed kelsa — bir marta avtomatik yuborish
+  // Playgroundʼdan seed kelsa — bir marta avtomatik yuborish
   useEffect(() => {
     if (!open || !seed) return;
     const sig = JSON.stringify(seed);
     if (seedSent.current === sig) return;
     seedSent.current = sig;
     const q = seed.errorText
-      ? 'Kodimda xato bor. Sababini tushuntirib, to\'g\'rilangan variantini bering.'
-      : 'Ushbu kodni tekshirib, yaxshilash bo\'yicha maslahat bering.';
+      ? 'Kodimda xato bor. Sababini tushuntirib, toʻgʻrilangan variantini bering.'
+      : 'Ushbu kodni tekshirib, yaxshilash boʻyicha maslahat bering.';
     send(q, { code: seed.code, errorText: seed.errorText });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, seed]);
@@ -142,7 +142,7 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/20"><Bot size={22} /></span>
           <div className="flex-1">
             <p className="font-display font-semibold leading-tight">AI Ustoz</p>
-            <p className="text-xs text-indigo-100">Kurs bo'yicha 24/7 yordamchi</p>
+            <p className="text-xs text-indigo-100">Kurs boʻyicha 24/7 yordamchi</p>
           </div>
           <button onClick={onClose} className="rounded-lg p-1.5 hover:bg-white/20"><X size={20} /></button>
         </div>
@@ -154,10 +154,10 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
               <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-indigo-100 text-primary"><Sparkles size={26} /></span>
               <p className="mt-3 font-display text-lg font-semibold">Savolingiz bormi?</p>
               <p className="mt-1 text-sm text-muted">
-                Kurs mavzusi, kod yoki xatolik bo'yicha bemalol so'rang. Men shu kurs doirasida yordam beraman.
+                Kurs mavzusi, kod yoki xatolik boʻyicha bemalol soʻrang. Men shu kurs doirasida yordam beraman.
               </p>
               <div className="mt-4 space-y-2 text-left">
-                {['Bu darsdagi tushunchani sodda tilda tushuntiring', 'Kodimdagi xatoni qanday tuzataman?', 'Bu mavzu bo\'yicha mashq bering'].map((s) => (
+                {['Bu darsdagi tushunchani sodda tilda tushuntiring', 'Kodimdagi xatoni qanday tuzataman?', 'Bu mavzu boʻyicha mashq bering'].map((s) => (
                   <button
                     key={s}
                     onClick={() => send(s)}
@@ -184,11 +184,11 @@ export default function AIChat({ open, onClose, slug, lessonId, seed }) {
                   <div className="mt-1.5 flex items-center gap-1.5 pl-1">
                     {mm.feedback === null ? (
                       <>
-                        <span className="text-[11px] text-muted">Foydali bo'ldimi?</span>
+                        <span className="text-[11px] text-muted">Foydali boʻldimi?</span>
                         <button onClick={() => sendFeedback(i, true)} className="rounded-md p-1 text-subtle transition-colors hover:bg-emerald-50 hover:text-emerald-600" title="Ha, foydali">
                           <ThumbsUp size={14} />
                         </button>
-                        <button onClick={() => sendFeedback(i, false)} className="rounded-md p-1 text-subtle transition-colors hover:bg-red-50 hover:text-red-500" title="Yo'q">
+                        <button onClick={() => sendFeedback(i, false)} className="rounded-md p-1 text-subtle transition-colors hover:bg-red-50 hover:text-red-500" title="Yoʻq">
                           <ThumbsDown size={14} />
                         </button>
                       </>

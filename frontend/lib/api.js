@@ -1,4 +1,4 @@
-// Backend API bilan ishlash uchun fetch o'ramchisi
+// Backend API bilan ishlash uchun fetch oʻramchisi
 import { API_URL } from './constants';
 
 // Brauzerda tokenni localStorage dan olamiz
@@ -19,7 +19,7 @@ export function clearToken() {
   }
 }
 
-// Asosiy so'rov funksiyasi
+// Asosiy soʻrov funksiyasi
 export async function apiFetch(path, { method = 'GET', body, auth = true, headers = {} } = {}) {
   const opts = {
     method,
@@ -51,12 +51,12 @@ export async function apiFetch(path, { method = 'GET', body, auth = true, header
   }
 
   if (!res.ok) {
-    const message = data?.message || 'So\'rovda xatolik yuz berdi';
+    const message = data?.message || 'Soʻrovda xatolik yuz berdi';
     const err = new Error(message);
     err.status = res.status;
     if (data?.code) err.code = data.code;
-    // Xatolik bilan kelgan qo'shimcha maydonlar (masalan EMAIL_NOT_VERIFIED
-    // javobidagi pendingToken) yo'qolib ketmasin
+    // Xatolik bilan kelgan qoʻshimcha maydonlar (masalan EMAIL_NOT_VERIFIED
+    // javobidagi pendingToken) yoʻqolib ketmasin
     err.data = data || null;
     throw err;
   }
@@ -83,7 +83,7 @@ export function uploadFile(path, file, { onProgress } = {}) {
 
     xhr.onload = () => {
       let data = null;
-      try { data = JSON.parse(xhr.responseText); } catch { /* bo'sh */ }
+      try { data = JSON.parse(xhr.responseText); } catch { /* boʻsh */ }
       if (xhr.status >= 200 && xhr.status < 300) {
         resolve(data);
       } else {
@@ -111,7 +111,7 @@ export async function downloadFile(path, fallbackName = 'hisobot.csv') {
     throw new Error(message);
   }
 
-  // Fayl nomini server sarlavhasidan olamiz (bo'lmasa zaxira nom)
+  // Fayl nomini server sarlavhasidan olamiz (boʻlmasa zaxira nom)
   const disp = res.headers.get('Content-Disposition') || '';
   const match = disp.match(/filename="?([^"]+)"?/);
   const name = match ? match[1] : fallbackName;

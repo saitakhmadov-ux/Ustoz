@@ -1,4 +1,4 @@
-// Video URL'ni embed (iframe) manziliga aylantirish
+// Video URLʼni embed (iframe) manziliga aylantirish
 export function getEmbedUrl(url) {
   if (!url) return null;
   try {
@@ -10,21 +10,21 @@ export function getEmbedUrl(url) {
     const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
     if (vm) return `https://player.vimeo.com/video/${vm[1]}`;
 
-    return url; // to'g'ridan-to'g'ri (mp4 yoki embed)
+    return url; // toʻgʻridan-toʻgʻri (mp4 yoki embed)
   } catch {
     return url;
   }
 }
 
-// Havola to'g'ridan-to'g'ri video fayl (mp4/webm) ekanligini aniqlash
+// Havola toʻgʻridan-toʻgʻri video fayl (mp4/webm) ekanligini aniqlash
 export function isDirectVideo(url) {
   return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url || '');
 }
 
 // ---- "Biz haqimizda" sahifasi uchun ----
 // Yuqoridagi ikkitasi dars videolari uchun ishlatiladi va tanilmagan havolani
-// ham qaytaraveradi. Bu yerda esa admin kiritgan havolaga ishonib bo'lmaydi,
-// shuning uchun tur aniq ajratiladi va noma'lum havola iframe'ga berilmaydi.
+// ham qaytaraveradi. Bu yerda esa admin kiritgan havolaga ishonib boʻlmaydi,
+// shuning uchun tur aniq ajratiladi va nomaʼlum havola iframeʼga berilmaydi.
 
 const YOUTUBE_ID = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{6,})/i;
 const VIMEO_ID = /vimeo\.com\/(?:video\/)?(\d+)/i;
@@ -41,9 +41,9 @@ export function videoEmbed(url) {
   const vm = raw.match(VIMEO_ID);
   if (vm) return { kind: 'embed', src: `https://player.vimeo.com/video/${vm[1]}` };
 
-  // Yuklangan fayl (/uploads/...) yoki to'g'ridan-to'g'ri video havolasi
+  // Yuklangan fayl (/uploads/...) yoki toʻgʻridan-toʻgʻri video havolasi
   if (raw.startsWith('/uploads/') || FILE_EXT.test(raw)) return { kind: 'file', src: raw };
 
-  // Tanib bo'lmagan havolani iframe'ga bermaymiz — noto'g'ri sahifa yuklanmasin
+  // Tanib boʻlmagan havolani iframeʼga bermaymiz — notoʻgʻri sahifa yuklanmasin
   return { kind: 'none', src: '' };
 }

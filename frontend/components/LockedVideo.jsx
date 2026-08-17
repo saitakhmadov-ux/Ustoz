@@ -4,11 +4,11 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { Play, Pause, Volume2, VolumeX, Lock, CheckCircle2, Loader2 } from 'lucide-react';
 import { isDirectVideo, getEmbedUrl } from '@/lib/video';
 
-// Video oxirigacha ko'rilishini majburlaydi: oldinga surib bo'lmaydi, oxiriga
+// Video oxirigacha koʻrilishini majburlaydi: oldinga surib boʻlmaydi, oxiriga
 // yetganда (>=98% yoki tugaganда) `onComplete` chaqiriladi. play/pause + ovoz mumkin.
-// Video ilgari ko'rilgan bo'lsa ham SHU qulflangan rejim qoladi (erkin surish yo'q) —
-// lekin ostidagi materiallar allaqachon ochiq bo'ladi (learn page videoGate=false).
-// `done=true` bo'lsa onComplete o'tkazilmaydi (qayta belgilash/yangilash shart emas).
+// Video ilgari koʻrilgan boʻlsa ham SHU qulflangan rejim qoladi (erkin surish yoʻq) —
+// lekin ostidagi materiallar allaqachon ochiq boʻladi (learn page videoGate=false).
+// `done=true` boʻlsa onComplete oʻtkazilmaydi (qayta belgilash/yangilash shart emas).
 const DONE_THRESHOLD = 0.98;
 
 function ytId(url) {
@@ -30,7 +30,7 @@ export default function LockedVideo({ videoUrl, onComplete }) {
   if (yt) return <YouTubeLocked videoId={yt} onComplete={onComplete} />;
   if (direct) return <DirectLocked src={videoUrl} onComplete={onComplete} />;
 
-  // Boshqa embed (masalan Vimeo) — qulf qo'llab-quvvatlanmaydi, oddiy ko'rsatamiz
+  // Boshqa embed (masalan Vimeo) — qulf qoʻllab-quvvatlanmaydi, oddiy koʻrsatamiz
   return (
     <div className="overflow-hidden rounded-2xl bg-black">
       <iframe
@@ -44,7 +44,7 @@ export default function LockedVideo({ videoUrl, onComplete }) {
   );
 }
 
-// Umumiy boshqaruv paneli (surib bo'lmaydigan progress + play/pause + ovoz)
+// Umumiy boshqaruv paneli (surib boʻlmaydigan progress + play/pause + ovoz)
 function Controls({ playing, onToggle, muted, onMute, volume, onVolume, current, duration }) {
   const pct = duration > 0 ? Math.min(100, (current / duration) * 100) : 0;
   return (
@@ -53,8 +53,8 @@ function Controls({ playing, onToggle, muted, onMute, volume, onVolume, current,
         {playing ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}
       </button>
 
-      {/* Surib bo'lmaydigan progress (ko'rsatkich, interaktiv emas) */}
-      <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/20" title="Oldinga surib bo'lmaydi">
+      {/* Surib boʻlmaydigan progress (koʻrsatkich, interaktiv emas) */}
+      <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/20" title="Oldinga surib boʻlmaydi">
         <div className="absolute inset-y-0 left-0 rounded-full bg-indigo-400" style={{ width: `${pct}%` }} />
       </div>
 
@@ -76,12 +76,12 @@ function Controls({ playing, onToggle, muted, onMute, volume, onVolume, current,
 function Hint() {
   return (
     <p className="mt-2 flex items-center gap-1.5 text-xs text-muted">
-      <Lock size={13} /> Videoni oxirigacha ko'ring — keyin matn, PDF va test ochiladi. Oldinga surib bo'lmaydi.
+      <Lock size={13} /> Videoni oxirigacha koʻring — keyin matn, PDF va test ochiladi. Oldinga surib boʻlmaydi.
     </p>
   );
 }
 
-// ---------- To'g'ridan-to'g'ri (mp4/webm) qulflangan pleer ----------
+// ---------- Toʻgʻridan-toʻgʻri (mp4/webm) qulflangan pleer ----------
 function DirectLocked({ src, onComplete }) {
   const ref = useRef(null);
   const maxRef = useRef(0);
@@ -107,7 +107,7 @@ function DirectLocked({ src, onComplete }) {
   };
   const onSeeking = () => {
     const v = ref.current; if (!v) return;
-    // Oldinga sakrashni bloklaymiz — eng ko'p ko'rilgan nuqtaga qaytaramiz
+    // Oldinga sakrashni bloklaymiz — eng koʻp koʻrilgan nuqtaga qaytaramiz
     if (v.currentTime > maxRef.current + 1.2) v.currentTime = maxRef.current;
   };
 
@@ -261,7 +261,7 @@ function YouTubeLocked({ videoId, onComplete }) {
         <div className="aspect-video w-full">
           <div ref={hostRef} className="h-full w-full" />
         </div>
-        {/* Iframe ustiga shaffof qatlam — YouTube ustiga bosib to'xtatish/sakrashни oldini oladi */}
+        {/* Iframe ustiga shaffof qatlam — YouTube ustiga bosib toʻxtatish/sakrashни oldini oladi */}
         <div className="absolute inset-0 bottom-[46px] cursor-pointer" onClick={toggle} aria-hidden="true" />
         {!ready && (
           <div className="absolute inset-0 grid place-items-center text-white/70">

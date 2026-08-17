@@ -17,7 +17,7 @@ import {
 const TABS = [
   { key: 'overview', label: 'Umumiy' },
   { key: 'transactions', label: 'Tranzaksiyalar' },
-  { key: 'payouts', label: "To'lovlar" },
+  { key: 'payouts', label: "Toʻlovlar" },
   { key: 'promo', label: 'Promo kodlar' },
 ];
 
@@ -26,7 +26,7 @@ function formatDate(d) {
 }
 
 // Ustozning shaxsiy maosh paneli. Bosh admin ham ochishi mumkin —
-// u holda barcha kurslar bo'yicha jamlangan ko'rinish chiqadi.
+// u holda barcha kurslar boʻyicha jamlangan koʻrinish chiqadi.
 export default function InstructorEarnings() {
   const { isAdmin } = useAuth();
   const [tab, setTab] = useState('overview');
@@ -76,12 +76,12 @@ export default function InstructorEarnings() {
         </div>
       </div>
 
-      {/* Chop etilganda sana ko'rinsin */}
+      {/* Chop etilganda sana koʻrinsin */}
       <p className="print-only mt-2 text-xs text-muted">
         Hisobot sanasi: {new Date().toLocaleDateString('uz-UZ')}
       </p>
 
-      {/* Asosiy ko'rsatkichlar — barcha tablarda ko'rinadi */}
+      {/* Asosiy koʻrsatkichlar — barcha tablarda koʻrinadi */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Jami ishlagan daromad"
@@ -91,16 +91,16 @@ export default function InstructorEarnings() {
           color="bg-emerald-50 text-emerald-600"
         />
         <StatCard
-          label="Kutilayotgan (to'lanmagan)"
+          label="Kutilayotgan (toʻlanmagan)"
           value={balance.pending}
-          hint="Hisobingizga hali o'tmagan"
+          hint="Hisobingizga hali oʻtmagan"
           icon={Clock}
           color="bg-amber-50 text-amber-600"
         />
         <StatCard
-          label="Hisobingizga o'tgan"
+          label="Hisobingizga oʻtgan"
           value={balance.paid}
-          hint="Tasdiqlangan o'tkazmalar"
+          hint="Tasdiqlangan oʻtkazmalar"
           icon={CheckCircle2}
           color="bg-indigo-50 text-indigo-600"
         />
@@ -153,7 +153,7 @@ function Overview({ data, period, setPeriod }) {
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="card p-5">
           <h2 className="text-lg">Pul qanday taqsimlangan</h2>
-          <p className="mt-1 text-sm text-muted">Butun davr bo'yicha jami</p>
+          <p className="mt-1 text-sm text-muted">Butun davr boʻyicha jami</p>
           <div className="mt-4">
             <SplitBreakdown
               gross={totals.gross}
@@ -181,7 +181,7 @@ function Overview({ data, period, setPeriod }) {
           </div>
           <div className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4 text-sm">
             <div>
-              <div className="text-muted">O'rtacha chek</div>
+              <div className="text-muted">Oʻrtacha chek</div>
               <div className="mt-0.5 font-semibold tabular-nums">{formatMoney(totals.avgCheck)}</div>
             </div>
             <div>
@@ -219,14 +219,14 @@ function Overview({ data, period, setPeriod }) {
       {/* Kurslar kesimi */}
       <div className="card overflow-hidden">
         <div className="p-5 pb-3">
-          <h2 className="text-lg">Kurslar bo'yicha</h2>
+          <h2 className="text-lg">Kurslar boʻyicha</h2>
           <p className="mt-1 text-sm text-muted">Qaysi kurs qancha daromad keltirgan</p>
         </div>
         {byCourse.length === 0 ? (
           <div className="p-5 pt-0">
             <EmptyState
-              title="Pulli kurs yo'q"
-              text="Sizga pulli kurs biriktirilgach, daromad shu yerda ko'rinadi."
+              title="Pulli kurs yoʻq"
+              text="Sizga pulli kurs biriktirilgach, daromad shu yerda koʻrinadi."
               icon={Coins}
             />
           </div>
@@ -353,7 +353,7 @@ function Transactions({ courses }) {
         </button>
       </div>
 
-      {/* Filtrga mos yig'indi */}
+      {/* Filtrga mos yigʻindi */}
       {sums && (
         <div className="mt-4 grid gap-3 sm:grid-cols-4">
           {[
@@ -375,8 +375,8 @@ function Transactions({ courses }) {
       <div className="mt-4">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : rows.length === 0 ? (
           <EmptyState
-            title="Tranzaksiya yo'q"
-            text={hasFilters ? 'Filtrni o\'zgartirib ko\'ring.' : 'Pulli kursingiz sotilgach, har bir sotuv shu yerda ko\'rinadi.'}
+            title="Tranzaksiya yoʻq"
+            text={hasFilters ? 'Filtrni oʻzgartirib koʻring.' : 'Pulli kursingiz sotilgach, har bir sotuv shu yerda koʻrinadi.'}
             icon={Receipt}
           />
         ) : (
@@ -387,9 +387,9 @@ function Transactions({ courses }) {
                   <tr>
                     <th className="px-4 py-3">Sana</th>
                     <th className="px-4 py-3">Kurs</th>
-                    <th className="px-4 py-3">O'quvchi</th>
+                    <th className="px-4 py-3">Oʻquvchi</th>
                     <th className="px-4 py-3 text-right">Asl narx</th>
-                    <th className="px-4 py-3 text-right">To'langan</th>
+                    <th className="px-4 py-3 text-right">Toʻlangan</th>
                     <th className="px-4 py-3 text-right">Soliq</th>
                     <th className="px-4 py-3">Manba</th>
                     <th className="px-4 py-3 text-right">Sizning ulush</th>
@@ -449,7 +449,7 @@ function Transactions({ courses }) {
   );
 }
 
-// ---------- To'lovlar (o'tkazmalar) ----------
+// ---------- Toʻlovlar (oʻtkazmalar) ----------
 function Payouts() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -476,7 +476,7 @@ function Payouts() {
             <div className="mt-0.5 font-display text-xl font-bold tabular-nums">{formatMoney(data.balance.earned)}</div>
           </div>
           <div>
-            <div className="text-sm text-muted">Hisobingizga o'tgan</div>
+            <div className="text-sm text-muted">Hisobingizga oʻtgan</div>
             <div className="mt-0.5 font-display text-xl font-bold tabular-nums text-indigo-600">{formatMoney(data.balance.paid)}</div>
           </div>
           <div>
@@ -486,12 +486,12 @@ function Payouts() {
         </div>
       </div>
 
-      <h2 className="mt-6 text-lg">Hisobingizga o'tgan summalar</h2>
+      <h2 className="mt-6 text-lg">Hisobingizga oʻtgan summalar</h2>
       <div className="mt-3">
         {data.payouts.length === 0 ? (
           <EmptyState
-            title="Hali o'tkazma yo'q"
-            text="Bosh admin o'tkazmani rasmiylashtirgach, u shu yerda ko'rinadi."
+            title="Hali oʻtkazma yoʻq"
+            text="Bosh admin oʻtkazmani rasmiylashtirgach, u shu yerda koʻrinadi."
             icon={Wallet}
           />
         ) : (
@@ -520,7 +520,7 @@ function Payouts() {
                       <td className="px-4 py-3 text-muted">{p.note || '—'}</td>
                       <td className="px-4 py-3">
                         {p.status === 'PAID' ? (
-                          <span className="badge bg-emerald-50 text-emerald-700"><CheckCircle2 size={12} /> O'tkazilgan</span>
+                          <span className="badge bg-emerald-50 text-emerald-700"><CheckCircle2 size={12} /> Oʻtkazilgan</span>
                         ) : (
                           <span className="badge bg-amber-50 text-amber-700"><Clock size={12} /> Kutilmoqda</span>
                         )}
@@ -568,7 +568,7 @@ function PromoCodes({ courses }) {
     try {
       const res = await api.get('/admin/teaching/promo-codes/suggest');
       setForm((f) => ({ ...f, code: res.code }));
-    } catch { /* taklif olinmasa foydalanuvchi o'zi kiritadi */ }
+    } catch { /* taklif olinmasa foydalanuvchi oʻzi kiritadi */ }
   };
 
   const create = async (e) => {
@@ -580,7 +580,7 @@ function PromoCodes({ courses }) {
         code: form.code.trim().toUpperCase(),
         discountPct: Number(form.discountPct),
         courseId: form.courseId || null,
-        // Bo'sh qoldirilsa — muddatsiz / cheksiz
+        // Boʻsh qoldirilsa — muddatsiz / cheksiz
         expiresAt: form.expiresAt || null,
         maxUses: form.maxUses ? Number(form.maxUses) : null,
       });
@@ -602,7 +602,7 @@ function PromoCodes({ courses }) {
   };
 
   const remove = async (p) => {
-    if (!confirm(`"${p.code}" kodini o'chirasizmi? U orqali yozilgan daromad tarixi saqlanadi.`)) return;
+    if (!confirm(`"${p.code}" kodini oʻchirasizmi? U orqali yozilgan daromad tarixi saqlanadi.`)) return;
     try {
       await api.del(`/admin/teaching/promo-codes/${p.id}`);
       load();
@@ -614,7 +614,7 @@ function PromoCodes({ courses }) {
       await navigator.clipboard.writeText(text);
       setCopied(id);
       setTimeout(() => setCopied(''), 1800);
-    } catch { alert('Nusxalab bo\'lmadi'); }
+    } catch { alert('Nusxalab boʻlmadi'); }
   };
 
   // Kod uchun ulashiladigan havola
@@ -637,11 +637,11 @@ function PromoCodes({ courses }) {
         <div>
           <h2 className="text-lg">Promo kodlaringiz</h2>
           <p className="mt-1 max-w-2xl text-sm text-muted">
-            Kod orqali kelgan o'quvchidan sof foydaning <b>{data.referralPct}%</b> i sizga
-            o'tadi (oddiy sotuvda esa {data.organicPct}%). Chegirma {data.maxDiscountPct}% gacha —
-            chegirma o'quvchini kodni ishlatishga undaydi, lekin sotuv summasini
+            Kod orqali kelgan oʻquvchidan sof foydaning <b>{data.referralPct}%</b> i sizga
+            oʻtadi (oddiy sotuvda esa {data.organicPct}%). Chegirma {data.maxDiscountPct}% gacha —
+            chegirma oʻquvchini kodni ishlatishga undaydi, lekin sotuv summasini
             kamaytirgani uchun ulushingiz ham shunga mos kamayadi. Har bir kod faqat
-            sizning kursingizda va bitta o'quvchida bir martagina ishlaydi.
+            sizning kursingizda va bitta oʻquvchida bir martagina ishlaydi.
           </p>
         </div>
         <button onClick={openForm} className="btn-primary no-print">
@@ -695,7 +695,7 @@ function PromoCodes({ courses }) {
             </div>
           </div>
 
-          {/* Ixtiyoriy cheklovlar — bo'sh qoldirilsa kod muddatsiz va cheksiz */}
+          {/* Ixtiyoriy cheklovlar — boʻsh qoldirilsa kod muddatsiz va cheksiz */}
           <div className="mt-4 grid gap-4 border-t border-line pt-4 md:grid-cols-2">
             <div>
               <label className="label">Amal muddati</label>
@@ -721,7 +721,7 @@ function PromoCodes({ courses }) {
               <p className="mt-1 text-xs text-muted">
                 {form.expiresAt
                   ? 'Shu kunning oxirigacha amal qiladi'
-                  : "Bo'sh — kod muddatsiz ishlaydi"}
+                  : "Boʻsh — kod muddatsiz ishlaydi"}
               </p>
             </div>
             <div>
@@ -736,8 +736,8 @@ function PromoCodes({ courses }) {
               />
               <p className="mt-1 text-xs text-muted">
                 {form.maxUses
-                  ? `Birinchi ${form.maxUses} ta xariddan keyin kod to'xtaydi`
-                  : "Bo'sh — cheksiz. Har o'quvchi kodni baribir bir marta ishlatadi"}
+                  ? `Birinchi ${form.maxUses} ta xariddan keyin kod toʻxtaydi`
+                  : "Boʻsh — cheksiz. Har oʻquvchi kodni baribir bir marta ishlatadi"}
               </p>
             </div>
           </div>
@@ -756,8 +756,8 @@ function PromoCodes({ courses }) {
       <div className="mt-5 space-y-4">
         {data.promoCodes.length === 0 ? (
           <EmptyState
-            title="Hali kod yo'q"
-            text="Promo kod yarating va uni ijtimoiy tarmoqlarda ulashing — kod orqali kelgan har bir o'quvchidan ko'proq ulush olasiz."
+            title="Hali kod yoʻq"
+            text="Promo kod yarating va uni ijtimoiy tarmoqlarda ulashing — kod orqali kelgan har bir oʻquvchidan koʻproq ulush olasiz."
             icon={Ticket}
           />
         ) : data.promoCodes.map((p) => {
@@ -777,7 +777,7 @@ function PromoCodes({ courses }) {
                     )}
                     {/* Holat: nofaol / muddati tugagan / limit tugagan / ishlayapti */}
                     {!p.active ? (
-                      <span className="badge bg-slate-100 text-muted">O'chirilgan</span>
+                      <span className="badge bg-slate-100 text-muted">Oʻchirilgan</span>
                     ) : p.expired ? (
                       <span className="badge bg-red-50 text-red-700">
                         <CalendarX size={12} /> Muddati tugagan
@@ -794,7 +794,7 @@ function PromoCodes({ courses }) {
                     {p.course ? `Faqat: ${p.course.title}` : 'Barcha kurslaringiz uchun'}
                     {' · '}Yaratilgan: {formatDate(p.createdAt)}
                   </p>
-                  {/* Cheklovlar — o'rnatilmagani "cheksiz" deb ko'rsatiladi */}
+                  {/* Cheklovlar — oʻrnatilmagani "cheksiz" deb koʻrsatiladi */}
                   <p className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
                     <span className="inline-flex items-center gap-1">
                       <CalendarClock size={12} />
@@ -808,7 +808,7 @@ function PromoCodes({ courses }) {
                         ? `Limit: ${p.uses}/${p.maxUses} ishlatilgan`
                         : 'Limitsiz'}
                     </span>
-                    <span>Har o'quvchi — 1 marta</span>
+                    <span>Har oʻquvchi — 1 marta</span>
                   </p>
                 </div>
                 <div className="no-print flex gap-1.5">
@@ -820,13 +820,13 @@ function PromoCodes({ courses }) {
                     {copied === `code-${p.id}` ? <Check size={16} className="text-emerald-600" /> : <Copy size={16} />}
                     Kod
                   </button>
-                  <button onClick={() => toggle(p)} className="btn-ghost" title={p.active ? "O'chirish" : 'Yoqish'}>
-                    <Power size={16} /> {p.active ? "O'chirish" : 'Yoqish'}
+                  <button onClick={() => toggle(p)} className="btn-ghost" title={p.active ? "Oʻchirish" : 'Yoqish'}>
+                    <Power size={16} /> {p.active ? "Oʻchirish" : 'Yoqish'}
                   </button>
                   <button
                     onClick={() => remove(p)}
                     className="grid h-9 w-9 place-items-center rounded-lg text-red-600 hover:bg-red-50"
-                    title="Butunlay o'chirish"
+                    title="Butunlay oʻchirish"
                   >
                     <Trash2 size={16} />
                   </button>

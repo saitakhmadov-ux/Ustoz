@@ -6,13 +6,13 @@ import { SITE_NAME, formatDateUz } from '@/lib/constants';
 
 // Ijtimoiy tarmoq uchun ulashish kartasi (1080×1080).
 //
-// Karta SVG sifatida yasaladi, so'ng canvas orqali PNG ga o'giriladi —
+// Karta SVG sifatida yasaladi, soʻng canvas orqali PNG ga oʻgiriladi —
 // hech qanday tashqi kutubxona kerak emas.
 //
 // DIQQAT: SVG canvas ichida chizilganda veb-shriftlar (Google Fonts)
-// mavjud bo'lmaydi, faqat tizim shriftlari ishlaydi. Shuning uchun bu yerda
+// mavjud boʻlmaydi, faqat tizim shriftlari ishlaydi. Shuning uchun bu yerda
 // ataylab tizim shrift stegi ishlatilgan — aks holda karta zaxira shriftga
-// tushib, kutilmagan ko'rinishga kirardi.
+// tushib, kutilmagan koʻrinishga kirardi.
 const FONT = "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 const SIZE = 1080;
 
@@ -25,8 +25,8 @@ function esc(s = '') {
     .replace(/"/g, '&quot;');
 }
 
-// Matnni belgilangan kenglikka sig'dirib qatorlarga bo'ladi.
-// Canvas o'lchovisiz taxminiy hisob: belgi kengligi ≈ 0.52 × shrift o'lchami.
+// Matnni belgilangan kenglikka sigʻdirib qatorlarga boʻladi.
+// Canvas oʻlchovisiz taxminiy hisob: belgi kengligi ≈ 0.52 × shrift oʻlchami.
 function wrap(text, fontSize, maxWidth, maxLines = 3) {
   const perLine = Math.max(8, Math.floor(maxWidth / (fontSize * 0.52)));
   const words = String(text || '').split(/\s+/);
@@ -53,7 +53,7 @@ function buildSvg({ fullName, courseTitle, serial, issuedAt, host }) {
   const date = formatDateUz(issuedAt);
   const titleLines = wrap(courseTitle, 62, 800, 3);
   // Qator qadami 82px — 62px shrift uchun tinch oraliq (bbox balandligi ~83px).
-  // Blok markazi 470 da qoladi, qatorlar soni qancha bo'lishidan qat'i nazar.
+  // Blok markazi 470 da qoladi, qatorlar soni qancha boʻlishidan qatʼi nazar.
   const titleStartY = 470 - (titleLines.length - 1) * 41;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}">
@@ -79,7 +79,7 @@ function buildSvg({ fullName, courseTitle, serial, issuedAt, host }) {
   <text x="${SIZE / 2}" y="150" text-anchor="middle" font-family="${FONT}" font-size="30" font-weight="700"
         letter-spacing="14" fill="#c9b06a">${esc(SITE_NAME.toUpperCase())}</text>
   <text x="${SIZE / 2}" y="192" text-anchor="middle" font-family="${FONT}" font-size="19"
-        letter-spacing="6" fill="#8f8ab8">ONLAYN IT TA'LIM PLATFORMASI</text>
+        letter-spacing="6" fill="#8f8ab8">ONLAYN IT TAʼLIM PLATFORMASI</text>
 
   <g transform="translate(${SIZE / 2} 268)" stroke="#a8842c" fill="none">
     <line x1="-190" y1="0" x2="-30" y2="0" stroke-width="1.5" opacity="0.6"/>
@@ -115,7 +115,7 @@ function buildSvg({ fullName, courseTitle, serial, issuedAt, host }) {
 </svg>`;
 }
 
-// SVG matnini PNG blob ga o'giradi (canvas orqali)
+// SVG matnini PNG blob ga oʻgiradi (canvas orqali)
 function svgToPng(svg) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
@@ -129,7 +129,7 @@ function svgToPng(svg) {
       URL.revokeObjectURL(url);
       canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('PNG yasalmadi'))), 'image/png');
     };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Kartani chizib bo\'lmadi')); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Kartani chizib boʻlmadi')); };
     img.src = url;
   });
 }
@@ -174,7 +174,7 @@ export default function ShareCard({ cert, verifyUrl }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      setErr('Havolani nusxalab bo\'lmadi');
+      setErr('Havolani nusxalab boʻlmadi');
     }
   };
 
@@ -183,10 +183,10 @@ export default function ShareCard({ cert, verifyUrl }) {
 
   return (
     <div className="no-print">
-      {/* Ko'rinish — haqiqiy kartaning kichraytirilgani */}
+      {/* Koʻrinish — haqiqiy kartaning kichraytirilgani */}
       <div
         className="mx-auto aspect-square w-full max-w-sm overflow-hidden rounded-2xl shadow-card"
-        // Karta SVG si — o'zimiz yasagan, foydalanuvchi kiritmasi emas
+        // Karta SVG si — oʻzimiz yasagan, foydalanuvchi kiritmasi emas
         dangerouslySetInnerHTML={{ __html: svg.replace(`width="${SIZE}" height="${SIZE}"`, 'width="100%" height="100%"') }}
       />
 

@@ -1,8 +1,8 @@
 'use client';
 
-// Moliya bo'limining "To'lovlar" yorlig'i — barcha tranzaksiyalar ro'yxati.
-// Yig'indi kartochkalari faqat filtr qo'llanganda ko'rsatiladi: filtrsiz holatda
-// bu raqamlar sahifa boshidagi "Jami aylanma" bilan bir xil bo'lardi.
+// Moliya boʻlimining "Toʻlovlar" yorligʻi — barcha tranzaksiyalar roʻyxati.
+// Yigʻindi kartochkalari faqat filtr qoʻllanganda koʻrsatiladi: filtrsiz holatda
+// bu raqamlar sahifa boshidagi "Jami aylanma" bilan bir xil boʻlardi.
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -14,13 +14,13 @@ import { Spinner, ErrorState, EmptyState, Pagination } from '@/components/ui';
 import { DataToolbar, FilterSelect, DataTable, StatCard } from '@/components/admin/table';
 
 const STATUS = {
-  PAID: { label: "To'langan", cls: 'bg-emerald-50 text-emerald-700' },
+  PAID: { label: "Toʻlangan", cls: 'bg-emerald-50 text-emerald-700' },
   PENDING: { label: 'Kutilmoqda', cls: 'bg-amber-50 text-amber-700' },
   FAILED: { label: 'Muvaffaqiyatsiz', cls: 'bg-red-50 text-red-700' },
 };
 
 const STATUS_OPTIONS = [
-  { value: 'PAID', label: "To'langan" },
+  { value: 'PAID', label: "Toʻlangan" },
   { value: 'PENDING', label: 'Kutilmoqda' },
   { value: 'FAILED', label: 'Muvaffaqiyatsiz' },
 ];
@@ -84,20 +84,20 @@ export default function PaymentsTable() {
         />
       </DataToolbar>
 
-      {/* Faqat filtrlangan kesim uchun yig'indi */}
+      {/* Faqat filtrlangan kesim uchun yigʻindi */}
       {t.hasFilters && (
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <StatCard
             icon={Wallet}
             tone="emerald"
             value={formatPrice(data?.summary?.paidRevenue || 0)}
-            label="Filtr bo'yicha aylanma"
+            label="Filtr boʻyicha aylanma"
           />
           <StatCard
             icon={Receipt}
             tone="indigo"
             value={data?.summary?.paidCount || 0}
-            label="Filtr bo'yicha sotuv"
+            label="Filtr boʻyicha sotuv"
           />
         </div>
       )}
@@ -105,8 +105,8 @@ export default function PaymentsTable() {
       <div className="mt-4">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : payments.length === 0 ? (
           <EmptyState
-            title="To'lov topilmadi"
-            text={t.hasFilters ? 'Filtrni o\'zgartirib ko\'ring.' : 'Hali hech qanday to\'lov amalga oshirilmagan.'}
+            title="Toʻlov topilmadi"
+            text={t.hasFilters ? 'Filtrni oʻzgartirib koʻring.' : 'Hali hech qanday toʻlov amalga oshirilmagan.'}
             icon={Wallet}
           />
         ) : (
@@ -118,7 +118,7 @@ export default function PaymentsTable() {
                 pages={data.pagination.pages}
                 total={data.pagination.total}
                 onChange={t.setPage}
-                label="to'lov"
+                label="toʻlov"
               />
             }
           >
@@ -143,7 +143,7 @@ export default function PaymentsTable() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Link href={`/receipt/${p.id}`} className="text-primary hover:underline">
-                      Ko'rish
+                      Koʻrish
                     </Link>
                   </td>
                 </tr>

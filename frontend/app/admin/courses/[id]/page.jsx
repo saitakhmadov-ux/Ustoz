@@ -36,7 +36,7 @@ export default function EditCoursePage() {
         <Link href={`/admin/courses/${id}/curriculum`} className="btn-outline"><ListTree size={16} /> Darslarni boshqarish</Link>
       </div>
 
-      {/* Serverdan kelgan xabar: muddat nechta o'quvchiga qo'llangani ham shunda */}
+      {/* Serverdan kelgan xabar: muddat nechta oʻquvchiga qoʻllangani ham shunda */}
       {saved && <div className="mt-4 rounded-xl bg-indigo-50 px-4 py-2.5 text-sm text-indigo-700">{saved}</div>}
 
       <div className="mt-6 max-w-3xl">

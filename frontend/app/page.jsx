@@ -20,20 +20,20 @@ const categories = [
 ];
 
 const features = [
-  { icon: PlayCircle, title: 'Video darslar', text: 'Har bir mavzu bo\'yicha tushunarli video darslar va amaliy topshiriqlar.', tint: 'bg-indigo-50 text-primary' },
-  { icon: Award, title: 'Sertifikat', text: 'Kursni to\'liq tugatganingizdan so\'ng rasmiy sertifikat oling.', tint: 'bg-emerald-50 text-accent' },
+  { icon: PlayCircle, title: 'Video darslar', text: 'Har bir mavzu boʻyicha tushunarli video darslar va amaliy topshiriqlar.', tint: 'bg-indigo-50 text-primary' },
+  { icon: Award, title: 'Sertifikat', text: 'Kursni toʻliq tugatganingizdan soʻng rasmiy sertifikat oling.', tint: 'bg-emerald-50 text-accent' },
   { icon: Users, title: 'Tajribali murabbiylar', text: 'Sohaning yetuk mutaxassislaridan bilim oling.', tint: 'bg-indigo-50 text-primary' },
-  { icon: Globe, title: 'O\'zbek tilida', text: 'Barcha kurslar to\'liq o\'zbek tilida, tushunarli va sifatli.', tint: 'bg-emerald-50 text-accent' },
+  { icon: Globe, title: 'Oʻzbek tilida', text: 'Barcha kurslar toʻliq oʻzbek tilida, tushunarli va sifatli.', tint: 'bg-emerald-50 text-accent' },
 ];
 
 // Bosh sahifa matnlari uchun zaxira (backend defaults bilan mos)
 const CONTENT_DEFAULTS = {
-  heroTitle: "Kelajak kasbini bugun o'rganing",
+  heroTitle: "Kelajak kasbini bugun oʻrganing",
   heroSubtitle:
-    "Frontend, Backend, Mobile va DevOps yo'nalishlarida amaliy kurslar — video darslar, testlar va sertifikat bilan mutaxassisga aylaning.",
+    "Frontend, Backend, Mobile va DevOps yoʻnalishlarida amaliy kurslar — video darslar, testlar va sertifikat bilan mutaxassisga aylaning.",
   ctaTitle: 'Bilim — eng yaxshi sarmoya',
   ctaSubtitle:
-    "Bugun ro'yxatdan o'ting va o'zingizga mos kursni tanlab, yangi kasbga yo'l oching.",
+    "Bugun roʻyxatdan oʻting va oʻzingizga mos kursni tanlab, yangi kasbga yoʻl oching.",
 };
 
 // Admin tahrirlagan matnlarni serverdan oladi (SSR, har renderда yangi).
@@ -83,7 +83,7 @@ export default async function HomePage() {
 
             {/* Afzalliklar */}
             <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
-              {['Sertifikatli kurslar', 'Amaliy ko\'nikmalar', 'O\'zbek tilida'].map((t) => (
+              {['Sertifikatli kurslar', 'Amaliy koʻnikmalar', 'Oʻzbek tilida'].map((t) => (
                 <li key={t} className="flex items-center gap-2 text-sm font-medium text-ink">
                   <CheckCircle2 size={17} className="text-accent" /> {t}
                 </li>
@@ -112,8 +112,8 @@ export default async function HomePage() {
       {/* ===== Kategoriyalar ===== */}
       <section className="container-page py-16 sm:py-20">
         <Reveal className="mb-10 text-center">
-          <h2 className="text-3xl">Mashhur yo'nalishlar</h2>
-          <p className="mt-2 text-muted">O'zingizga mos sohani tanlang va o'rganishni boshlang</p>
+          <h2 className="text-3xl">Mashhur yoʻnalishlar</h2>
+          <p className="mt-2 text-muted">Oʻzingizga mos sohani tanlang va oʻrganishni boshlang</p>
         </Reveal>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
           {categories.map((cat, i) => {
@@ -140,7 +140,7 @@ export default async function HomePage() {
       {/* ===== Eng yuqori baholi kurslar ===== */}
       <TopCourses limit={4} />
 
-      {/* ===== O'quvchilar fikri (real sharhlar) ===== */}
+      {/* ===== Oʻquvchilar fikri (real sharhlar) ===== */}
       <Testimonials limit={6} />
 
       {/* ===== Nega Ustoz ===== */}
@@ -148,7 +148,7 @@ export default async function HomePage() {
         <div className="container-page">
           <Reveal className="mb-12 text-center">
             <h2 className="text-3xl">Nega aynan Ustoz?</h2>
-            <p className="mt-2 text-muted">Sifatli ta'lim uchun kerakli hamma narsa bir joyda</p>
+            <p className="mt-2 text-muted">Sifatli taʼlim uchun kerakli hamma narsa bir joyda</p>
           </Reveal>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {features.map((f, i) => {
@@ -182,13 +182,13 @@ export default async function HomePage() {
                 Hoziroq boshlash <ArrowRight size={16} />
               </Link>
               <Link href="/courses" className="btn inline-flex items-center gap-2 border border-white/40 bg-white/10 text-white hover:bg-white/20">
-                Kurslarni ko'rish
+                Kurslarni koʻrish
               </Link>
             </div>
             <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/85">
               <span className="flex items-center gap-1.5"><CheckCircle2 size={16} /> Bepul kurslar mavjud</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 size={16} /> Sertifikat bilan</span>
-              <span className="flex items-center gap-1.5"><CheckCircle2 size={16} /> O'zbek tilida</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 size={16} /> Oʻzbek tilida</span>
             </div>
           </div>
         </Reveal>

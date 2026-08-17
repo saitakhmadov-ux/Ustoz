@@ -21,7 +21,7 @@ export default function CourseForm({ initial, onSaved }) {
 
   useEffect(() => {
     api.get('/categories', { auth: false }).then((res) => setCategories(res.categories)).catch(() => {});
-    // Ustoz ro'yxati faqat bosh admin uchun kerak (biriktirish maqsadida)
+    // Ustoz roʻyxati faqat bosh admin uchun kerak (biriktirish maqsadida)
     if (isAdmin) {
       api.get('/admin/instructors').then((res) => setInstructors(res.instructors)).catch(() => {});
     }
@@ -72,7 +72,7 @@ export default function CourseForm({ initial, onSaved }) {
       } else {
         res = await api.post('/courses', payload);
       }
-      // Xabarni ham uzatamiz — muddat nechta o'quvchiga qo'llangani shunda
+      // Xabarni ham uzatamiz — muddat nechta oʻquvchiga qoʻllangani shunda
       onSaved?.(res.course, res.message);
     } catch (err) {
       setError(err.message);
@@ -110,8 +110,8 @@ export default function CourseForm({ initial, onSaved }) {
             </select>
             <p className="mt-1 text-xs text-muted">
               {form.kind === 'TYPING'
-                ? 'Har bir dars — yozish mashqi. O\'quvchi matnni yozib chiqadi, tezlik va aniqlik o\'lchanadi.'
-                : 'Darslarda video, matnli material, qo\'shimcha fayllar va testlar bo\'ladi.'}
+                ? 'Har bir dars — yozish mashqi. Oʻquvchi matnni yozib chiqadi, tezlik va aniqlik oʻlchanadi.'
+                : 'Darslarda video, matnli material, qoʻshimcha fayllar va testlar boʻladi.'}
             </p>
           </div>
         )}
@@ -146,12 +146,12 @@ export default function CourseForm({ initial, onSaved }) {
               onChange={(e) => setForm({ ...form, accessMonths: e.target.value })}
             />
             <p className="mt-1 text-xs text-muted">
-              Bo'sh qoldirsangiz daraja bo'yicha standart ({ACCESS_MONTHS[form.level] ?? 1} oy) qo'llanadi.
+              Boʻsh qoldirsangiz daraja boʻyicha standart ({ACCESS_MONTHS[form.level] ?? 1} oy) qoʻllanadi.
             </p>
             <p className="mt-1 flex items-start gap-1.5 text-xs text-amber-700">
               <AlertTriangle size={13} className="mt-px shrink-0" />
-              Saqlaganda muddat <b>mavjud o'quvchilarga ham</b> qo'llanadi — har birida
-              yozilgan sanadan boshlab qayta hisoblanadi. Qo'lda uzaytirilgan muddatlar
+              Saqlaganda muddat <b>mavjud oʻquvchilarga ham</b> qoʻllanadi — har birida
+              yozilgan sanadan boshlab qayta hisoblanadi. Qoʻlda uzaytirilgan muddatlar
               ham shu qiymatga tushadi.
             </p>
           </div>
@@ -160,7 +160,7 @@ export default function CourseForm({ initial, onSaved }) {
         {isAdmin && (
           <>
             <div>
-              <label className="label">Narx (so'm)</label>
+              <label className="label">Narx (soʻm)</label>
               <input type="number" min="0" className="input disabled:bg-slate-50" value={form.price} disabled={form.isFree} onChange={(e) => setForm({ ...form, price: e.target.value })} />
             </div>
 
@@ -185,11 +185,11 @@ export default function CourseForm({ initial, onSaved }) {
               <input type="checkbox" checked={form.isFree} onChange={(e) => setForm({ ...form, isFree: e.target.checked })} className="h-4 w-4 rounded text-primary focus:ring-primary" />
               Bepul kurs
             </label>
-            {/* Kod maydoni klaviatura kursida ma'nosiz — ko'rsatmaymiz */}
+            {/* Kod maydoni klaviatura kursida maʼnosiz — koʻrsatmaymiz */}
             {form.kind !== 'TYPING' && (
               <label className="flex cursor-pointer items-center gap-2 text-sm">
                 <input type="checkbox" checked={form.codePlayground} onChange={(e) => setForm({ ...form, codePlayground: e.target.checked })} className="h-4 w-4 rounded text-emerald-600 focus:ring-emerald-500" />
-                Kod maydoni (dasturlash kursi) — o'quvchilar kod yozib sinab ko'ra oladi
+                Kod maydoni (dasturlash kursi) — oʻquvchilar kod yozib sinab koʻra oladi
               </label>
             )}
           </div>

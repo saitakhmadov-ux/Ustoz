@@ -3,12 +3,12 @@ import { GraduationCap, CheckCircle2 } from 'lucide-react';
 import { SITE_NAME } from '@/lib/constants';
 
 const perks = [
-  'O\'zbek tilidagi amaliy IT kurslar',
+  'Oʻzbek tilidagi amaliy IT kurslar',
   'Video darslar, testlar va sertifikat',
-  'O\'z tezligingizda, istalgan vaqtda',
+  'Oʻz tezligingizda, istalgan vaqtda',
 ];
 
-// Kirish/Ro'yxat sahifalari uchun ikki panelli qobiq
+// Kirish/Roʻyxat sahifalari uchun ikki panelli qobiq
 export default function AuthShell({ title, subtitle, children, footer }) {
   return (
     <div className="grid min-h-[calc(100vh-4rem)] lg:grid-cols-2">
@@ -29,10 +29,10 @@ export default function AuthShell({ title, subtitle, children, footer }) {
 
         <div className="relative">
           <h2 className="font-display text-3xl font-bold leading-tight text-white">
-            Kelajak kasbini bugun o'rganing
+            Kelajak kasbini bugun oʻrganing
           </h2>
           <p className="mt-3 max-w-sm text-white/85">
-            Ustoz jamoasiga qo'shiling — bilim olish hech qachon bunchalik qulay bo'lmagan.
+            Ustoz jamoasiga qoʻshiling — bilim olish hech qachon bunchalik qulay boʻlmagan.
           </p>
           <ul className="mt-6 space-y-3">
             {perks.map((p) => (

@@ -1,7 +1,7 @@
 'use client';
 
-// Parolni tiklashning birinchi qadami: emailga kod so'rash.
-// Javob har doim bir xil — qaysi email ro'yxatda borligi oshkor qilinmaydi.
+// Parolni tiklashning birinchi qadami: emailga kod soʻrash.
+// Javob har doim bir xil — qaysi email roʻyxatda borligi oshkor qilinmaydi.
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

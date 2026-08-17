@@ -56,7 +56,7 @@ export default function AdminCategoriesPage() {
   };
 
   const remove = async (id, name) => {
-    if (!confirm(`"${name}" kategoriyasini o'chirasizmi?`)) return;
+    if (!confirm(`"${name}" kategoriyasini oʻchirasizmi?`)) return;
     try { await api.del(`/categories/${id}`); load(); }
     catch (err) { alert(err.message); }
   };
@@ -64,9 +64,9 @@ export default function AdminCategoriesPage() {
   return (
     <div>
       <h1 className="text-2xl">Kategoriyalar</h1>
-      <p className="mt-1 text-sm text-muted">Kurs yo'nalishlarini boshqarish</p>
+      <p className="mt-1 text-sm text-muted">Kurs yoʻnalishlarini boshqarish</p>
 
-      {/* Qo'shish formasi */}
+      {/* Qoʻshish formasi */}
       <form onSubmit={add} className="card mt-6 flex flex-wrap items-end gap-3 p-4">
         <div className="w-20">
           <label className="label">Ikon</label>
@@ -81,11 +81,11 @@ export default function AdminCategoriesPage() {
           <input className="input" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>
         <button className="btn-primary" disabled={saving}>
-          {saving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />} Qo'shish
+          {saving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />} Qoʻshish
         </button>
       </form>
 
-      {/* Ro'yxat */}
+      {/* Roʻyxat */}
       <div className="mt-6">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : (
           <div className="card divide-y divide-line">

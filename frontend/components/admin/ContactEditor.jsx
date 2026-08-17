@@ -1,8 +1,8 @@
 'use client';
 
-// "Kontaktlar" sahifasini to'liq boshqarish: sarlavha, aloqa kartochkalari,
-// ish vaqti, xarita va aloqa formasi ko'rinishi.
-// Ommaviy /contact sahifasi aynan shu ma'lumotdan chiziladi.
+// "Kontaktlar" sahifasini toʻliq boshqarish: sarlavha, aloqa kartochkalari,
+// ish vaqti, xarita va aloqa formasi koʻrinishi.
+// Ommaviy /contact sahifasi aynan shu maʼlumotdan chiziladi.
 
 import { useEffect, useState } from 'react';
 import {
@@ -30,7 +30,7 @@ export default function ContactEditor() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Har qanday o'zgarish "Saqlandi" belgisini o'chiradi — nima saqlanmagani aniq bo'lsin
+  // Har qanday oʻzgarish "Saqlandi" belgisini oʻchiradi — nima saqlanmagani aniq boʻlsin
   const patch = (changes) => { setForm((f) => ({ ...f, ...changes })); setSavedMsg(''); };
 
   const items = {
@@ -82,7 +82,7 @@ export default function ContactEditor() {
           <input className="input" value={form.subtitle} onChange={(e) => patch({ subtitle: e.target.value })} />
         </div>
         <p className="flex items-start gap-1.5 text-xs text-muted">
-          <Info size={14} className="mt-px shrink-0" /> Bo'sh qoldirsangiz standart matn ko'rsatiladi.
+          <Info size={14} className="mt-px shrink-0" /> Boʻsh qoldirsangiz standart matn koʻrsatiladi.
         </p>
       </div>
 
@@ -96,13 +96,13 @@ export default function ContactEditor() {
             <p className="mt-1 text-sm text-muted">Email, telefon, manzil, Telegram, ijtimoiy tarmoqlar.</p>
           </div>
           <button type="button" onClick={items.add} disabled={form.items.length >= MAX_ITEMS} className="btn-outline disabled:opacity-50">
-            <Plus size={16} /> Kartochka qo'shish
+            <Plus size={16} /> Kartochka qoʻshish
           </button>
         </div>
 
         {form.items.length === 0 ? (
           <p className="mt-4 rounded-xl border border-dashed border-line py-6 text-center text-sm text-muted">
-            Kartochka yo'q — sahifada aloqa ma'lumotlari ko'rinmaydi.
+            Kartochka yoʻq — sahifada aloqa maʼlumotlari koʻrinmaydi.
           </p>
         ) : (
           <div className="mt-5 space-y-3">
@@ -149,7 +149,7 @@ export default function ContactEditor() {
 
         <p className="mt-4 flex items-start gap-1.5 text-xs text-muted">
           <Info size={14} className="mt-px shrink-0" />
-          Havola qo'shsangiz kartochka bosiladigan bo'ladi. Faqat <code>https://</code>,{' '}
+          Havola qoʻshsangiz kartochka bosiladigan boʻladi. Faqat <code>https://</code>,{' '}
           <code>mailto:</code>, <code>tel:</code> va sayt ichidagi manzillar qabul qilinadi.
         </p>
       </div>
@@ -158,7 +158,7 @@ export default function ContactEditor() {
       <div className="card space-y-4 p-6">
         <div>
           <h2 className="font-display text-lg font-semibold text-heading">Ish vaqti</h2>
-          <p className="mt-1 text-sm text-muted">Bo'sh qoldirsangiz bu blok ko'rinmaydi.</p>
+          <p className="mt-1 text-sm text-muted">Boʻsh qoldirsangiz bu blok koʻrinmaydi.</p>
         </div>
         <textarea
           className="input min-h-[70px]"
@@ -175,8 +175,8 @@ export default function ContactEditor() {
             <Map size={18} className="text-primary" /> Xarita
           </h2>
           <p className="mt-1 text-sm text-muted">
-            Google Maps'da joyni toping → "Share" → "Embed a map" → <code>iframe</code> ichidagi{' '}
-            <code>src</code> havolasini shu yerga qo'ying.
+            Google Mapsʼda joyni toping → "Share" → "Embed a map" → <code>iframe</code> ichidagi{' '}
+            <code>src</code> havolasini shu yerga qoʻying.
           </p>
         </div>
         <input
@@ -187,7 +187,7 @@ export default function ContactEditor() {
         />
         {form.mapUrl && (
           <div className="aspect-[16/9] overflow-hidden rounded-xl border border-line">
-            <iframe src={form.mapUrl} title="Xarita ko'rinishi" className="h-full w-full" loading="lazy" />
+            <iframe src={form.mapUrl} title="Xarita koʻrinishi" className="h-full w-full" loading="lazy" />
           </div>
         )}
       </div>
@@ -197,8 +197,8 @@ export default function ContactEditor() {
         <div>
           <h2 className="font-display text-lg font-semibold text-heading">Aloqa formasi</h2>
           <p className="mt-1 text-sm text-muted">
-            Forma hozircha <b>namuna</b> — to'ldirilgan xabar hech qayerga yuborilmaydi.
-            Shuning uchun ostidagi izohni o'zgartirish yoki formani butunlay yashirish mumkin.
+            Forma hozircha <b>namuna</b> — toʻldirilgan xabar hech qayerga yuborilmaydi.
+            Shuning uchun ostidagi izohni oʻzgartirish yoki formani butunlay yashirish mumkin.
           </p>
         </div>
         <label className="flex cursor-pointer items-center gap-2.5 text-sm">
@@ -208,7 +208,7 @@ export default function ContactEditor() {
             checked={form.formEnabled}
             onChange={(e) => patch({ formEnabled: e.target.checked })}
           />
-          Formani sahifada ko'rsatish
+          Formani sahifada koʻrsatish
         </label>
         {form.formEnabled && (
           <div>
@@ -229,14 +229,14 @@ export default function ContactEditor() {
         </button>
         {savedMsg && <span className="text-sm font-medium text-accent">{savedMsg}</span>}
         <a href="/contact" target="_blank" rel="noreferrer" className="ml-auto text-sm text-primary hover:underline">
-          Sahifani ko'rish <ExternalLink size={13} className="inline" />
+          Sahifani koʻrish <ExternalLink size={13} className="inline" />
         </a>
       </div>
     </div>
   );
 }
 
-// Ro'yxat qatori uchun tartib va o'chirish tugmalari
+// Roʻyxat qatori uchun tartib va oʻchirish tugmalari
 function RowActions({ index, total, onMove, onRemove }) {
   return (
     <div className="flex shrink-0 flex-col gap-1">
@@ -246,7 +246,7 @@ function RowActions({ index, total, onMove, onRemove }) {
       <button type="button" onClick={() => onMove(index, 1)} disabled={index === total - 1} title="Pastga" className="grid h-7 w-7 place-items-center rounded-lg text-muted hover:bg-slate-100 disabled:opacity-30">
         <ChevronDown size={15} />
       </button>
-      <button type="button" onClick={() => onRemove(index)} title="O'chirish" className="grid h-7 w-7 place-items-center rounded-lg text-red-600 hover:bg-red-50">
+      <button type="button" onClick={() => onRemove(index)} title="Oʻchirish" className="grid h-7 w-7 place-items-center rounded-lg text-red-600 hover:bg-red-50">
         <Trash2 size={15} />
       </button>
     </div>

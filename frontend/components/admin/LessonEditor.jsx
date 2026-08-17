@@ -5,10 +5,10 @@ import { Loader2, Upload, Link2, Trash2, PlayCircle, FileText, X } from 'lucide-
 import { api } from '@/lib/api';
 import { fileUrl, MAX_PDF_MB, formatFileSize } from '@/lib/constants';
 
-// Dars qo'shish/tahrirlash formasi
+// Dars qoʻshish/tahrirlash formasi
 // mode: 'create' (sectionId kerak) yoki 'edit' (lesson kerak)
 //
-// typing=true — klaviatura mashqi kursi: video, matn va materiallar ko'rsatilmaydi
+// typing=true — klaviatura mashqi kursi: video, matn va materiallar koʻrsatilmaydi
 // (mashq matni alohida tahrirlagichda), faqat dars nomi qoladi.
 export default function LessonEditor({
   sectionId, lesson, onDone, onCancel, typing = false,
@@ -56,8 +56,8 @@ export default function LessonEditor({
 
       {typing ? (
         <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-muted">
-          Klaviatura mashqi kursi: darsda video va material bo'lmaydi.
-          Mashq matni darsni saqlagandan so'ng quyidagi "Yozish mashqi" bo'limida kiritiladi.
+          Klaviatura mashqi kursi: darsda video va material boʻlmaydi.
+          Mashq matni darsni saqlagandan soʻng quyidagi "Yozish mashqi" boʻlimida kiritiladi.
         </p>
       ) : (
         <>
@@ -65,17 +65,17 @@ export default function LessonEditor({
           <textarea className="input mb-2 min-h-[80px] text-sm" placeholder="Matnli material (ixtiyoriy)" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
           <label className="flex cursor-pointer items-center gap-2 text-sm">
             <input type="checkbox" checked={form.isFreePreview} onChange={(e) => setForm({ ...form, isFreePreview: e.target.checked })} className="h-4 w-4 rounded text-primary focus:ring-primary" />
-            Bepul ko'rish (preview)
+            Bepul koʻrish (preview)
           </label>
 
-          {/* Materiallar bo'limi — faqat saqlangan darsda */}
+          {/* Materiallar boʻlimi — faqat saqlangan darsda */}
           <div className="mt-3 border-t border-line pt-3">
-            <p className="mb-2 text-xs font-semibold uppercase text-muted">Qo'shimcha materiallar (video / PDF)</p>
+            <p className="mb-2 text-xs font-semibold uppercase text-muted">Qoʻshimcha materiallar (video / PDF)</p>
             {lesson ? (
               <MaterialsManager lessonId={lesson.id} materials={materials} setMaterials={setMaterials} />
             ) : (
               <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-muted">
-                Materiallar (video/PDF) qo'shish uchun avval darsni saqlang.
+                Materiallar (video/PDF) qoʻshish uchun avval darsni saqlang.
               </p>
             )}
           </div>
@@ -84,7 +84,7 @@ export default function LessonEditor({
 
       <div className="mt-3 flex gap-2">
         <button onClick={save} disabled={saving} className="btn-primary py-1.5 text-sm">
-          {saving && <Loader2 size={14} className="animate-spin" />} {lesson ? 'Saqlash' : 'Qo\'shish'}
+          {saving && <Loader2 size={14} className="animate-spin" />} {lesson ? 'Saqlash' : 'Qoʻshish'}
         </button>
         <button onClick={onCancel} className="btn-ghost py-1.5 text-sm">{lesson ? 'Yopish' : 'Bekor qilish'}</button>
       </div>
@@ -92,13 +92,13 @@ export default function LessonEditor({
   );
 }
 
-// Dars materiallarini boshqarish: fayl yuklash yoki URL qo'shish + o'chirish
+// Dars materiallarini boshqarish: fayl yuklash yoki URL qoʻshish + oʻchirish
 function MaterialsManager({ lessonId, materials, setMaterials }) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [err, setErr] = useState('');
 
-  // URL qo'shish rejimi
+  // URL qoʻshish rejimi
   const [urlMode, setUrlMode] = useState(false);
   const [urlForm, setUrlForm] = useState({ type: 'VIDEO', title: '', url: '' });
   const [addingUrl, setAddingUrl] = useState(false);
@@ -140,7 +140,7 @@ function MaterialsManager({ lessonId, materials, setMaterials }) {
   const addUrl = async () => {
     setErr('');
     if (!urlForm.title.trim()) return setErr('Material nomini kiriting');
-    if (!/^https?:\/\//i.test(urlForm.url)) return setErr('To\'g\'ri URL kiriting (http...)');
+    if (!/^https?:\/\//i.test(urlForm.url)) return setErr('Toʻgʻri URL kiriting (http...)');
     setAddingUrl(true);
     try {
       const res = await api.post('/admin/materials', {
@@ -160,7 +160,7 @@ function MaterialsManager({ lessonId, materials, setMaterials }) {
   };
 
   const remove = async (id) => {
-    if (!confirm('Bu materialni o\'chirasizmi?')) return;
+    if (!confirm('Bu materialni oʻchirasizmi?')) return;
     try {
       await api.del(`/admin/materials/${id}`);
       setMaterials((prev) => prev.filter((m) => m.id !== id));
@@ -171,7 +171,7 @@ function MaterialsManager({ lessonId, materials, setMaterials }) {
     <div>
       {err && <div className="mb-2 rounded bg-red-50 px-3 py-1.5 text-xs text-red-700">{err}</div>}
 
-      {/* Mavjud materiallar ro'yxati */}
+      {/* Mavjud materiallar roʻyxati */}
       {materials.length > 0 && (
         <ul className="mb-2 space-y-1.5">
           {materials.map((m) => (
@@ -183,7 +183,7 @@ function MaterialsManager({ lessonId, materials, setMaterials }) {
                 {m.title}
               </a>
               <span className="badge bg-slate-100 text-xs text-slate-600">{m.type}</span>
-              <button onClick={() => remove(m.id)} className="text-red-500 hover:text-red-700" title="O'chirish">
+              <button onClick={() => remove(m.id)} className="text-red-500 hover:text-red-700" title="Oʻchirish">
                 <Trash2 size={14} />
               </button>
             </li>
@@ -201,7 +201,7 @@ function MaterialsManager({ lessonId, materials, setMaterials }) {
         </div>
       )}
 
-      {/* URL qo'shish formasi */}
+      {/* URL qoʻshish formasi */}
       {urlMode ? (
         <div className="mb-2 rounded-lg border border-line p-2.5">
           <div className="flex gap-2">
@@ -214,7 +214,7 @@ function MaterialsManager({ lessonId, materials, setMaterials }) {
           <input className="input mt-2 text-sm" placeholder="https://... (havola)" value={urlForm.url} onChange={(e) => setUrlForm({ ...urlForm, url: e.target.value })} />
           <div className="mt-2 flex gap-2">
             <button onClick={addUrl} disabled={addingUrl} className="btn-primary py-1 text-xs">
-              {addingUrl && <Loader2 size={12} className="animate-spin" />} Qo'shish
+              {addingUrl && <Loader2 size={12} className="animate-spin" />} Qoʻshish
             </button>
             <button onClick={() => { setUrlMode(false); setErr(''); }} className="btn-ghost py-1 text-xs"><X size={12} /> Bekor</button>
           </div>
@@ -226,10 +226,10 @@ function MaterialsManager({ lessonId, materials, setMaterials }) {
             <input type="file" accept=".mp4,.webm,.mov,.mkv,.pdf,video/*,application/pdf" className="hidden" onChange={onFile} disabled={uploading} />
           </label>
           <button type="button" onClick={() => setUrlMode(true)} className="btn-ghost py-1.5 text-sm">
-            <Link2 size={14} /> URL orqali qo'shish
+            <Link2 size={14} /> URL orqali qoʻshish
           </button>
           <p className="w-full text-xs text-muted">
-            PDF material hajmi eng ko'pi bilan {MAX_PDF_MB} MB bo'lishi mumkin.
+            PDF material hajmi eng koʻpi bilan {MAX_PDF_MB} MB boʻlishi mumkin.
           </p>
         </div>
       )}

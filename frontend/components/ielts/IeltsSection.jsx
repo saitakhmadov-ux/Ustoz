@@ -1,13 +1,13 @@
 'use client';
 
-// IELTS Computer Writing — "Klaviaturada tez yozish" kursi ichidagi bo'lim.
+// IELTS Computer Writing — "Klaviaturada tez yozish" kursi ichidagi boʻlim.
 //
-// To'rt rejim: Writing Task 1 (Academic / General), Writing Task 2,
-// Typing Practice, Vocabulary Practice. Interfeys o'zbekcha, topshiriqlar
+// Toʻrt rejim: Writing Task 1 (Academic / General), Writing Task 2,
+// Typing Practice, Vocabulary Practice. Interfeys oʻzbekcha, topshiriqlar
 // inglizcha (IELTS formatida).
 //
-// Bo'lim yashil (accent) urg'u bilan ajralib turadi, ammo dizayn tizimi
-// o'sha-o'sha: card, btn-primary, badge va boshqalar.
+// Boʻlim yashil (accent) urgʻu bilan ajralib turadi, ammo dizayn tizimi
+// oʻsha-oʻsha: card, btn-primary, badge va boshqalar.
 
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -30,10 +30,10 @@ const ICONS = {
 
 // Bosh ekrandagi kartochkalar: Task 1 ikkita formatga ega
 const CARDS = [
-  { id: 'T1', title: 'Writing Task 1', desc: 'Diagramma tavsifi yoki xat — 20 daqiqa, 150 so\'z', icon: PenLine },
-  { id: 'TASK2', title: 'Writing Task 2', desc: 'Esse — 40 daqiqa, 250 so\'z', icon: FileText },
-  { id: 'TYPING', title: 'Typing Practice', desc: 'Inglizcha paragrafni ko\'chirib yozish', icon: Keyboard },
-  { id: 'VOCAB', title: 'Vocabulary Practice', desc: 'IELTS akademik lug\'ati (3 daraja)', icon: BookMarked },
+  { id: 'T1', title: 'Writing Task 1', desc: 'Diagramma tavsifi yoki xat — 20 daqiqa, 150 soʻz', icon: PenLine },
+  { id: 'TASK2', title: 'Writing Task 2', desc: 'Esse — 40 daqiqa, 250 soʻz', icon: FileText },
+  { id: 'TYPING', title: 'Typing Practice', desc: 'Inglizcha paragrafni koʻchirib yozish', icon: Keyboard },
+  { id: 'VOCAB', title: 'Vocabulary Practice', desc: 'IELTS akademik lugʻati (3 daraja)', icon: BookMarked },
 ];
 
 export default function IeltsSection({ slug }) {
@@ -67,7 +67,7 @@ export default function IeltsSection({ slug }) {
     try {
       const res = await api.get(`/learn/${slug}/ielts/attempts`);
       setHistory(res.attempts || []);
-    } catch { /* tarix ko'rinmasa ham mashq ishlaydi */ }
+    } catch { /* tarix koʻrinmasa ham mashq ishlaydi */ }
   }, [slug]);
 
   useEffect(() => { loadHistory(); }, [loadHistory]);
@@ -78,7 +78,7 @@ export default function IeltsSection({ slug }) {
     loadTask(type, level);
   };
 
-  // Natijani yuborish (yozma va ko'chirish mashqlari uchun umumiy)
+  // Natijani yuborish (yozma va koʻchirish mashqlari uchun umumiy)
   const submit = async (text, durationMs) => {
     setBusy(true); setError('');
     try {
@@ -102,8 +102,8 @@ export default function IeltsSection({ slug }) {
         <div className="rounded-2xl border border-accent/30 bg-accent/5 p-5">
           <h2 className="font-display text-lg font-semibold text-heading">IELTS Computer Writing</h2>
           <p className="mt-1 text-sm text-muted">
-            Kompyuterda IELTS yozish formatiga mashq: taymer, so'z chegarasi va real
-            vaqtdagi hisob. Bu rasmiy imtihon emas — mashq bo'limi.
+            Kompyuterda IELTS yozish formatiga mashq: taymer, soʻz chegarasi va real
+            vaqtdagi hisob. Bu rasmiy imtihon emas — mashq boʻlimi.
           </p>
         </div>
 
@@ -139,7 +139,7 @@ export default function IeltsSection({ slug }) {
             <History size={17} className="text-muted" />
             <b className="text-ink">Mening natijalarim</b>
             <span className="text-sm text-muted">({history.length})</span>
-            <span className="ml-auto text-sm text-primary">{showHistory ? 'Yashirish' : 'Ko\'rish'}</span>
+            <span className="ml-auto text-sm text-primary">{showHistory ? 'Yashirish' : 'Koʻrish'}</span>
           </button>
 
           {showHistory && (
@@ -225,7 +225,7 @@ export default function IeltsSection({ slug }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <button type="button" onClick={() => { setMode(null); setTask(null); setAttempt(null); }} className="btn-ghost text-sm">
-          <ArrowLeft size={15} /> Bo'limlar
+          <ArrowLeft size={15} /> Boʻlimlar
         </button>
         <span className="badge bg-accent/10 text-accent-dark">
           {modeInfo?.label} {modeInfo?.sub ? `· ${modeInfo.sub}` : ''}

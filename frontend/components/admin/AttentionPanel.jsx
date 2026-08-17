@@ -1,8 +1,8 @@
 'use client';
 
-// "Diqqat talab qiladi" — boshqaruv panelini passiv hisobotdan ish ro'yxatiga
-// aylantiradi. Backend faqat haqiqatan qo'l tekkizish kerak bo'lgan holatlarni
-// qaytaradi; hech narsa bo'lmasa xotirjam holat ko'rsatiladi.
+// "Diqqat talab qiladi" — boshqaruv panelini passiv hisobotdan ish roʻyxatiga
+// aylantiradi. Backend faqat haqiqatan qoʻl tekkizish kerak boʻlgan holatlarni
+// qaytaradi; hech narsa boʻlmasa xotirjam holat koʻrsatiladi.
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -19,7 +19,7 @@ const TONES = {
   slate: 'bg-slate-50 text-slate-600 border-slate-200',
 };
 
-// Eng ko'p ishlatiladigan to'rtta amal — har biri ikki klik tejaydi
+// Eng koʻp ishlatiladigan toʻrtta amal — har biri ikki klik tejaydi
 const QUICK_ACTIONS = [
   { href: '/admin/courses/new', label: 'Yangi kurs', icon: BookOpen },
   { href: '/admin/users', label: 'Yangi odam', icon: UserPlus },
@@ -61,7 +61,7 @@ export function AttentionPanel() {
         </span>
         <span>
           <b className="text-ink">Hammasi joyida.</b>{' '}
-          <span className="text-muted">Hozircha qo'l tekkizish kerak bo'lgan holat yo'q.</span>
+          <span className="text-muted">Hozircha qoʻl tekkizish kerak boʻlgan holat yoʻq.</span>
         </span>
       </div>
     );

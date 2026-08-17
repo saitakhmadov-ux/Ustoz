@@ -3,7 +3,7 @@ import { contactIcon } from '@/lib/contactIcons';
 
 export const metadata = { title: 'Kontaktlar' };
 
-// Sahifa mazmuni to'liq admin panelidan boshqariladi
+// Sahifa mazmuni toʻliq admin panelidan boshqariladi
 // (Admin -> Sayt sahifalari -> "Kontaktlar").
 // Backend saqlanmagan maydonlar uchun standart qiymat qaytaradi.
 async function getContact() {
@@ -18,7 +18,7 @@ async function getContact() {
   }
 }
 
-// Kartochka: havola bo'lsa bosiladigan, bo'lmasa oddiy blok
+// Kartochka: havola boʻlsa bosiladigan, boʻlmasa oddiy blok
 function ContactCard({ item }) {
   const Icon = contactIcon(item.icon);
   const inner = (
@@ -56,7 +56,7 @@ export default async function ContactPage() {
     return (
       <div className="container-page max-w-4xl py-14 text-center">
         <h1 className="text-4xl">Kontaktlar</h1>
-        <p className="mt-4 text-muted">Ma'lumotni yuklab bo'lmadi. Birozdan so'ng qayta urinib ko'ring.</p>
+        <p className="mt-4 text-muted">Maʼlumotni yuklab boʻlmadi. Birozdan soʻng qayta urinib koʻring.</p>
       </div>
     );
   }
@@ -69,7 +69,7 @@ export default async function ContactPage() {
       </div>
 
       <div className={`mt-10 grid gap-8 ${contact.formEnabled ? 'md:grid-cols-2' : ''}`}>
-        {/* Aloqa ma'lumotlari */}
+        {/* Aloqa maʼlumotlari */}
         <div className="space-y-4">
           {contact.items.map((it) => <ContactCard key={it.id} item={it} />)}
 
@@ -86,7 +86,7 @@ export default async function ContactPage() {
           )}
         </div>
 
-        {/* Forma (demo) — admin panelidan yoqib/o'chiriladi */}
+        {/* Forma (demo) — admin panelidan yoqib/oʻchiriladi */}
         {contact.formEnabled && (
           <form className="card p-6">
             <div className="mb-4">

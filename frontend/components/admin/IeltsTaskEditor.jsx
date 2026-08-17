@@ -1,10 +1,10 @@
 'use client';
 
-// IELTS topshirig'ini tahrirlash.
+// IELTS topshirigʻini tahrirlash.
 //
-// Diagramma ma'lumoti jadval ko'rinishida kiritiladi (yorliqlar + seriyalar) —
-// admin rasm qidirib yurmaydi, sayt diagrammani o'zi chizadi. Jarayon (Process)
-// va xarita (Map) uchun esa rasm yuklanadi, chunki ularni sondan chizib bo'lmaydi.
+// Diagramma maʼlumoti jadval koʻrinishida kiritiladi (yorliqlar + seriyalar) —
+// admin rasm qidirib yurmaydi, sayt diagrammani oʻzi chizadi. Jarayon (Process)
+// va xarita (Map) uchun esa rasm yuklanadi, chunki ularni sondan chizib boʻlmaydi.
 
 import { useRef, useState } from 'react';
 import {
@@ -42,7 +42,7 @@ const emptyForm = {
   active: true,
 };
 
-// Bazadagi topshiriqni forma ko'rinishiga aylantiradi
+// Bazadagi topshiriqni forma koʻrinishiga aylantiradi
 function toForm(task) {
   if (!task) return emptyForm;
   const d = task.chartData || {};
@@ -188,7 +188,7 @@ export default function IeltsTaskEditor({ task, onDone, onCancel }) {
       </div>
 
       <div>
-        <label className="label">Nomi (admin ro'yxati uchun)</label>
+        <label className="label">Nomi (admin roʻyxati uchun)</label>
         <input className="input" value={form.title} onChange={(e) => set({ title: e.target.value })} />
       </div>
 
@@ -204,7 +204,7 @@ export default function IeltsTaskEditor({ task, onDone, onCancel }) {
       {!isCopy && (
         <div className="grid gap-3 md:grid-cols-2">
           <div>
-            <label className="label">Minimal so'z</label>
+            <label className="label">Minimal soʻz</label>
             <input type="number" className="input" value={form.minWords} onChange={(e) => set({ minWords: e.target.value })} />
           </div>
           <div>
@@ -217,7 +217,7 @@ export default function IeltsTaskEditor({ task, onDone, onCancel }) {
       {isCopy && (
         <div>
           <label className="label">
-            {form.type === 'VOCAB' ? "So'zlar (probel bilan)" : 'Paragraf matni'}
+            {form.type === 'VOCAB' ? "Soʻzlar (probel bilan)" : 'Paragraf matni'}
           </label>
           <textarea
             className="input min-h-[100px] font-mono text-sm"
@@ -241,7 +241,7 @@ export default function IeltsTaskEditor({ task, onDone, onCancel }) {
             <div className="mt-4 space-y-3">
               <div className="grid gap-3 md:grid-cols-2">
                 <div>
-                  <label className="label">O'lchov birligi</label>
+                  <label className="label">Oʻlchov birligi</label>
                   <input className="input" placeholder="% / mln / kWh" value={form.unit} onChange={(e) => set({ unit: e.target.value })} />
                 </div>
                 <div>
@@ -295,11 +295,11 @@ export default function IeltsTaskEditor({ task, onDone, onCancel }) {
                   onClick={() => set({ series: [...form.series, { name: '', values: '' }] })}
                   className="text-sm font-medium text-primary hover:underline"
                 >
-                  + Seriya qo'shish
+                  + Seriya qoʻshish
                 </button>
                 <p className="flex items-start gap-1.5 text-xs text-muted">
                   <Info size={13} className="mt-px shrink-0" />
-                  Har bir seriyadagi sonlar soni yorliqlar soniga teng bo'lishi kerak.
+                  Har bir seriyadagi sonlar soni yorliqlar soniga teng boʻlishi kerak.
                 </p>
               </div>
             </div>
@@ -324,7 +324,7 @@ export default function IeltsTaskEditor({ task, onDone, onCancel }) {
                   </>
                 ) : (
                   <span className="flex items-center gap-1.5 text-xs text-amber-700">
-                    <ImageIcon size={13} /> Rasm yuklanmaguncha o'quvchiga matnli tavsif ko'rsatiladi
+                    <ImageIcon size={13} /> Rasm yuklanmaguncha oʻquvchiga matnli tavsif koʻrsatiladi
                   </span>
                 )}
               </div>
@@ -335,7 +335,7 @@ export default function IeltsTaskEditor({ task, onDone, onCancel }) {
 
       {!isCopy && (
         <div>
-          <label className="label">Ma'lumot tavsifi (inglizcha)</label>
+          <label className="label">Maʼlumot tavsifi (inglizcha)</label>
           <textarea
             className="input min-h-[80px]"
             placeholder="What the chart/diagram shows — used by AI grading and as image alt text"
@@ -343,8 +343,8 @@ export default function IeltsTaskEditor({ task, onDone, onCancel }) {
             onChange={(e) => set({ dataSummary: e.target.value })}
           />
           <p className="mt-1 text-xs text-muted">
-            AI esseni baholaganda shu tavsifni va yuqoridagi sonlarni o'qiydi — talabaning
-            ma'lumot haqidagi da'volari to'g'riligini tekshirish uchun.
+            AI esseni baholaganda shu tavsifni va yuqoridagi sonlarni oʻqiydi — talabaning
+            maʼlumot haqidagi daʼvolari toʻgʻriligini tekshirish uchun.
           </p>
         </div>
       )}

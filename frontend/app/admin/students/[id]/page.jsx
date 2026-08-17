@@ -11,7 +11,7 @@ import { api } from '@/lib/api';
 import { Spinner, ErrorState } from '@/components/ui';
 import { formatDaysLeft } from '@/lib/constants';
 
-// Yozilish holati — yorliq va rang (ro'yxat sahifasi bilan bir xil)
+// Yozilish holati — yorliq va rang (roʻyxat sahifasi bilan bir xil)
 const STATUS = {
   completed: { label: 'Tugatgan', cls: 'bg-emerald-50 text-emerald-700', Icon: GraduationCap },
   inProgress: { label: 'Jarayonda', cls: 'bg-indigo-50 text-indigo-700', Icon: PlayCircle },
@@ -32,7 +32,7 @@ function formatDate(d) {
   return new Date(d).toLocaleDateString('uz-UZ');
 }
 
-// Bir kurs bo'yicha darslar ro'yxati — bo'limlar kesimida guruhlanadi
+// Bir kurs boʻyicha darslar roʻyxati — boʻlimlar kesimida guruhlanadi
 function LessonBreakdown({ lessons }) {
   const sections = [];
   for (const l of lessons) {
@@ -128,7 +128,7 @@ export default function StudentDetailPage() {
   return (
     <div>
       <Link href="/admin/students" className="inline-flex items-center gap-2 text-sm text-muted hover:text-primary">
-        <ArrowLeft size={16} /> O'quvchilar
+        <ArrowLeft size={16} /> Oʻquvchilar
       </Link>
 
       {/* Profil */}
@@ -145,7 +145,7 @@ export default function StudentDetailPage() {
         </button>
       </div>
       <p className="mt-2 text-xs text-muted">
-        Ro'yxatdan o'tgan: {formatDate(student.createdAt)}
+        Roʻyxatdan oʻtgan: {formatDate(student.createdAt)}
       </p>
 
       {sent && (
@@ -295,7 +295,7 @@ export default function StudentDetailPage() {
                     className="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-primary"
                   >
                     {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                    <ListChecks size={16} /> Darslar bo'yicha tafsilot
+                    <ListChecks size={16} /> Darslar boʻyicha tafsilot
                   </button>
                   {open && <LessonBreakdown lessons={e.lessons} />}
                 </div>

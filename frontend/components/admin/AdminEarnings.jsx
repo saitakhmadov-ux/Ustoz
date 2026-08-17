@@ -1,8 +1,8 @@
 'use client';
 
-// Bosh admin uchun "Moliya" bo'limi — platformadagi butun pul oqimi bir joyda:
-// tranzaksiyalar, taqsimot, ustozlar kesimi, o'tkazmalar va foiz sozlamalari.
-// Avval "To'lovlar" alohida sahifa edi va aylanma raqami ikki joyda takrorlanardi.
+// Bosh admin uchun "Moliya" boʻlimi — platformadagi butun pul oqimi bir joyda:
+// tranzaksiyalar, taqsimot, ustozlar kesimi, oʻtkazmalar va foiz sozlamalari.
+// Avval "Toʻlovlar" alohida sahifa edi va aylanma raqami ikki joyda takrorlanardi.
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
@@ -17,12 +17,12 @@ import {
 } from '@/components/admin/earnings-ui';
 import PaymentsTable from '@/components/admin/PaymentsTable';
 
-// Pul yo'li bo'yicha tartib: tushdi -> taqsimlandi -> kimga tegishli -> to'landi -> qoida
+// Pul yoʻli boʻyicha tartib: tushdi -> taqsimlandi -> kimga tegishli -> toʻlandi -> qoida
 const TABS = [
   { key: 'overview', label: 'Umumiy' },
-  { key: 'payments', label: "To'lovlar" },
+  { key: 'payments', label: "Toʻlovlar" },
   { key: 'instructors', label: 'Ustozlar' },
-  { key: 'payouts', label: "O'tkazmalar" },
+  { key: 'payouts', label: "Oʻtkazmalar" },
   { key: 'settings', label: 'Foizlar' },
 ];
 
@@ -98,7 +98,7 @@ export default function AdminEarnings() {
         Hisobot sanasi: {new Date().toLocaleDateString('uz-UZ')}
       </p>
 
-      {/* Asosiy ko'rsatkichlar */}
+      {/* Asosiy koʻrsatkichlar */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Jami aylanma"
@@ -124,7 +124,7 @@ export default function AdminEarnings() {
         <StatCard
           label="Ustozlarga qarz"
           value={payoutTotals.pending}
-          hint={`${formatMoney(payoutTotals.earned)} dan ${formatMoney(payoutTotals.paid)} to'langan`}
+          hint={`${formatMoney(payoutTotals.earned)} dan ${formatMoney(payoutTotals.paid)} toʻlangan`}
           icon={Clock}
           color="bg-amber-50 text-amber-600"
         />
@@ -170,7 +170,7 @@ function Overview({ data, period, setPeriod, platformTotal, unassignedNet }) {
           <dl className="mt-4 space-y-2 text-sm">
             <div className="flex items-baseline justify-between gap-4 font-semibold">
               {/* Yuqoridagi "Jami aylanma" kartochkasi bilan bir xil raqam — nomi ham bir xil */}
-              <dt>Aylanma (o'quvchilar to'lagani)</dt>
+              <dt>Aylanma (oʻquvchilar toʻlagani)</dt>
               <dd className="tabular-nums">{formatMoney(totals.gross + unassigned.gross)}</dd>
             </div>
             <div className="flex items-baseline justify-between gap-4 text-red-600">
@@ -197,7 +197,7 @@ function Overview({ data, period, setPeriod, platformTotal, unassignedNet }) {
               <span>
                 <b>{unassigned.sales} ta sotuv</b> ({formatMoney(unassigned.gross)}) ustoz
                 biriktirilmagan kurslardan. Bunday sotuvdan hech kimga ulush ajratilmaydi —
-                soliqdan keyingi mablag' to'liq tizimga qoladi. Kurslarga ustoz biriktirsangiz,
+                soliqdan keyingi mablag' toʻliq tizimga qoladi. Kurslarga ustoz biriktirsangiz,
                 keyingi sotuvlar ustoz hisobiga ham yoziladi.
               </span>
             </div>
@@ -208,7 +208,7 @@ function Overview({ data, period, setPeriod, platformTotal, unassignedNet }) {
         <div className="card p-5">
           <h2 className="text-lg">Ustoz ulushi manbasi</h2>
           <p className="mt-1 text-sm text-muted">
-            Promo kod orqali sotuvda ustoz ko'proq oladi ({config.referralInstructorPct}%),
+            Promo kod orqali sotuvda ustoz koʻproq oladi ({config.referralInstructorPct}%),
             tizim esa kamroq ({100 - config.referralInstructorPct}%)
           </p>
           <div className="mt-5">
@@ -221,7 +221,7 @@ function Overview({ data, period, setPeriod, platformTotal, unassignedNet }) {
           </div>
           <div className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4 text-sm">
             <div>
-              <div className="text-muted">O'rtacha chek</div>
+              <div className="text-muted">Oʻrtacha chek</div>
               <div className="mt-0.5 font-semibold tabular-nums">{formatMoney(totals.avgCheck)}</div>
             </div>
             <div>
@@ -237,7 +237,7 @@ function Overview({ data, period, setPeriod, platformTotal, unassignedNet }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-lg">Aylanma dinamikasi</h2>
-            <p className="mt-1 text-sm text-muted">Ustozli kurslardan tushgan to'lovlar</p>
+            <p className="mt-1 text-sm text-muted">Ustozli kurslardan tushgan toʻlovlar</p>
           </div>
           <div className="no-print"><PeriodTabs value={period} onChange={setPeriod} /></div>
         </div>
@@ -262,13 +262,13 @@ function Overview({ data, period, setPeriod, platformTotal, unassignedNet }) {
 
 // ---------- Ustozlar kesimi ----------
 function InstructorsTable({ data, onChanged }) {
-  const [payFor, setPayFor] = useState(null); // o'tkazma qo'shilayotgan ustoz
+  const [payFor, setPayFor] = useState(null); // oʻtkazma qoʻshilayotgan ustoz
 
   if (data.byInstructor.length === 0) {
     return (
       <EmptyState
-        title="Ustoz yo'q"
-        text="Odamlar bo'limidan ustoz qo'shing va ularga pulli kurs biriktiring."
+        title="Ustoz yoʻq"
+        text="Odamlar boʻlimidan ustoz qoʻshing va ularga pulli kurs biriktiring."
         icon={Users}
       />
     );
@@ -294,7 +294,7 @@ function InstructorsTable({ data, onChanged }) {
                 <th className="px-4 py-3 text-right">Sotuv</th>
                 <th className="px-4 py-3 text-right">Aylanma</th>
                 <th className="px-4 py-3 text-right">Ishlagan</th>
-                <th className="px-4 py-3 text-right">To'langan</th>
+                <th className="px-4 py-3 text-right">Toʻlangan</th>
                 <th className="px-4 py-3 text-right">Qoldiq</th>
                 <th className="px-4 py-3 text-right no-print">Amal</th>
               </tr>
@@ -322,9 +322,9 @@ function InstructorsTable({ data, onChanged }) {
                         onClick={() => setPayFor(i)}
                         disabled={i.pending <= 0}
                         className="btn-outline py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
-                        title={i.pending > 0 ? "O'tkazma qo'shish" : "To'lanmagan qoldiq yo'q"}
+                        title={i.pending > 0 ? "Oʻtkazma qoʻshish" : "Toʻlanmagan qoldiq yoʻq"}
                       >
-                        <Wallet size={14} /> To'lash
+                        <Wallet size={14} /> Toʻlash
                       </button>
                       <Link href={`/admin/earnings/${i.instructorId}`} className="btn-ghost py-1.5 text-xs">
                         Tafsilot <ArrowRight size={14} />
@@ -353,7 +353,7 @@ function InstructorsTable({ data, onChanged }) {
   );
 }
 
-// O'tkazma qo'shish formasi
+// Oʻtkazma qoʻshish formasi
 function PayoutForm({ instructor, onClose, onSaved }) {
   const [amount, setAmount] = useState(String(instructor.pending > 0 ? instructor.pending : ''));
   const [method, setMethod] = useState('Karta');
@@ -365,7 +365,7 @@ function PayoutForm({ instructor, onClose, onSaved }) {
     e.preventDefault();
     setError('');
     const value = parseInt(amount, 10);
-    if (!Number.isFinite(value) || value <= 0) return setError('Summani to\'g\'ri kiriting');
+    if (!Number.isFinite(value) || value <= 0) return setError('Summani toʻgʻri kiriting');
     setSaving(true);
     try {
       await api.post('/admin/payouts', {
@@ -385,14 +385,14 @@ function PayoutForm({ instructor, onClose, onSaved }) {
 
   return (
     <form onSubmit={submit} className="card mb-4 p-5">
-      <h2 className="text-lg">{instructor.fullName} — o'tkazma qo'shish</h2>
+      <h2 className="text-lg">{instructor.fullName} — oʻtkazma qoʻshish</h2>
       <p className="mt-1 text-sm text-muted">
-        To'lanmagan qoldiq: <b className="tabular-nums">{formatMoney(instructor.pending)}</b>
+        Toʻlanmagan qoldiq: <b className="tabular-nums">{formatMoney(instructor.pending)}</b>
       </p>
       {error && <div className="mt-3 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700">{error}</div>}
       <div className="mt-4 grid gap-4 md:grid-cols-3">
         <div>
-          <label className="label">Summa (so'm)</label>
+          <label className="label">Summa (soʻm)</label>
           <input
             type="number"
             className="input"
@@ -421,7 +421,7 @@ function PayoutForm({ instructor, onClose, onSaved }) {
   );
 }
 
-// ---------- O'tkazmalar ----------
+// ---------- Oʻtkazmalar ----------
 function PayoutsTab({ instructors, onChanged }) {
   const [payouts, setPayouts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -439,7 +439,7 @@ function PayoutsTab({ instructors, onChanged }) {
   useEffect(() => { load(); }, [load]);
 
   const remove = async (p) => {
-    if (!confirm(`${formatMoney(p.amount)} o'tkazmasini o'chirasizmi? Ustozning qoldig'i shunga oshadi.`)) return;
+    if (!confirm(`${formatMoney(p.amount)} oʻtkazmasini oʻchirasizmi? Ustozning qoldigʻi shunga oshadi.`)) return;
     try {
       await api.del(`/admin/payouts/${p.id}`);
       load();
@@ -453,13 +453,13 @@ function PayoutsTab({ instructors, onChanged }) {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg">Ustozlarga o'tkazmalar</h2>
+          <h2 className="text-lg">Ustozlarga oʻtkazmalar</h2>
           <p className="mt-1 text-sm text-muted">
-            Jami o'tkazilgan: <b className="tabular-nums">{formatMoney(total)}</b>
+            Jami oʻtkazilgan: <b className="tabular-nums">{formatMoney(total)}</b>
           </p>
         </div>
         <button onClick={() => setShowForm((v) => !v)} className="btn-primary no-print">
-          <Plus size={16} /> Yangi o'tkazma
+          <Plus size={16} /> Yangi oʻtkazma
         </button>
       </div>
 
@@ -474,8 +474,8 @@ function PayoutsTab({ instructors, onChanged }) {
       <div className="mt-4">
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : payouts.length === 0 ? (
           <EmptyState
-            title="O'tkazma yo'q"
-            text="Ustozlar yorlig'idan qoldiqni ko'rib, o'tkazma qo'shing."
+            title="Oʻtkazma yoʻq"
+            text="Ustozlar yorligʻidan qoldiqni koʻrib, oʻtkazma qoʻshing."
             icon={Wallet}
           />
         ) : (
@@ -509,7 +509,7 @@ function PayoutsTab({ instructors, onChanged }) {
                       <td className="px-4 py-3 text-muted">{p.createdBy?.fullName || '—'}</td>
                       <td className="px-4 py-3">
                         {p.status === 'PAID' ? (
-                          <span className="badge bg-emerald-50 text-emerald-700"><CheckCircle2 size={12} /> O'tkazilgan</span>
+                          <span className="badge bg-emerald-50 text-emerald-700"><CheckCircle2 size={12} /> Oʻtkazilgan</span>
                         ) : (
                           <span className="badge bg-amber-50 text-amber-700"><Clock size={12} /> Kutilmoqda</span>
                         )}
@@ -518,7 +518,7 @@ function PayoutsTab({ instructors, onChanged }) {
                         <button
                           onClick={() => remove(p)}
                           className="ml-auto grid h-8 w-8 place-items-center rounded-lg text-red-600 hover:bg-red-50"
-                          title="O'chirish"
+                          title="Oʻchirish"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -550,7 +550,7 @@ function ManualPayoutForm({ instructors, onClose, onSaved }) {
     setError('');
     const value = parseInt(amount, 10);
     if (!instructorId) return setError('Ustozni tanlang');
-    if (!Number.isFinite(value) || value <= 0) return setError('Summani to\'g\'ri kiriting');
+    if (!Number.isFinite(value) || value <= 0) return setError('Summani toʻgʻri kiriting');
     setSaving(true);
     try {
       await api.post('/admin/payouts', {
@@ -584,7 +584,7 @@ function ManualPayoutForm({ instructors, onClose, onSaved }) {
           )}
         </div>
         <div>
-          <label className="label">Summa (so'm)</label>
+          <label className="label">Summa (soʻm)</label>
           <input type="number" className="input" value={amount} onChange={(e) => setAmount(e.target.value)} min={1} required />
         </div>
         <div>
@@ -634,7 +634,7 @@ function SettingsTab({ config, onSaved }) {
     }
   };
 
-  // Misol: 500 000 so'mlik kurs bo'yicha taqsimot
+  // Misol: 500 000 soʻmlik kurs boʻyicha taqsimot
   const sample = 500000;
   const tax = Math.round((sample * form.taxPct) / 100);
   const net = sample - tax;
@@ -653,9 +653,9 @@ function SettingsTab({ config, onSaved }) {
       <form onSubmit={save} className="card p-5">
         <h2 className="text-lg"><Settings2 size={18} className="mr-1.5 inline" /> Taqsimot foizlari</h2>
         <div className="mt-3 rounded-xl bg-amber-50 px-4 py-3 text-xs text-amber-800">
-          O'zgartirish faqat <b>keyingi</b> sotuvlarga qo'llanadi. Mavjud daromad
-          yozuvlarida foizlar saqlangan va qayta hisoblanmaydi — o'tgan oylardagi
-          maosh o'zgarmaydi.
+          Oʻzgartirish faqat <b>keyingi</b> sotuvlarga qoʻllanadi. Mavjud daromad
+          yozuvlarida foizlar saqlangan va qayta hisoblanmaydi — oʻtgan oylardagi
+          maosh oʻzgarmaydi.
         </div>
         {error && <div className="mt-3 rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-700">{error}</div>}
         {message && <div className="mt-3 rounded-xl bg-emerald-50 px-4 py-2.5 text-sm text-emerald-700">{message}</div>}

@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { Spinner } from './ui';
 
-// Himoyalangan sahifalarni o'raydi.
+// Himoyalangan sahifalarni oʻraydi.
 // adminOnly=true — faqat bosh admin. staffOnly=true — bosh admin yoki ustoz admin.
 export default function RequireAuth({ children, adminOnly = false, staffOnly = false }) {
   const { isAuthenticated, isAdmin, isStaff, loading } = useAuth();

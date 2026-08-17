@@ -1,10 +1,10 @@
 'use client';
 
-// Ro'yxatdan o'tgandan keyingi qadam: emailga kelgan 6 xonali kodni kiritish.
-// Kod to'g'ri bo'lsa seans shu yerda boshlanadi.
+// Roʻyxatdan oʻtgandan keyingi qadam: emailga kelgan 6 xonali kodni kiritish.
+// Kod toʻgʻri boʻlsa seans shu yerda boshlanadi.
 //
-// Ikkinchi yo'l — Telegram (TelegramVerify): botda "Start" bosilsa hisob
-// tasdiqlanadi va sahifa o'zi kirib ketadi. Email kelmasa shu yo'l qoladi.
+// Ikkinchi yoʻl — Telegram (TelegramVerify): botda "Start" bosilsa hisob
+// tasdiqlanadi va sahifa oʻzi kirib ketadi. Email kelmasa shu yoʻl qoladi.
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -28,8 +28,8 @@ export default function VerifyEmailPage() {
   const [pendingToken, setPendingToken] = useState(null);
   const timer = useResendTimer(60);
 
-  // Tasdiqlash kaliti sessionStorage da (ro'yxatdan o'tish yoki kirish paytida
-  // saqlangan). Bo'lmasa Telegram yo'li ko'rsatilmaydi — faqat email kodi.
+  // Tasdiqlash kaliti sessionStorage da (roʻyxatdan oʻtish yoki kirish paytida
+  // saqlangan). Boʻlmasa Telegram yoʻli koʻrsatilmaydi — faqat email kodi.
   useEffect(() => {
     setPendingToken(readPendingToken(email));
   }, [email]);
@@ -74,7 +74,7 @@ export default function VerifyEmailPage() {
         <p className="mt-4 text-center text-sm text-muted">
           Boshqa email bilan{' '}
           <Link href="/register" className="font-semibold text-primary hover:underline">
-            ro'yxatdan o'tish
+            roʻyxatdan oʻtish
           </Link>
         </p>
       }

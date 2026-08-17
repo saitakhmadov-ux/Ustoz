@@ -3,14 +3,14 @@
 // Formalarni botlardan himoyalash uchun uch qatlam.
 // Backend (utils/humanCheck.js) shu uchtasini tekshiradi:
 //   captchaToken — Cloudflare Turnstile
-//   website      — honeypot: ko'rinmas maydon, faqat bot to'ldiradi
-//   formMs       — forma ochilgandan yuborilgunicha o'tgan vaqt
+//   website      — honeypot: koʻrinmas maydon, faqat bot toʻldiradi
+//   formMs       — forma ochilgandan yuborilgunicha oʻtgan vaqt
 //
 // Ommaviy kalit admin panelidan (/api/home/security) olinadi — shuning uchun
-// CAPTCHA'ni yoqish uchun saytni qayta joylash shart emas.
-// NEXT_PUBLIC_TURNSTILE_SITE_KEY qo'yilgan bo'lsa, u ustun turadi.
-// Kalit umuman bo'lmasa vidjet ko'rsatilmaydi va backend ham tekshiruvni
-// o'tkazib yuboradi — lokal ishlab chiqish uchun.
+// CAPTCHAʼni yoqish uchun saytni qayta joylash shart emas.
+// NEXT_PUBLIC_TURNSTILE_SITE_KEY qoʻyilgan boʻlsa, u ustun turadi.
+// Kalit umuman boʻlmasa vidjet koʻrsatilmaydi va backend ham tekshiruvni
+// oʻtkazib yuboradi — lokal ishlab chiqish uchun.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
@@ -19,7 +19,7 @@ const ENV_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 const SCRIPT_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 const KEY_TIMEOUT_MS = 5000;
 
-// Kalitni sahifa umri davomida bir marta so'raymiz (bir nechta forma bo'lsa ham).
+// Kalitni sahifa umri davomida bir marta soʻraymiz (bir nechta forma boʻlsa ham).
 // Server javob bermasa yoki kechiksa — kalitsiz davom etamiz, aks holda
 // foydalanuvchi formani umuman yubora olmay qoladi.
 let keyPromise = null;
@@ -34,7 +34,7 @@ function fetchSiteKey() {
   return keyPromise;
 }
 
-// Skriptni bir marta yuklaymiz (bir nechta forma bo'lsa ham)
+// Skriptni bir marta yuklaymiz (bir nechta forma boʻlsa ham)
 let scriptPromise = null;
 function loadTurnstile() {
   if (typeof window === 'undefined') return Promise.reject(new Error('server'));
@@ -58,7 +58,7 @@ export function useBotShield() {
   const [captchaToken, setCaptchaToken] = useState('');
   const [honeypot, setHoneypot] = useState('');
   const startedAt = useRef(Date.now());
-  // null — kalit hali noma'lum; '' — CAPTCHA o'chirilgan
+  // null — kalit hali nomaʼlum; '' — CAPTCHA oʻchirilgan
   const [siteKey, setSiteKey] = useState(ENV_SITE_KEY || null);
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export function useBotShield() {
     return () => { alive = false; };
   }, []);
 
-  // Har bir yuborishda backendga qo'shiladigan maydonlar
+  // Har bir yuborishda backendga qoʻshiladigan maydonlar
   const fields = useCallback(() => ({
     captchaToken,
     website: honeypot,
@@ -82,7 +82,7 @@ export function useBotShield() {
     honeypot,
     setHoneypot,
     siteKey,
-    // Kalit aniqlanmaguncha va CAPTCHA yoqilgan bo'lsa token kelmaguncha
+    // Kalit aniqlanmaguncha va CAPTCHA yoqilgan boʻlsa token kelmaguncha
     // tugma bloklanadi
     ready: siteKey !== null && (!siteKey || Boolean(captchaToken)),
     enabled: Boolean(siteKey),
@@ -116,7 +116,7 @@ export default function BotShield({ shield }) {
     return () => {
       cancelled = true;
       if (widgetId.current !== null && window.turnstile) {
-        try { window.turnstile.remove(widgetId.current); } catch { /* e'tiborsiz */ }
+        try { window.turnstile.remove(widgetId.current); } catch { /* eʼtiborsiz */ }
         widgetId.current = null;
       }
     };
@@ -124,11 +124,11 @@ export default function BotShield({ shield }) {
 
   return (
     <>
-      {/* Honeypot — ekranda yo'q, ammo displey:none emas: ba'zi botlar
-          yashirin maydonni o'tkazib yuboradi, shuning uchun ko'rinishdan
-          chiqarib qo'yamiz. Skrinrider uchun aria-hidden va tabIndex -1. */}
+      {/* Honeypot — ekranda yoʻq, ammo displey:none emas: baʼzi botlar
+          yashirin maydonni oʻtkazib yuboradi, shuning uchun koʻrinishdan
+          chiqarib qoʻyamiz. Skrinrider uchun aria-hidden va tabIndex -1. */}
       <div aria-hidden="true" className="absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden">
-        <label htmlFor="website">Veb-sayt (to'ldirmang)</label>
+        <label htmlFor="website">Veb-sayt (toʻldirmang)</label>
         <input
           id="website"
           name="website"
@@ -145,7 +145,7 @@ export default function BotShield({ shield }) {
           <div ref={boxRef} />
           {failed && (
             <p className="mt-2 text-xs text-amber-700">
-              Tekshiruv vidjetini yuklab bo'lmadi. Sahifani yangilab ko'ring.
+              Tekshiruv vidjetini yuklab boʻlmadi. Sahifani yangilab koʻring.
             </p>
           )}
         </div>

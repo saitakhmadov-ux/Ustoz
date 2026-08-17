@@ -1,7 +1,7 @@
 // IELTS moduli uchun umumiy yordamchilar (brauzer tomoni).
 //
-// So'z/belgi sanash qoidasi backend/src/utils/ielts.js bilan AYNAN bir xil —
-// aks holda ekranda ko'ringan son server saqlagan sondan farq qiladi.
+// Soʻz/belgi sanash qoidasi backend/src/utils/ielts.js bilan AYNAN bir xil —
+// aks holda ekranda koʻringan son server saqlagan sondan farq qiladi.
 
 export const MODES = [
   {
@@ -32,13 +32,13 @@ export const MODES = [
     id: 'TYPING',
     label: 'Typing Practice',
     sub: 'Paragraph',
-    hint: 'IELTS uslubidagi inglizcha paragrafni ko\'chirib yozish',
+    hint: 'IELTS uslubidagi inglizcha paragrafni koʻchirib yozish',
   },
   {
     id: 'VOCAB',
     label: 'Vocabulary Practice',
     sub: 'Academic words',
-    hint: 'IELTS akademik lug\'atini terish (Easy / Medium / Hard)',
+    hint: 'IELTS akademik lugʻatini terish (Easy / Medium / Hard)',
   },
 ];
 
@@ -48,7 +48,7 @@ export const LEVELS = [
   { id: 'HARD', label: 'Hard' },
 ];
 
-// IELTS qoidasi: so'zlar bo'sh joy bilan ajratiladi (defisli so'z — bitta so'z)
+// IELTS qoidasi: soʻzlar boʻsh joy bilan ajratiladi (defisli soʻz — bitta soʻz)
 export function countWords(text) {
   const s = String(text || '').trim();
   if (!s) return 0;
@@ -67,7 +67,7 @@ export function formatTime(totalSec) {
 // Diagramma ranglari — saytning mavjud palitrasi
 export const CHART_COLORS = ['#4f46e5', '#059669', '#f59e0b', '#e11d48', '#0ea5e9', '#7c3aed'];
 
-// O'q uchun "qulay" maksimal qiymat (10, 25, 50, 100, 250 ...)
+// Oʻq uchun "qulay" maksimal qiymat (10, 25, 50, 100, 250 ...)
 export function niceMax(value) {
   if (!(value > 0)) return 10;
   const exp = 10 ** Math.floor(Math.log10(value));
@@ -76,5 +76,5 @@ export function niceMax(value) {
   return step * exp;
 }
 
-// Qoralamani saqlash kaliti — sahifa yangilansa ham matn yo'qolmasin
+// Qoralamani saqlash kaliti — sahifa yangilansa ham matn yoʻqolmasin
 export const draftKey = (taskId) => `ielts_draft_${taskId}`;

@@ -17,7 +17,7 @@ export default function Navbar() {
   const { user, isAuthenticated, isAdmin, isStaff, logout, loading } = useAuth();
   const router = useRouter();
 
-  // O'qilmagan bildirishnomalar sonini olish (va vaqti-vaqti bilan yangilash)
+  // Oʻqilmagan bildirishnomalar sonini olish (va vaqti-vaqti bilan yangilash)
   useEffect(() => {
     if (!isAuthenticated) { setUnread(0); return; }
     let alive = true;
@@ -70,14 +70,14 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* O'ng tomon (desktop) */}
+        {/* Oʻng tomon (desktop) */}
         <div className="hidden items-center gap-2 md:flex">
           <ThemeToggle />
           {loading ? (
             <div className="h-9 w-24 animate-pulse rounded-xl bg-slate-100" />
           ) : isAuthenticated ? (
             <>
-              {/* Bildirishnoma qo'ng'irog'i */}
+              {/* Bildirishnoma qoʻngʻirogʻi */}
               <Link
                 href="/notifications"
                 className="relative grid h-9 w-9 place-items-center rounded-xl border border-line hover:border-primary"
@@ -131,7 +131,7 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/login" className="btn-ghost">Kirish</Link>
-              <Link href="/register" className="btn-primary">Ro'yxatdan o'tish</Link>
+              <Link href="/register" className="btn-primary">Roʻyxatdan oʻtish</Link>
             </>
           )}
         </div>
@@ -170,7 +170,7 @@ export default function Navbar() {
               ) : (
                 <>
                   <Link href="/login" className="btn-outline" onClick={() => setOpen(false)}>Kirish</Link>
-                  <Link href="/register" className="btn-primary" onClick={() => setOpen(false)}>Ro'yxatdan o'tish</Link>
+                  <Link href="/register" className="btn-primary" onClick={() => setOpen(false)}>Roʻyxatdan oʻtish</Link>
                 </>
               )}
             </div>

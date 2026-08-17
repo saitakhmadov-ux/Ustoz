@@ -3,10 +3,10 @@ import { CornerOrnament, Divider, Seal, GuillochePattern } from './ornaments';
 
 // Sertifikat varaqasi.
 //
-// MUHIM: bu blok ATAYLAB temaga bo'ysunmaydi. Sertifikat — hujjat, qog'oz.
-// Kecha rejimida ham u oq qog'oz bo'lib qoladi (to'q sahifada stol ustidagi
-// varaqdek ko'rinadi), chunki uni chop etishadi va skrinshot qilishadi.
-// Shuning uchun ranglar bu yerda qat'iy — token emas.
+// MUHIM: bu blok ATAYLAB temaga boʻysunmaydi. Sertifikat — hujjat, qogʻoz.
+// Kecha rejimida ham u oq qogʻoz boʻlib qoladi (toʻq sahifada stol ustidagi
+// varaqdek koʻrinadi), chunki uni chop etishadi va skrinshot qilishadi.
+// Shuning uchun ranglar bu yerda qatʼiy — token emas.
 const PAPER = '#fffdf7';
 const INK = '#191634';
 const INK_SOFT = '#5b5680';
@@ -23,7 +23,7 @@ export default function CertificateSheet({
       className="certificate relative overflow-hidden rounded-2xl"
       style={{ background: PAPER, color: INK, boxShadow: '0 18px 60px rgba(15,12,45,0.28)' }}
     >
-      {/* Tashqi oltin chiziq + ichki quyuq hoshiya — "o'yilgan" hujjat hoshiyasi */}
+      {/* Tashqi oltin chiziq + ichki quyuq hoshiya — "oʻyilgan" hujjat hoshiyasi */}
       <div className="absolute inset-[10px] rounded-xl" style={{ border: `1px solid ${GOLD}`, opacity: 0.55 }} />
       <div className="absolute inset-[16px] rounded-lg" style={{ border: `2px solid ${RULE}` }} />
       <div className="absolute inset-[21px] rounded-md" style={{ border: `1px solid ${RULE}`, opacity: 0.35 }} />
@@ -50,7 +50,7 @@ export default function CertificateSheet({
           {SITE_NAME}
         </p>
         <p className="mt-1 text-[10px] uppercase sm:text-[11px]" style={{ color: INK_SOFT, letterSpacing: '0.3em' }}>
-          Onlayn IT ta'lim platformasi
+          Onlayn IT taʼlim platformasi
         </p>
 
         <div className="mt-7 flex justify-center" style={{ color: GOLD }}>
@@ -78,7 +78,7 @@ export default function CertificateSheet({
         <div className="mx-auto mt-4 h-px w-40 sm:w-64" style={{ background: GOLD }} />
 
         <p className="mt-7 text-sm sm:text-base" style={{ color: INK_SOFT }}>
-          va u quyidagi kursni to'liq hamda muvaffaqiyatli tamomlaganini tasdiqlaydi
+          va u quyidagi kursni toʻliq hamda muvaffaqiyatli tamomlaganini tasdiqlaydi
         </p>
         <p
           className="mx-auto mt-3 max-w-2xl font-display text-lg font-semibold leading-snug sm:text-2xl"
@@ -87,7 +87,7 @@ export default function CertificateSheet({
           «{courseTitle}»
         </p>
 
-        {/* Pastki qator: sana · muhr · o'qituvchi imzosi */}
+        {/* Pastki qator: sana · muhr · oʻqituvchi imzosi */}
         <div className="mt-12 grid grid-cols-1 items-end gap-8 sm:grid-cols-3 sm:gap-4">
           <div className="order-2 sm:order-1">
             <div className="mx-auto h-px w-40" style={{ background: INK_SOFT, opacity: 0.5 }} />
@@ -112,7 +112,7 @@ export default function CertificateSheet({
           </div>
         </div>
 
-        {/* Tekshiruv ma'lumoti — hujjatning "haqiqiylik" qatori */}
+        {/* Tekshiruv maʼlumoti — hujjatning "haqiqiylik" qatori */}
         <div
           className="mx-auto mt-11 max-w-xl rounded-lg px-4 py-3"
           style={{ background: 'rgba(46,40,103,0.045)', border: `1px solid rgba(46,40,103,0.14)` }}

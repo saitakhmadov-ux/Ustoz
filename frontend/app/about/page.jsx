@@ -5,7 +5,7 @@ import { aboutIcon } from '@/lib/aboutIcons';
 
 export const metadata = { title: 'Biz haqimizda' };
 
-// Sahifa mazmuni to'liq admin panelidan boshqariladi
+// Sahifa mazmuni toʻliq admin panelidan boshqariladi
 // (Admin -> Bosh sahifa -> "Biz haqimizda").
 // Backend saqlanmagan maydonlar uchun standart qiymat qaytaradi.
 async function getAbout() {
@@ -20,7 +20,7 @@ async function getAbout() {
   }
 }
 
-// Matndagi bo'sh qatorlarni alohida abzatsga ajratamiz
+// Matndagi boʻsh qatorlarni alohida abzatsga ajratamiz
 function Paragraphs({ text, className = '' }) {
   const parts = String(text || '').split(/\n\s*\n|\n/).map((p) => p.trim()).filter(Boolean);
   return parts.map((p, i) => (
@@ -36,7 +36,7 @@ export default async function AboutPage() {
     return (
       <div className="container-page max-w-4xl py-14 text-center">
         <h1 className="text-4xl">Biz haqimizda</h1>
-        <p className="mt-4 text-muted">Ma'lumotni yuklab bo'lmadi. Birozdan so'ng qayta urinib ko'ring.</p>
+        <p className="mt-4 text-muted">Maʼlumotni yuklab boʻlmadi. Birozdan soʻng qayta urinib koʻring.</p>
       </div>
     );
   }
@@ -98,7 +98,7 @@ export default async function AboutPage() {
         </div>
       )}
 
-      {/* Qo'shimcha bo'limlar */}
+      {/* Qoʻshimcha boʻlimlar */}
       {about.sections.length > 0 && (
         <div className="mt-12 space-y-8">
           {about.sections.map((s) => (

@@ -7,8 +7,8 @@
 // 824 characters".
 //
 // Vaqt tugaganda: muharrir qulflanadi, javob avtomatik yuboriladi va natija
-// ko'rsatiladi — yozilgan matn HECH QACHON yo'qolmaydi. Qo'shimcha himoya:
-// har o'zgarishda qoralama localStorage ga yoziladi, shuning uchun sahifa
+// koʻrsatiladi — yozilgan matn HECH QACHON yoʻqolmaydi. Qoʻshimcha himoya:
+// har oʻzgarishda qoralama localStorage ga yoziladi, shuning uchun sahifa
 // yangilansa yoki brauzer yopilsa ham matn joyida qoladi.
 
 import {
@@ -34,7 +34,7 @@ export default function WritingTask({
 
   const key = draftKey(task.id);
 
-  // Qoralamani tiklash (sahifa yangilangan bo'lsa)
+  // Qoralamani tiklash (sahifa yangilangan boʻlsa)
   useEffect(() => {
     setText(''); setStartedAt(null); setLeft(totalSec); setLocked(false);
     setRestored(false); sentRef.current = false;
@@ -45,16 +45,16 @@ export default function WritingTask({
         setStartedAt(saved.startedAt || null);
         setRestored(true);
       }
-    } catch { /* qoralama buzilgan bo'lsa e'tiborsiz qoldiramiz */ }
+    } catch { /* qoralama buzilgan boʻlsa eʼtiborsiz qoldiramiz */ }
   }, [key, totalSec]);
 
-  // Har o'zgarishda qoralamani saqlaymiz
+  // Har oʻzgarishda qoralamani saqlaymiz
   useEffect(() => {
     if (locked) return;
     if (!text) { localStorage.removeItem(key); return; }
     try {
       localStorage.setItem(key, JSON.stringify({ text, startedAt, at: Date.now() }));
-    } catch { /* joy yetmasa — jim o'tamiz */ }
+    } catch { /* joy yetmasa — jim oʻtamiz */ }
   }, [text, startedAt, key, locked]);
 
   const finish = useCallback((finalText, ms) => {
@@ -140,7 +140,7 @@ export default function WritingTask({
       {restored && !locked && (
         <p className="flex items-start gap-2 rounded-xl bg-indigo-50 px-4 py-2.5 text-sm text-indigo-800">
           <AlertTriangle size={15} className="mt-0.5 shrink-0" />
-          Saqlangan qoralama tiklandi — oldingi matningiz yo'qolmadi.
+          Saqlangan qoralama tiklandi — oldingi matningiz yoʻqolmadi.
         </p>
       )}
 
@@ -170,7 +170,7 @@ export default function WritingTask({
           <RotateCcw size={16} /> Reset
         </button>
         <span className="text-xs text-muted">
-          Vaqt tugaganda javob avtomatik yuboriladi — yozganingiz yo'qolmaydi.
+          Vaqt tugaganda javob avtomatik yuboriladi — yozganingiz yoʻqolmaydi.
         </span>
       </div>
     </div>

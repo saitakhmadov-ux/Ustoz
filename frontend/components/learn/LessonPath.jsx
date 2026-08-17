@@ -4,14 +4,14 @@ import {
   Check, Lock, Play, FileText, ChevronRight,
 } from 'lucide-react';
 
-// Kurs yo'l xaritasi.
+// Kurs yoʻl xaritasi.
 //
-// Oddiy ro'yxat o'rniga — yo'l: darslar tik chiziq (umurtqa) bo'ylab tugunlar
-// sifatida joylashadi. Bajarilgan qismi to'ldirilgan, oldinda turgani bo'sh.
-// Shu tufayli o'quvchi qayerda turganini va oldinda nima borligini ko'radi.
+// Oddiy roʻyxat oʻrniga — yoʻl: darslar tik chiziq (umurtqa) boʻylab tugunlar
+// sifatida joylashadi. Bajarilgan qismi toʻldirilgan, oldinda turgani boʻsh.
+// Shu tufayli oʻquvchi qayerda turganini va oldinda nima borligini koʻradi.
 //
 // Tugun holatlari:
-//   done      — bajarilgan (to'ldirilgan, belgili)
+//   done      — bajarilgan (toʻldirilgan, belgili)
 //   current   — hozir ochiq turgan dars (halqa bilan ajratilgan)
 //   available — ochiq, lekin bajarilmagan
 //   locked    — qulflangan
@@ -50,7 +50,7 @@ function Node({ state }) {
 }
 
 export default function LessonPath({ sections, activeId, onSelect }) {
-  // Umumiy ro'yxatda oldingi dars bajarilganmi — chiziq rangini shu belgilaydi
+  // Umumiy roʻyxatda oldingi dars bajarilganmi — chiziq rangini shu belgilaydi
   let seenIndex = 0;
   const flat = sections.flatMap((s) => s.lessons);
 
@@ -58,7 +58,7 @@ export default function LessonPath({ sections, activeId, onSelect }) {
     <nav className="px-4 pb-6 pt-2">
       {sections.map((section, si) => (
         <div key={section.id} className="mb-1">
-          {/* Bo'lim belgisi — yo'ldagi bekat */}
+          {/* Boʻlim belgisi — yoʻldagi bekat */}
           <div className="flex items-center gap-3 py-3">
             <span
               className="relative z-10 h-2.5 w-2.5 shrink-0 rotate-45 border border-field bg-surface"
@@ -66,7 +66,7 @@ export default function LessonPath({ sections, activeId, onSelect }) {
               style={{ marginLeft: 9 }}
             />
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-              {si + 1}-bo'lim · {section.title}
+              {si + 1}-boʻlim · {section.title}
             </p>
           </div>
 
@@ -76,7 +76,7 @@ export default function LessonPath({ sections, activeId, onSelect }) {
               const idx = seenIndex;
               seenIndex += 1;
               const prev = flat[idx - 1];
-              // Ushbu tugun ustidagi chiziq bo'lagi: oldingi dars bajarilgan bo'lsa to'ldirilgan
+              // Ushbu tugun ustidagi chiziq boʻlagi: oldingi dars bajarilgan boʻlsa toʻldirilgan
               const spineDone = idx === 0 ? lesson.completed : prev?.completed;
 
               return (

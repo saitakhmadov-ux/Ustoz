@@ -22,7 +22,7 @@ export default function LoginPage() {
       const user = await login(form.email, form.password);
       router.push(user.role === 'ADMIN' ? '/admin' : '/dashboard');
     } catch (err) {
-      // Parol to'g'ri, ammo email tasdiqlanmagan — tasdiqlash sahifasiga o'tamiz
+      // Parol toʻgʻri, ammo email tasdiqlanmagan — tasdiqlash sahifasiga oʻtamiz
       if (err.code === 'EMAIL_NOT_VERIFIED') {
         router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
         return;
@@ -35,12 +35,12 @@ export default function LoginPage() {
   return (
     <AuthShell
       title="Tizimga kirish"
-      subtitle="Hisobingizga kiring va o'rganishni davom ettiring"
+      subtitle="Hisobingizga kiring va oʻrganishni davom ettiring"
       footer={
         <p className="mt-4 text-center text-sm text-muted">
-          Hisobingiz yo'qmi?{' '}
+          Hisobingiz yoʻqmi?{' '}
           <Link href="/register" className="font-semibold text-primary hover:underline">
-            Ro'yxatdan o'ting
+            Roʻyxatdan oʻting
           </Link>
         </p>
       }

@@ -32,7 +32,7 @@ export default function AdminReviewsPage() {
 
   const remove = async (r) => {
     const who = r.user?.fullName || 'Foydalanuvchi';
-    if (!confirm(`${who}ning "${r.course?.title}" kursiga qoldirgan sharhini o'chirasizmi?`)) return;
+    if (!confirm(`${who}ning "${r.course?.title}" kursiga qoldirgan sharhini oʻchirasizmi?`)) return;
     try {
       await api.del(`/admin/reviews/${r.id}`);
       t.pageBackIfEmpty(reviews.length, load);
@@ -43,7 +43,7 @@ export default function AdminReviewsPage() {
     <div>
       <PageHeader
         title="Sharhlar"
-        subtitle="O'quvchilar qoldirgan baho va izohlar — nomaqbullarini o'chirishingiz mumkin"
+        subtitle="Oʻquvchilar qoldirgan baho va izohlar — nomaqbullarini oʻchirishingiz mumkin"
       />
 
       <DataToolbar
@@ -71,7 +71,7 @@ export default function AdminReviewsPage() {
         {error ? <ErrorState message={error} /> : loading ? <Spinner /> : reviews.length === 0 ? (
           <EmptyState
             title="Sharh topilmadi"
-            text={t.hasFilters ? 'Filtrni o\'zgartirib ko\'ring.' : 'Hali hech kim baho qoldirmagan.'}
+            text={t.hasFilters ? 'Filtrni oʻzgartirib koʻring.' : 'Hali hech kim baho qoldirmagan.'}
             icon={MessageSquare}
           />
         ) : (
@@ -107,7 +107,7 @@ export default function AdminReviewsPage() {
 
                   <button
                     onClick={() => remove(r)}
-                    title="Sharhni o'chirish"
+                    title="Sharhni oʻchirish"
                     className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-red-600 hover:bg-red-50"
                   >
                     <Trash2 size={16} />

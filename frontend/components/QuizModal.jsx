@@ -7,7 +7,7 @@ import {
 import { api } from '@/lib/api';
 import { fileUrl } from '@/lib/constants';
 
-// Qolgan vaqtni "N soat M daqiqa" ko'rinishida
+// Qolgan vaqtni "N soat M daqiqa" koʻrinishida
 function fmtRemaining(ms) {
   if (!ms || ms <= 0) return '';
   const totalMin = Math.ceil(ms / 60000);
@@ -17,7 +17,7 @@ function fmtRemaining(ms) {
   return `${m} daqiqa`;
 }
 
-// Test — bitta oynada bitta savol, taymer bilan, ko'chirishga qarshi.
+// Test — bitta oynada bitta savol, taymer bilan, koʻchirishga qarshi.
 // lesson.quiz meta: { total, draw, required, available, timePerQ, passPercent,
 //   cooldownHours, passed, lastScore, cooldown:{active,remainingMs,until} }
 export default function QuizModal({ lesson, onResult }) {
@@ -82,7 +82,7 @@ export default function QuizModal({ lesson, onResult }) {
     }
   };
 
-  // Joriy savolni yakunlab keyingisiga o'tadi (yoki testni yuboradi)
+  // Joriy savolni yakunlab keyingisiga oʻtadi (yoki testni yuboradi)
   const handleAdvance = (value) => {
     if (lockRef.current) return;
     lockRef.current = true;
@@ -95,7 +95,7 @@ export default function QuizModal({ lesson, onResult }) {
       } else {
         submit(next);
       }
-    }, value === null ? 150 : 400); // tanlovда qisqa belgilanish ko'rinadi
+    }, value === null ? 150 : 400); // tanlovда qisqa belgilanish koʻrinadi
   };
 
   const pick = (oi) => {
@@ -106,7 +106,7 @@ export default function QuizModal({ lesson, onResult }) {
 
   const submit = async (finalAnswers) => {
     setPhase('loading');
-    // Barcha berilgan savollarni jo'natamiz (javobsizlar null)
+    // Barcha berilgan savollarni joʻnatamiz (javobsizlar null)
     const payload = {};
     questions.forEach((q) => { payload[q.id] = finalAnswers[q.id] ?? null; });
     try {
@@ -145,24 +145,24 @@ export default function QuizModal({ lesson, onResult }) {
 
         {meta.passed ? (
           <div className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            <p className="flex items-center gap-2 font-medium"><ShieldCheck size={16} /> Testdan muvaffaqiyatli o'tgansiz</p>
+            <p className="flex items-center gap-2 font-medium"><ShieldCheck size={16} /> Testdan muvaffaqiyatli oʻtgansiz</p>
             {meta.lastScore != null && <p className="mt-1 text-emerald-700">Oxirgi natija: {meta.lastScore}%</p>}
           </div>
         ) : !meta.available ? (
           <div className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Test hozircha tayyorlanmoqda — savollar bazasi to'ldirilmoqda.
+            Test hozircha tayyorlanmoqda — savollar bazasi toʻldirilmoqda.
           </div>
         ) : cooldownMs > 0 ? (
           <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
             <p className="flex items-center gap-2 font-medium"><Lock size={16} /> Qayta topshirish vaqti hali kelmadi</p>
-            <p className="mt-1">Yana <b>{fmtRemaining(cooldownMs)}</b> dan keyin urinib ko'rishingiz mumkin. Shu vaqt ichida yuqoridagi video va materiallarni qayta ko'rib chiqing.</p>
+            <p className="mt-1">Yana <b>{fmtRemaining(cooldownMs)}</b> dan keyin urinib koʻrishingiz mumkin. Shu vaqt ichida yuqoridagi video va materiallarni qayta koʻrib chiqing.</p>
           </div>
         ) : (
           <div className="rounded-xl bg-indigo-50/60 px-4 py-3 text-sm text-ink">
             <ul className="space-y-1">
               <li>• <b>{meta.draw}</b> ta savol (bazadagi {meta.total} tadan tasodifiy)</li>
-              <li>• Har savolga <b>{meta.timePerQ} soniya</b> — javob bermasangiz keyingisiga o'tadi</li>
-              <li>• O'tish uchun kamida <b>{meta.passPercent}%</b> to'g'ri javob kerak</li>
+              <li>• Har savolga <b>{meta.timePerQ} soniya</b> — javob bermasangiz keyingisiga oʻtadi</li>
+              <li>• Oʻtish uchun kamida <b>{meta.passPercent}%</b> toʻgʻri javob kerak</li>
               <li>• Yiqilsangiz, <b>{meta.cooldownHours} soat</b>dan keyin qayta urinish ochiladi</li>
             </ul>
           </div>
@@ -188,16 +188,16 @@ export default function QuizModal({ lesson, onResult }) {
           </span>
           <h3 className="mt-4 text-2xl">{result.passed ? 'Muvaffaqiyatli!' : 'Yetarli emas'}</h3>
           <p className="mt-2 text-4xl font-display font-bold text-ink">{result.score}%</p>
-          <p className="mt-1 text-muted">{result.correct} / {result.total} to'g'ri javob</p>
+          <p className="mt-1 text-muted">{result.correct} / {result.total} toʻgʻri javob</p>
 
           <div className={`mt-5 rounded-xl px-4 py-3 text-sm ${result.passed ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-700'}`}>
             {result.passed
               ? 'Keyingi materiallar ochildi. Davom etishingiz mumkin.'
-              : `O'tish uchun ${result.passPercent}% kerak edi. Yana ${fmtRemaining(result.cooldown?.remainingMs)} dan keyin qayta urinib ko'ring — shu vaqtda materiallarni qayta ko'ring.`}
+              : `Oʻtish uchun ${result.passPercent}% kerak edi. Yana ${fmtRemaining(result.cooldown?.remainingMs)} dan keyin qayta urinib koʻring — shu vaqtda materiallarni qayta koʻring.`}
           </div>
 
           <button onClick={finish} className={`mt-6 w-full ${result.passed ? 'btn-primary' : 'btn-outline'}`}>
-            {result.passed ? 'Davom etish' : 'Materiallarni qayta ko\'rish'}
+            {result.passed ? 'Davom etish' : 'Materiallarni qayta koʻrish'}
           </button>
         </div>
       </QuizOverlay>
@@ -248,7 +248,7 @@ export default function QuizModal({ lesson, onResult }) {
             ))}
           </div>
 
-          <p className="mt-5 text-center text-xs text-muted">Javob variantini tanlang — keyingi savolga avtomatik o'tiladi</p>
+          <p className="mt-5 text-center text-xs text-muted">Javob variantini tanlang — keyingi savolga avtomatik oʻtiladi</p>
         </div>
       </QuizOverlay>
     );
@@ -257,7 +257,7 @@ export default function QuizModal({ lesson, onResult }) {
   return null;
 }
 
-// To'liq ekranli qoraytirilgan qatlam + ko'chirishga qarshi himoya
+// Toʻliq ekranli qoraytirilgan qatlam + koʻchirishga qarshi himoya
 function QuizOverlay({ children, onExit }) {
   const block = (e) => e.preventDefault();
   return (

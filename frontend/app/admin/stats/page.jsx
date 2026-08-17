@@ -1,7 +1,7 @@
 'use client';
 
-// Bosh admin uchun statistika Boshqaruv panelining ikkinchi yorlig'iga ko'chirildi.
-// Ustoz uchun esa bu alohida sahifa bo'lib qoladi — uning paneli yo'q.
+// Bosh admin uchun statistika Boshqaruv panelining ikkinchi yorligʻiga koʻchirildi.
+// Ustoz uchun esa bu alohida sahifa boʻlib qoladi — uning paneli yoʻq.
 
 import { useEffect } from 'react';
 import { useAuth } from '@/lib/auth';

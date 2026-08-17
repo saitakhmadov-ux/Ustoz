@@ -1,8 +1,8 @@
 'use client';
 
-// Boshqaruv panelining "Umumiy ko'rsatkichlar" yorlig'i:
-// davr bo'yicha dinamika, aylanma va so'nggi harakatlar.
-// O'quvchilar kesimidagi chuqurroq tahlil qo'shni yorliqda (StudentAnalytics).
+// Boshqaruv panelining "Umumiy koʻrsatkichlar" yorligʻi:
+// davr boʻyicha dinamika, aylanma va soʻnggi harakatlar.
+// Oʻquvchilar kesimidagi chuqurroq tahlil qoʻshni yorliqda (StudentAnalytics).
 
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -21,12 +21,12 @@ const PERIODS = [
   { key: 'all', label: 'Butun davr' },
 ];
 
-// O'sish belgisi — oldingi davrga nisbatan
+// Oʻsish belgisi — oldingi davrga nisbatan
 function GrowthBadge({ value }) {
   if (value === 0) {
     return (
       <span className="inline-flex items-center gap-1 text-xs font-medium text-muted">
-        <Minus size={13} /> o'zgarishsiz
+        <Minus size={13} /> oʻzgarishsiz
       </span>
     );
   }
@@ -42,10 +42,10 @@ function GrowthBadge({ value }) {
 // Oddiy ustunli grafik (tashqi kutubxonasiz)
 function BarChart({ data, color = 'var(--color-primary)', formatValue = (v) => v }) {
   if (!data || data.length === 0) {
-    return <p className="py-10 text-center text-sm text-muted">Bu davrda ma'lumot yo'q</p>;
+    return <p className="py-10 text-center text-sm text-muted">Bu davrda maʼlumot yoʻq</p>;
   }
   const max = Math.max(...data.map((d) => d.value), 1);
-  // Ko'p nuqta bo'lsa faqat ba'zi yorliqlarni ko'rsatamiz
+  // Koʻp nuqta boʻlsa faqat baʼzi yorliqlarni koʻrsatamiz
   const labelStep = Math.ceil(data.length / 8);
 
   return (
@@ -53,7 +53,7 @@ function BarChart({ data, color = 'var(--color-primary)', formatValue = (v) => v
       <div className="flex h-40 items-end gap-1">
         {data.map((d) => (
           // h-full muhim: ustunning balandligi foizda berilgani uchun ota element
-          // aniq balandlikka ega bo'lishi kerak, aks holda ustun ko'rinmay qoladi
+          // aniq balandlikka ega boʻlishi kerak, aks holda ustun koʻrinmay qoladi
           <div key={d.date} className="group relative flex h-full flex-1 flex-col justify-end" style={{ minWidth: 4 }}>
             <div
               className="rounded-t transition-opacity hover:opacity-80"
@@ -100,11 +100,11 @@ export default function DashboardOverview({ onOpenAnalytics }) {
 
   const isAll = stats.period === 'all';
 
-  // Davr bo'yicha ko'rsatkichlar (o'sish bilan)
+  // Davr boʻyicha koʻrsatkichlar (oʻsish bilan)
   const periodCards = [
     {
       key: 'users', label: 'Yangi foydalanuvchi', value: stats.current.users, icon: Users, tone: 'blue',
-      tip: 'Tanlangan davrda ro\'yxatdan o\'tgan yangi hisoblar soni.',
+      tip: 'Tanlangan davrda roʻyxatdan oʻtgan yangi hisoblar soni.',
     },
     {
       key: 'enrollments', label: 'Yozilishlar', value: stats.current.enrollments, icon: GraduationCap, tone: 'indigo',
@@ -112,11 +112,11 @@ export default function DashboardOverview({ onOpenAnalytics }) {
     },
     {
       key: 'sales', label: 'Sotuvlar', value: stats.current.sales, icon: BookOpen, tone: 'emerald',
-      tip: 'Muvaffaqiyatli (to\'langan) tranzaksiyalar soni.',
+      tip: 'Muvaffaqiyatli (toʻlangan) tranzaksiyalar soni.',
     },
     {
       key: 'revenue', label: 'Aylanma', value: formatPrice(stats.current.revenue), icon: Wallet, tone: 'amber',
-      tip: 'O\'quvchilardan tushgan umumiy summa — soliq va ustoz ulushi ajratilishidan oldin. Taqsimoti «Moliya» bo\'limida.',
+      tip: 'Oʻquvchilardan tushgan umumiy summa — soliq va ustoz ulushi ajratilishidan oldin. Taqsimoti «Moliya» boʻlimida.',
     },
   ];
 
@@ -128,7 +128,7 @@ export default function DashboardOverview({ onOpenAnalytics }) {
 
   return (
     <div>
-      {/* Ish ro'yxati va tezkor amallar — raqamlardan oldin */}
+      {/* Ish roʻyxati va tezkor amallar — raqamlardan oldin */}
       <AttentionPanel />
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
@@ -140,7 +140,7 @@ export default function DashboardOverview({ onOpenAnalytics }) {
         />
       </div>
 
-      {/* Davr ko'rsatkichlari */}
+      {/* Davr koʻrsatkichlari */}
       <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {periodCards.map((c) => (
           <StatCard key={c.key} icon={c.icon} tone={c.tone} value={c.value} label={c.label} tip={c.tip}>
@@ -150,7 +150,7 @@ export default function DashboardOverview({ onOpenAnalytics }) {
       </div>
       {!isAll && (
         <p className="mt-2 text-xs text-muted">
-          O'sish foizi oldingi shu uzunlikdagi davrga nisbatan hisoblanadi.
+          Oʻsish foizi oldingi shu uzunlikdagi davrga nisbatan hisoblanadi.
         </p>
       )}
 
@@ -168,7 +168,7 @@ export default function DashboardOverview({ onOpenAnalytics }) {
         <BarChart data={CHARTS[chart].data} formatValue={CHARTS[chart].format} />
       </div>
 
-      {/* Umumiy (butun davr) ko'rsatkichlari */}
+      {/* Umumiy (butun davr) koʻrsatkichlari */}
       <div className="card mt-6 grid grid-cols-2 gap-y-4 p-5 sm:grid-cols-4 sm:divide-x sm:divide-line">
         {[
           { label: 'Jami foydalanuvchi', value: stats.users },
@@ -177,7 +177,7 @@ export default function DashboardOverview({ onOpenAnalytics }) {
           {
             label: 'Umumiy aylanma',
             value: formatPrice(stats.revenue),
-            tip: 'Platformaning butun faoliyati davomidagi to\'langan summa.',
+            tip: 'Platformaning butun faoliyati davomidagi toʻlangan summa.',
           },
         ].map((s) => (
           <div key={s.label} className="text-center sm:px-3">
@@ -191,14 +191,14 @@ export default function DashboardOverview({ onOpenAnalytics }) {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        {/* So'nggi sotuvlar */}
+        {/* Soʻnggi sotuvlar */}
         <div className="card p-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg">So'nggi sotuvlar</h2>
+            <h2 className="text-lg">Soʻnggi sotuvlar</h2>
             <Link href="/admin/earnings?tab=payments" className="text-sm text-primary hover:underline">Barchasi</Link>
           </div>
           <div className="mt-3 divide-y divide-line">
-            {stats.recentPayments.length === 0 && <p className="py-4 text-sm text-muted">Hali sotuvlar yo'q</p>}
+            {stats.recentPayments.length === 0 && <p className="py-4 text-sm text-muted">Hali sotuvlar yoʻq</p>}
             {stats.recentPayments.map((p) => (
               <div key={p.id} className="flex items-center justify-between py-3 text-sm">
                 <div className="min-w-0">
@@ -211,7 +211,7 @@ export default function DashboardOverview({ onOpenAnalytics }) {
           </div>
         </div>
 
-        {/* Top kurslar — batafsil kesim qo'shni yorliqda */}
+        {/* Top kurslar — batafsil kesim qoʻshni yorliqda */}
         <div className="card p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-lg">Eng ommabop kurslar</h2>
@@ -220,14 +220,14 @@ export default function DashboardOverview({ onOpenAnalytics }) {
             </button>
           </div>
           <div className="mt-3 divide-y divide-line">
-            {stats.topCourses.length === 0 && <p className="py-4 text-sm text-muted">Ma'lumot yo'q</p>}
+            {stats.topCourses.length === 0 && <p className="py-4 text-sm text-muted">Maʼlumot yoʻq</p>}
             {stats.topCourses.map((c, i) => (
               <div key={c.id} className="flex items-center justify-between py-3 text-sm">
                 <div className="flex min-w-0 items-center gap-3">
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-slate-100 text-xs font-bold">{i + 1}</span>
                   <p className="truncate font-medium">{c.title}</p>
                 </div>
-                <span className="shrink-0 text-xs text-muted">{c._count.enrollments} o'quvchi</span>
+                <span className="shrink-0 text-xs text-muted">{c._count.enrollments} oʻquvchi</span>
               </div>
             ))}
           </div>

@@ -31,7 +31,7 @@ function CertificatesInner() {
           <Spinner />
         ) : certificates.length === 0 ? (
           <EmptyState
-            title="Hali sertifikat yo'q"
+            title="Hali sertifikat yoʻq"
             text="Kursni 100% tugatganingizda sertifikat avtomatik beriladi"
             icon={Award}
           />

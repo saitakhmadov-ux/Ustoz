@@ -151,8 +151,12 @@ module.exports = {
         field: 'var(--color-field)',
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-sora)', 'var(--font-inter)', 'sans-serif'],
+        // MUHIM: nomlar `app/layout.jsx` dagi next/font `variable` qiymatlari
+        // bilan bir xil bo'lishi SHART. Aniqlanmagan `var()` shrift oilasini
+        // butunlay bekor qiladi (deklaratsiya tashlanadi va ota shrift meros
+        // bo'ladi) — ya'ni `font-display` klassi jimgina ishlamay qo'yadi.
+        sans: ['var(--font-body)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-body)', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         xl: '0.875rem',

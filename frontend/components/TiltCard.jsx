@@ -2,16 +2,16 @@
 
 import { useRef, useState, useCallback } from 'react';
 
-// Kartochkalar uchun 3D egilish (tilt) o'rovi.
+// Kartochkalar uchun 3D egilish (tilt) oʻrovi.
 // Sichqoncha harakatiga qarab kartochka markazga nisbatan mayin egiladi;
-// sichqoncha chiqqanda tekis holatiga qaytadi. Sensor ekran va reduced-motion da o'chadi.
-// Kartochka o'lchami o'zgarmaydi — o'rov faqat transform beradi (perspective transform ichida).
+// sichqoncha chiqqanda tekis holatiga qaytadi. Sensor ekran va reduced-motion da oʻchadi.
+// Kartochka oʻlchami oʻzgarmaydi — oʻrov faqat transform beradi (perspective transform ichida).
 export default function TiltCard({ children, className = '', max = 7, glare = true }) {
   const outerRef = useRef(null);
   const [style, setStyle] = useState(null);
   const [glarePos, setGlarePos] = useState({ x: 50, y: 50, on: false });
 
-  // Faqat aniq kursor (sichqoncha) va harakatga ruxsat bo'lganda ishlaydi
+  // Faqat aniq kursor (sichqoncha) va harakatga ruxsat boʻlganda ishlaydi
   const enabled = useCallback(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return false;
     return (
@@ -27,7 +27,7 @@ export default function TiltCard({ children, className = '', max = 7, glare = tr
     const rect = el.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width; // 0..1
     const py = (e.clientY - rect.top) / rect.height; // 0..1
-    const rotateY = (px - 0.5) * 2 * max; // chap/o'ng burilish
+    const rotateY = (px - 0.5) * 2 * max; // chap/oʻng burilish
     const rotateX = -(py - 0.5) * 2 * max; // yuqori/past burilish
     setStyle({
       transform: `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateZ(6px)`,

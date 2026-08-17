@@ -1,6 +1,6 @@
 'use client';
 
-// Tasdiqlash kodi bilan ishlaydigan sahifalar uchun umumiy bo'laklar
+// Tasdiqlash kodi bilan ishlaydigan sahifalar uchun umumiy boʻlaklar
 // (email tasdiqlash va parolni tiklash ikkalasi ham shulardan foydalanadi).
 
 import { useCallback, useEffect, useState } from 'react';
@@ -39,7 +39,7 @@ export function useResendTimer(seconds = 60) {
   return { left, start, ready: left <= 0 };
 }
 
-// Manzil qatoridan parametr olish. useSearchParams o'rniga — bu sahifalar
+// Manzil qatoridan parametr olish. useSearchParams oʻrniga — bu sahifalar
 // faqat brauzerda ishlaydi va Suspense chegarasi talab qilinmasin.
 export function useQueryParam(name) {
   const [value, setValue] = useState('');

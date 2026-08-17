@@ -7,10 +7,10 @@ import Link from 'next/link';
 // Dars yoki kurs yakunlanganda chiqadigan qisqa tantana.
 //
 // Klaviatura moduli uchun yozilgan konfetti animatsiyasi (globals.css ->
-// .tp-confetti) shu yerda qayta ishlatiladi — sayt bo'ylab bitta til.
+// .tp-confetti) shu yerda qayta ishlatiladi — sayt boʻylab bitta til.
 //
-// kind='lesson' — 2.6 soniyada o'zi yopiladi, o'qishga xalaqit bermaydi.
-// kind='course' — qo'lda yopiladi, chunki sertifikat havolasi bor.
+// kind='lesson' — 2.6 soniyada oʻzi yopiladi, oʻqishga xalaqit bermaydi.
+// kind='course' — qoʻlda yopiladi, chunki sertifikat havolasi bor.
 
 const COLORS = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#0ea5e9', '#a855f7'];
 

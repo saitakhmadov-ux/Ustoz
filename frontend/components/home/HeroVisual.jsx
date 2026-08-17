@@ -7,7 +7,7 @@ import { fileUrl } from '@/lib/constants';
 
 // Edura uslubidagi rasmli hero: surat(lar) + dekorativ doira/nuqtalar + jonli suzuvchi kartalar.
 // Rasmlar admin panel (/admin/hero) orqali yuklanadi va belgilangan interval bilan almashib turadi.
-// Admin hech rasm yuklamagan bo'lsa quyidagi standart surat ko'rsatiladi.
+// Admin hech rasm yuklamagan boʻlsa quyidagi standart surat koʻrsatiladi.
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=900&q=80';
 
 export default function HeroVisual() {
@@ -33,7 +33,7 @@ export default function HeroVisual() {
       .catch(() => {});
   }, []);
 
-  // Bir nechta rasm bo'lsa — interval bilan almashtiramiz (crossfade)
+  // Bir nechta rasm boʻlsa — interval bilan almashtiramiz (crossfade)
   useEffect(() => {
     if (images.length < 2) return;
     const t = setInterval(() => {
@@ -42,7 +42,7 @@ export default function HeroVisual() {
     return () => clearInterval(t);
   }, [images, intervalSec]);
 
-  // Faqat aniq kursor (sichqoncha) va harakatga ruxsat bo'lganda ishlaydi
+  // Faqat aniq kursor (sichqoncha) va harakatga ruxsat boʻlganda ishlaydi
   const tiltEnabled = () => {
     if (typeof window === 'undefined' || !window.matchMedia) return false;
     return (
@@ -72,7 +72,7 @@ export default function HeroVisual() {
     willChange: 'transform',
   };
 
-  // Qatlam chuqurligi — faqat hover paytida qo'llanadi (tinch holatda hammasi tekis, o'lcham o'zgarmaydi)
+  // Qatlam chuqurligi — faqat hover paytida qoʻllanadi (tinch holatda hammasi tekis, oʻlcham oʻzgarmaydi)
   const depth = (z) => ({
     transform: `translateZ(${tilt.active ? z : 0}px)`,
     transition: ease,
@@ -116,7 +116,7 @@ export default function HeroVisual() {
                 <img
                   key={`${src}-${i}`}
                   src={src}
-                  alt="Ustoz platformasida o'qiyotgan o'quvchilar"
+                  alt="Ustoz platformasida oʻqiyotgan oʻquvchilar"
                   className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
                     i === idx ? 'opacity-100' : 'opacity-0'
                   }`}
@@ -124,7 +124,7 @@ export default function HeroVisual() {
                 />
               ))}
 
-              {/* Ko'p rasm bo'lsa — pastda nuqta indikatorlari */}
+              {/* Koʻp rasm boʻlsa — pastda nuqta indikatorlari */}
               {images.length > 1 && (
                 <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center gap-1.5">
                   {images.map((_, i) => (
@@ -142,7 +142,7 @@ export default function HeroVisual() {
           </div>
         </div>
 
-        {/* Suzuvchi karta: kurslar (yuqori o'ng) — eng oldinda suzadi */}
+        {/* Suzuvchi karta: kurslar (yuqori oʻng) — eng oldinda suzadi */}
         <div className="absolute right-0 top-14 z-20 hidden sm:block" style={depth(70)}>
           <div className="float-slow flex items-center gap-3 rounded-2xl border border-line bg-surface-glass px-4 py-3 shadow-card-hover backdrop-blur">
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-50 text-primary">
@@ -155,7 +155,7 @@ export default function HeroVisual() {
           </div>
         </div>
 
-        {/* Suzuvchi karta: o'quvchilar (past chap) — eng oldinda suzadi */}
+        {/* Suzuvchi karta: oʻquvchilar (past chap) — eng oldinda suzadi */}
         <div className="absolute -left-2 bottom-12 z-20 hidden sm:block" style={depth(70)}>
           <div className="float-slow flex items-center gap-3 rounded-2xl border border-line bg-surface-glass px-4 py-3 shadow-card-hover backdrop-blur" style={{ animationDelay: '-3s' }}>
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-accent">
